@@ -16,6 +16,7 @@ requires 'SWISH::Filter'              => '0.15';
 requires 'Rose::DateTime'             => 0;         # TODO Moose equivalent?
 requires 'Moose'                      => 0;
 requires 'MooseX::Types::Path::Class' => 0;
+requires 'MooseX::Types::DateTime'    => 0;
 requires 'File::Temp'                 => 0;
 requires 'Data::Dump'                 => 0;
 requires 'Config::General'            => '2.31';
@@ -25,7 +26,7 @@ requires 'File::Slurp'   => 0;         # TODO SWISH::3->slurp already present?
 requires 'XML::Simple'   => 0;
 requires 'Search::Query' => '0.300';
 requires 'SWISH::3'      => 1.000007;
-requires 'Module::Load'  => 0;
+requires 'Class::Load'   => 0;
 
 # recommended Aggregator support
 

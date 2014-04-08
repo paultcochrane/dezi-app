@@ -1,7 +1,6 @@
 package Dezi::Aggregator;
-use strict;
-use warnings;
-use base qw( Dezi::Class );
+use Moose;
+extends 'Dezi::Class';
 use Carp;
 use Dezi::Utils;
 use SWISH::Filter;
@@ -9,20 +8,24 @@ use Dezi::Indexer::Doc;
 use Scalar::Util qw( blessed );
 use Data::Dump qw( dump );
 
-our $VERSION = '0.75';
+use namespace::sweep;
 
-__PACKAGE__->mk_accessors(
-    qw(
-        set_parser_from_type
-        indexer
-        doc_class
-        swish_filter_obj
-        test_mode filter
-        ok_if_newer_than
-        progress
-        )
+our $VERSION = '0.001';
+
+has 'set_parser_from_type' => ( is => 'rw', isa => 'Bool', default => 0 );
+has 'indexer' => ( is => 'rw', isa => 'Dezi::Indexer', required => 1 );
+has 'doc_class' =>
+    ( is => 'rw', required => 1, default => 'Dezi::Indexer::Doc' );
+has 'swish_filter_obj' => (
+    is      => 'rw',
+    isa     => 'SWISH::Filter',
+    default => sub { SWISH::Filter->new }
 );
-__PACKAGE__->mk_ro_accessors(qw( count ));
+has 'test_mode' => ( is => 'rw', isa => 'Bool', default => 0 );
+has 'filter' => ( is => 'rw', isa => 'CodeRef' );
+has 'ok_if_newer_than' => ( is => 'rw', isa => 'Int' );
+has 'progress'         => ( is => 'rw', isa => 'Object' ); # Term::ProgressBar
+has 'count'            => ( is => 'ro', isa => 'Int' );
 
 =pod
 
@@ -33,8 +36,8 @@ Dezi::Aggregator - document aggregation base class
 =head1 SYNOPSIS
 
  package MyAggregator;
- use strict;
- use base qw( Dezi::Aggregator );
+ use Moose;
+ extends 'Dezi::Aggregator';
  
  sub get_doc {
     my ($self, $url) = @_;
@@ -67,7 +70,7 @@ of aggregators that crawl the filesystem and web, respectively.
 
 =head1 METHODS
 
-=head2 init
+=head2 BUILD
 
 Set object flags per Dezi::Class API. These are also accessors, 
 and include:
@@ -122,22 +125,20 @@ just like count() is.
 
 =cut
 
-sub init {
+sub BUILDARGS {
     my $self   = shift;
     my %arg    = @_;
     my $filter = delete $arg{filter};
-    $self->SUPER::init(%arg);
-    $self->{verbose} ||= 0;
+    if ($filter) {
+        $arg{filter} = $self->set_filter($filter);
+    }
+    return \%arg;
+}
+
+sub BUILD {
+    my $self = shift;
     $self->{__progress_so_far} = 0;
     $self->{__progress_next}   = 0;
-
-    $self->{doc_class} ||= 'Dezi::Indexer::Doc';
-    $self->{swish_filter_obj} ||= SWISH::Filter->new;
-
-    if ($filter) {
-        $self->set_filter($filter);
-    }
-
 }
 
 =head2 config
@@ -166,7 +167,7 @@ and passes each doc_class() object from get_doc() to indexer->process().
 
 sub crawl {
     my $self = shift;
-    croak ref($self) . " does not implement crawl()";
+    confess ref($self) . " does not implement crawl()";
 }
 
 =head2 get_doc( I<url> )
@@ -178,7 +179,7 @@ object.
 
 sub get_doc {
     my $self = shift;
-    croak ref($self) . " does not implement get_doc()";
+    confess ref($self) . " does not implement get_doc()";
 }
 
 =head2 swish_filter( I<doc_class_object> )

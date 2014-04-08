@@ -5,7 +5,7 @@ use base qw( Dezi::Class );
 __PACKAGE__->mk_accessors(qw( cache ));
 use Carp;
 
-our $VERSION = '0.75';
+our $VERSION = '0.001';
 
 =pod
 

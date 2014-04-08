@@ -1,14 +1,12 @@
 package Dezi::Indexer::Headers;
-
-use 5.008_003;
-use strict;
-use warnings;
-use base qw( Dezi::Class );
+use Moose;
+extends 'Dezi::Class';
 use Carp;
-__PACKAGE__->mk_accessors(qw( version ));
 use bytes;    # so length() measures bytes
 
-our $VERSION = '0.75';
+has 'version' => ( is => 'ro', default => sub {'3'} );
+
+our $VERSION = '0.001';
 our $AutoURL = time();
 our %Headers = (
     2 => {
@@ -27,15 +25,6 @@ our %Headers = (
         }
 
 );
-
-sub init {
-    my $self = shift;
-    $self->SUPER::init(@_);
-    $self->{version} ||= 2;
-    if ($ENV{SWISH3}) {
-        $self->{version} = 3;
-    }
-}
 
 sub head {
     my $self = shift;

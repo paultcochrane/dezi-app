@@ -1,8 +1,8 @@
 package Dezi::Indexer::Config;
-use strict;
-use warnings;
+use Moose;
+extends 'Dezi::Class';
+use MooseX::Types::Path::Class;
 use Carp;
-use File::Slurp;
 use Config::General;
 use Data::Dump qw( dump );
 use File::Temp ();
@@ -10,17 +10,19 @@ use Search::Tools::XML;
 use Search::Tools::UTF8;
 use Dezi::Utils;
 use File::Spec;
+use Path::Class::File;
+use SWISH::3;
 use overload(
     '""'     => \&stringify,
     bool     => sub {1},
     fallback => 1,
 );
 
-our $VERSION = '0.75';
+use namespace::sweep;
+
+our $VERSION = '0.001';
 
 my $XML = Search::Tools::XML->new;
-
-use base qw( Dezi::Class );
 
 my %unique = map { $_ => 1 } qw(
     MetaNames
@@ -120,9 +122,10 @@ my @Opts = qw(
     Words
     XMLClassAttributes
 );
+
 my %Opts = map { $_ => $_ } @Opts;
 
-__PACKAGE__->mk_accessors(qw( file debug verbose ));
+has 'file' => (is => 'rw', isa => 'Path::Class::File');
 
 =head1 NAME
 
@@ -319,7 +322,7 @@ sub read2 {
     my $file = shift or croak "version2 type file required";
 
     # stringify $file in case it is an object
-    my $buf = read_file("$file");
+    my $buf = SWISH::3->slurp("$file");
 
     # filter include syntax to work with Config::General's
     $buf =~ s,IncludeConfigFile (.+?)\n,Include $1\n,g;
@@ -345,7 +348,7 @@ sub read2 {
 
 =head2 write2( I<path/file> [,I<prog_mode>] )
 
-Writes version 2 compatible config file.
+Writes Swish-e version 2 compatible config file.
 
 If I<path/file> is omitted, a temp file will be
 written using File::Temp.
@@ -370,7 +373,7 @@ sub write2 {
     my $prog_mode = shift || 0;
 
     # stringify both
-    write_file( "$file", $self->stringify($prog_mode) );
+    Path::Class::File->new("$file")->spew( $self->stringify($prog_mode) );
 
     #warn "$self";
 
@@ -396,7 +399,7 @@ sub write3 {
     my $self = shift;
     my $file = shift or croak "file required";
 
-    write_file( "$file", $self->ver2_to_ver3 );
+    Path::Class::File->new("$file")->spew( $self->ver2_to_ver3 );
 
     warn "wrote config file $file" if $self->debug;
 
@@ -732,8 +735,7 @@ KEY: for my $k ( sort keys %$config ) {
 
                 for my $ext ( split( m/\ +/, $file_ext ) ) {
                     $ext =~ s/^\.//;
-                    my $mime
-                        = Dezi::Utils->mime_type( "null.$ext", $ext )
+                    my $mime = Dezi::Utils->mime_type( "null.$ext", $ext )
                         || $parser_map{$parser_type};
                     if (    exists $conf3{Parsers}->{$parser_type}
                         and exists $conf3{Parsers}->{$parser_type}->{$mime} )

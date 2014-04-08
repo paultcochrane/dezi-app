@@ -8,7 +8,7 @@ use Search::Tools::XML;
 use Mail::Box::Manager;
 use base qw( Dezi::Aggregator );
 
-our $VERSION = '0.75';
+our $VERSION = '0.001';
 
 my $XMLer = Search::Tools::XML->new();
 

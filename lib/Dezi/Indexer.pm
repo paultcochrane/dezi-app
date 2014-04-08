@@ -1,16 +1,30 @@
 package Dezi::Indexer;
-use strict;
-use warnings;
-use base qw( Dezi::Class );
+use Moose;
+extends 'Dezi::Class';
+with 'Dezi::CoerceConfig';
+use MooseX::Types::DateTime;
 use Scalar::Util qw( blessed );
 use Carp;
 use Data::Dump qw( dump );
 use Dezi::Indexer::Config;
 
-our $VERSION = '0.75';
+use namespace::sweep;
 
-__PACKAGE__->mk_accessors(
-    qw( invindex config count clobber flush started test_mode ));
+our $VERSION = '0.001';
+
+has 'invindex' => ( is => 'rw', isa => 'Dezi::InvIndex' );
+has 'config' => (
+    is      => 'rw',
+    isa     => 'Dezi::Type::IndexerConfig',
+    coerce  => 1,
+    default => sub { Dezi::Indexer::Config->new() },
+);
+has 'count'   => ( is => 'rw', isa => 'Int' );
+has 'clobber' => ( is => 'rw', isa => 'Bool', default => 0 );
+has 'flush'   => ( is => 'rw', isa => 'Int' );
+has 'started' =>
+    ( is => 'rw', isa => 'DateTime', coerce => 1, default => sub { time() } );
+has 'test_mode' => ( is => 'rw', isa => 'Bool', default => 0 );
 
 =pod
 
@@ -75,27 +89,6 @@ Dry run mode, just prints info on stderr but does not
 build index.
 
 =back
-
-=head2 init
-
-Override base method to initialize object.
-
-=cut
-
-sub init {
-    my $self = shift;
-    $self->SUPER::init(@_);
-    if (    exists $self->{config}
-        and defined $self->{config}
-        and !blessed( $self->{config} )
-        and $self->{config} !~ m/<swish>|\.xml$/ )
-    {
-        $self->{config}
-            = $self->verify_isa_swish_prog_config( $self->{config} );
-    }
-    $self->{config} ||= Dezi::Indexer::Config->new;
-    return $self;
-}
 
 =head2 start
 

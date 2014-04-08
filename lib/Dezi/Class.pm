@@ -1,7 +1,7 @@
 package Dezi::Class;
 use Moose;
 
-our $VERSION = '0.75';
+our $VERSION = '0.001';
 
 has 'debug' =>
     ( is => 'rw', isa => 'Int', default => sub { $ENV{DEZI_DEBUG} || 0 } );

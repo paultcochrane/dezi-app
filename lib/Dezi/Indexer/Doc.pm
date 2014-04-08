@@ -1,23 +1,18 @@
 package Dezi::Indexer::Doc;
-use strict;
-use warnings;
+use Moose;
+extends 'Dezi::Class';
 use Carp;
 use Data::Dump qw( dump );
-use base qw( Dezi::Class );
 use overload(
     '""'     => \&as_string,
     'bool'   => sub {1},
     fallback => 1,
 );
-
 use Dezi::Indexer::Headers;
 
-our $VERSION = '0.75';
+use namespace::sweep;
 
-__PACKAGE__->mk_accessors(
-    qw( url modtime type parser content action size charset data version ));
-
-my $default_version = $ENV{SWISH3} ? 3 : 2;
+our $VERSION = '0.001';
 
 my ( $locale, $lang, $charset );
 {
@@ -30,6 +25,23 @@ my ( $locale, $lang, $charset );
     ( $lang, $charset ) = split( m/\./, $locale );
     $charset ||= 'iso-8859-1';
 }
+
+has 'url'     => ( is => 'rw', isa => 'Str', );
+has 'modtime' => ( is => 'rw', isa => 'Int' );
+has 'type'    => ( is => 'rw', isa => 'Str' );
+has 'parser'  => ( is => 'rw', isa => 'Str' );
+has 'content' => ( is => 'rw', isa => 'Str' );
+has 'action'  => ( is => 'rw', isa => 'Str' );
+has 'data'    => ( is => 'rw', isa => 'Str' );
+has 'size'    => ( is => 'rw', isa => 'Int' );
+has 'charset' => ( is => 'rw', isa => 'Str', default => sub {$charset} );
+has 'version' => ( is => 'rw', isa => 'Str', default => sub {3} );
+has 'headers' => (
+    is       => 'rw',
+    isa      => 'Dezi::Indexer::Headers',
+    default  => sub { Dezi::Indexer::Headers->new() },
+    required => 1,
+);
 
 =pod
 
@@ -118,13 +130,9 @@ Calls filter() on object.
 
 =cut
 
-sub init {
+sub BUILD {
     my $self = shift;
-    $self->SUPER::init(@_);
-    $self->{charset} ||= $charset;
-    $self->{version} ||= $default_version;
     $self->filter();
-    return $self;
 }
 
 =head2 filter
@@ -153,14 +161,11 @@ Example:
 
 =cut
 
-# TODO cache this higher up? how else to set debug??
-my $headers = Dezi::Indexer::Headers->new();
-
 sub as_string {
     my $self = shift;
 
     # we ignore size() and let Headers compute it based on actual content()
-    return $headers->head(
+    return $self->headers->head(
         $self->content,
         {   url     => $self->url,
             modtime => $self->modtime,

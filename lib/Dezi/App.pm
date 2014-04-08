@@ -1,5 +1,5 @@
 package Dezi::App;
-use Moo;
+use Moose;
 use namespace::sweep;
 
 our $VERSION = '0.001';

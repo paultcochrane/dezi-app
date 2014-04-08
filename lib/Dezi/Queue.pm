@@ -4,7 +4,7 @@ use warnings;
 use base qw( Dezi::Class );
 use Carp;
 
-our $VERSION = '0.75';
+our $VERSION = '0.001';
 
 =pod
 
