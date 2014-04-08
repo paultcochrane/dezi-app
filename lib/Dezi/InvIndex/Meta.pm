@@ -1,27 +1,32 @@
 package Dezi::InvIndex::Meta;
-use strict;
-use warnings;
-use base qw( Dezi::Class );
+use Moose;
+extends 'Dezi::Class';
+use MooseX::Types::Path::Class;
 use Carp;
 use XML::Simple;
 use SWISH::3 qw( :constants );
 
+use namespace::sweep;
+
 our $VERSION = '0.75';
 
-__PACKAGE__->mk_accessors(qw( invindex ));
-__PACKAGE__->mk_ro_accessors(qw( file data ));
+has 'invindex' => ( is => 'rw', isa => 'Dezi::InvIndex', required => 1 );
+has 'file'     => ( is => 'ro', isa => 'Path::Class::File' );
+has 'data'     => ( is => 'ro', isa => 'HashRef' );
 
 # index metadata. read/write libswish3 file xml format.
 #
 
-sub swish_header_file {
+sub header_file {
     return 'swish.xml';
 }
 
-sub init {
+# back compat
+sub swish_header_file { shift->header_file }
+
+sub BUILD {
     my $self = shift;
-    $self->SUPER::init(@_);
-    $self->{file} ||= $self->invindex->path->file( $self->swish_header_file );
+    $self->{file} = $self->invindex->path->file( $self->header_file );
     if ( !-s $self->{file} ) {
         confess("No such file: $self->{file}");
     }
@@ -75,7 +80,7 @@ sub AUTOLOAD {
     if ( exists $self->{data}->{$method} ) {
         return $self->{data}->{$method};
     }
-    croak "no such Meta key: $method";
+    confess "no such Meta key: $method";
 }
 
 1;
@@ -93,7 +98,7 @@ Dezi::InvIndex::Meta - read/write InvIndex metadata
  use Data::Dump qw( dump );
  use Dezi::InvIndex;
  my $index = Dezi::InvIndex->new(path => 'path/to/index');
- my $meta = $index->meta;
+ my $meta = $index->meta;  # isa Dezi::InvIndex::Meta object
  for my $key (keys %{ $meta->data }) {
     dump $meta->$key;
  }
@@ -106,14 +111,18 @@ at this time.
 
 =head1 METHODS
 
-=head2 swish_header_file
+=head2 header_file
 
 Class or object method. Returns the basename of the header file.
 Default is C<swish.xml>.
 
-=head2 init
+=head2 swish_header_file
 
-Read and initialize the swish_header_file().
+Alias for header_file(). For backwards compatability with SWISH::Prog.
+
+=head2 BUILD
+
+Read and initialize the header_file().
 
 =head2 data
 
@@ -122,7 +131,7 @@ accessor.
 
 =head2 file
 
-The full path to the swish_header_file() file. This is a read-only accessor.
+The full path to the header_file() file. This is a read-only accessor.
 
 =head2 invindex
 
@@ -145,29 +154,35 @@ Returns hashref of alias names to pure names.
 
 =head1 AUTHOR
 
-Peter Karman, E<lt>perl@peknet.comE<gt>
+Peter Karman, E<lt>karpet@dezi.orgE<gt>
 
 =head1 BUGS
 
-Please report any bugs or feature requests to C<bug-swish-prog at rt.cpan.org>, or through
+Please report any bugs or feature requests to C<bug-dezi-app at rt.cpan.org>, or through
 the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Dezi-App>.  
-I will be notified, and then you'll
-automatically be notified of progress on your bug as I make changes.
+I will be notified, and then you'll automatically be notified of progress on your bug as I make changes.
 
 =head1 SUPPORT
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc Dezi
-
+    perldoc Dezi::InvIndex::Meta
 
 You can also look for information at:
 
 =over 4
 
+=item * Website
+
+L<http://dezi.org/>
+
+=item * IRC
+
+#dezisearch at freenode
+
 =item * Mailing list
 
-L<http://lists.swish-e.org/listinfo/users>
+L<https://groups.google.com/forum/#!forum/dezi-search>
 
 =item * RT: CPAN's request tracker
 
@@ -183,17 +198,17 @@ L<http://cpanratings.perl.org/d/Dezi-App>
 
 =item * Search CPAN
 
-L<http://search.cpan.org/dist/Dezi-App/>
+L<https://metacpan.org/dist/Dezi-App/>
 
 =back
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2008-2009 by Peter Karman
+Copyright 2014 by Peter Karman
 
 This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself. 
+it under the terms of the GPL v2 or later.
 
 =head1 SEE ALSO
 
-L<http://swish-e.org/>
+L<http://dezi.org/>, L<http://swish-e.org/>, L<http://lucy.apache.org/>

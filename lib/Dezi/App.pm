@@ -10,7 +10,7 @@ __END__
 
 =head1 AUTHOR
 
-Peter Karman, E<lt>perl@peknet.comE<gt>
+Peter Karman, E<lt>karpet@dezi.orgE<gt>
 
 =head1 BUGS
 

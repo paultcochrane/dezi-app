@@ -1,15 +1,14 @@
 package Dezi::Class;
-use strict;
-use warnings;
-use base qw( Rose::ObjectX::CAF );
-use Carp;
-use Data::Dump qw( dump );
-use Dezi::Indexer::Config;
-use Scalar::Util qw( blessed );
+use Moose;
 
 our $VERSION = '0.75';
 
-__PACKAGE__->mk_accessors(qw( debug verbose warnings ));
+has 'debug' =>
+    ( is => 'rw', isa => 'Int', default => sub { $ENV{DEZI_DEBUG} || 0 } );
+has 'verbose' =>
+    ( is => 'rw', isa => 'Int', default => sub { $ENV{DEZI_VERBOSE} || 0 } );
+has 'warnings' =>
+    ( is => 'rw', isa => 'Int', default => sub { $ENV{DEZI_WARNINGS} || 0 } );
 
 =pod
 
@@ -20,51 +19,43 @@ Dezi::Class - base class for Dezi classes
 =head1 SYNOPSIS
 
  package My::Class;
- use base qw( Dezi::Class );
+ use Moose;
+ extends 'Dezi::Class';
+ # other stuff
  1;
  
  # see METHODS for what you get for free
 
 =head1 DESCRIPTION
 
-Dezi::Class is a subclass of Rose::ObjectX::CAF.
+Dezi::Class is a subclass of Moose.
 It's a base class useful for making simple accessor/mutator methods.
 Dezi::Class implements some additional methods and features
 useful for Dezi projects.
 
 =head1 METHODS
 
-=head2 new( I<params> )
+=head2 BUILD
 
-Constructor. Returns a new object. May take a hash or hashref
-as I<params>.
-
-=head2 init
-
-Override init() in your subclass to perform object maintenance at
-construction time. Called by new().
+Initializes new object.
 
 =head2 debug
 
-Get/set the debug level. Default is 0.
+Get/set the debug level. Default is C<DEZI_DEBUG> env var or 0.
 
 =head2 warnings
 
-Get/set the warnings level. Default is 0.
+Get/set the warnings level. Default is C<DEZI_WARNINGS> env var or 0.
 
 =head2 verbose
 
-Get/set flags affecting the verbosity of the program.
+Get/set flags affecting the verbosity of the program. Default is C<DEZI_VERBOSE> env var or 0.
 
 =cut
 
-sub init {
+sub BUILD {
     my $self = shift;
-    $self->SUPER::init(@_);
-    $self->{debug}   ||= $ENV{PERL_DEBUG}   || 0;
-    $self->{verbose} ||= $ENV{PERL_VERBOSE} || 0;
     $self->{_start} = time();
-    return $self;
 }
 
 =head2 elapsed
@@ -77,84 +68,41 @@ sub elapsed {
     return time() - shift->{_start};
 }
 
-=head2 dump( [I<data>] )
-
-Returns $self (and I<data> if present) via Data::Dump::dump. Useful for peering
-inside an object or other scalar.
-
-=cut
-
-=head2 verify_isa_swish_prog_config([I<config>])
-
-Returns a Dezi::Indexer::Config object based on I<config>. 
-
-I<config> may be a readable file name or a Dezi::Indexer::Config object.
-
-Will croak if I<config> is neither of the above.
-
-=cut
-
-sub verify_isa_swish_prog_config {
-    my $self    = shift;
-    my $config2 = shift;
-
-    #carp "verify_isa_config: $config2";
-
-    my $config2_object;
-    if ( !$config2 ) {
-        $config2_object = Dezi::Indexer::Config->new();
-    }
-    elsif ( !blessed($config2) && -r $config2 ) {
-        $config2_object = Dezi::Indexer::Config->new($config2);
-    }
-    elsif ( !blessed($config2) && ref $config2 eq 'HASH' ) {
-        $config2_object = Dezi::Indexer::Config->new($config2);
-    }
-    elsif ( blessed($config2) ) {
-        if ( !$config2->isa('Dezi::Indexer::Config') ) {
-            croak
-                "config object does not inherit from Dezi::Indexer::Config: $config2";
-        }
-        else {
-            $config2_object = $config2;
-        }
-    }
-    else {
-        croak "$config2 is neither an object nor a readable file";
-    }
-
-    return $config2_object;
-}
-
 1;
 
 __END__
 
 =head1 AUTHOR
 
-Peter Karman, E<lt>perl@peknet.comE<gt>
+Peter Karman, E<lt>karpet@dezi.orgE<gt>
 
 =head1 BUGS
 
-Please report any bugs or feature requests to C<bug-swish-prog at rt.cpan.org>, or through
+Please report any bugs or feature requests to C<bug-dezi-app at rt.cpan.org>, or through
 the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Dezi-App>.  
-I will be notified, and then you'll
-automatically be notified of progress on your bug as I make changes.
+I will be notified, and then you'll automatically be notified of progress on your bug as I make changes.
 
 =head1 SUPPORT
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc Dezi
-
+    perldoc Dezi::Class
 
 You can also look for information at:
 
 =over 4
 
+=item * Website
+
+L<http://dezi.org/>
+
+=item * IRC
+
+#dezisearch at freenode
+
 =item * Mailing list
 
-L<http://lists.swish-e.org/listinfo/users>
+L<https://groups.google.com/forum/#!forum/dezi-search>
 
 =item * RT: CPAN's request tracker
 
@@ -170,17 +118,18 @@ L<http://cpanratings.perl.org/d/Dezi-App>
 
 =item * Search CPAN
 
-L<http://search.cpan.org/dist/Dezi-App/>
+L<https://metacpan.org/dist/Dezi-App/>
 
 =back
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2008-2009 by Peter Karman
+Copyright 2014 by Peter Karman
 
 This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself. 
+it under the terms of the GPL v2 or later.
 
 =head1 SEE ALSO
 
-L<http://swish-e.org/>
+L<http://dezi.org/>, L<http://swish-e.org/>, L<http://lucy.apache.org/>
+

@@ -1,33 +1,28 @@
 package Dezi::InvIndex;
-
-use strict;
-use warnings;
-use base qw( Dezi::Class );
+use Moose;
+extends 'Dezi::Class';
 use Carp;
-use Path::Class ();    # do not import file() and dir()
-use Scalar::Util qw( blessed );
 use Dezi::InvIndex::Meta;
+use MooseX::Types::Path::Class;
+use Module::Load ();
+use Try::Tiny;
 use overload(
     '""'     => sub { shift->path },
     'bool'   => sub {1},
     fallback => 1,
 );
 
+use namespace::sweep;
+
 our $VERSION = '0.75';
 
-__PACKAGE__->mk_accessors(qw( path clobber ));
-
-sub init {
-    my $self = shift;
-    $self->SUPER::init(@_);
-    my $path = $self->{path} || $self->{invindex} || 'index.swish';
-
-    unless ( blessed($path) && $path->isa('Path::Class::Dir') ) {
-        $self->path( Path::Class::dir($path) );
-    }
-
-    $self->{clobber} = 0 unless exists $self->{clobber};
-}
+has 'path' => (
+    is      => 'rw',
+    isa     => 'Path::Class::Dir',
+    coerce  => 1,
+    default => 'dezi.index',
+);
+has 'clobber' => ( is => 'rw', isa => 'Bool', default => 0 );
 
 sub new_from_meta {
     my $self = shift;
@@ -41,10 +36,9 @@ sub new_from_meta {
     # create new object and re-set $self
     my $newclass = "Dezi::${format}::InvIndex";
 
-    warn "reblessing $self into $newclass";
+    #warn "reblessing $self into $newclass";
 
-    eval "require $newclass";
-    croak $@ if $@;
+    Module::Load::load($newclass);
 
     return $newclass->new(
         path    => $self->{path},
@@ -59,12 +53,12 @@ sub open {
         $self->path->rmtree( $self->verbose, 1 );
     }
     elsif ( -f $self->path ) {
-        croak $self->path
+        confess $self->path
             . " is not a directory -- won't even attempt to clobber";
     }
 
     if ( !-d $self->path ) {
-        carp "no path $self->{path} -- mkpath";
+        cluck("no path $self->{path} -- mkpath");
         $self->path->mkpath( $self->verbose );
     }
 
@@ -84,8 +78,7 @@ sub meta {
 
 sub meta_file {
     my $self = shift;
-    return $self->path->file(
-        Dezi::InvIndex::Meta->swish_header_file );
+    return $self->path->file( Dezi::InvIndex::Meta->swish_header_file );
 }
 
 1;
@@ -94,7 +87,7 @@ __END__
 
 =head1 NAME
 
-Dezi::InvIndex - base class for Swish-e inverted indexes
+Dezi::InvIndex - base class for Dezi inverted indexes
 
 =head1 SYNOPSIS
 
@@ -105,8 +98,7 @@ Dezi::InvIndex - base class for Swish-e inverted indexes
  
 =head1 DESCRIPTION
 
-A Dezi::InvIndex is a base class for defining different Swish-e
-inverted index formats.
+A Dezi::InvIndex is a base class for defining different inverted index formats.
 
 =head1 METHODS
 
@@ -127,7 +119,7 @@ information about the index.
 
 =head2 meta_file
 
-Returns Path::Class::File object pointing at the swish_header_file.
+Returns Path::Class::File object pointing at the header_file.
 
 =head2 open
 
@@ -162,29 +154,35 @@ class indicated by the C<swish.xml> meta header file.
 
 =head1 AUTHOR
 
-Peter Karman, E<lt>perl@peknet.comE<gt>
+Peter Karman, E<lt>karpet@dezi.orgE<gt>
 
 =head1 BUGS
 
-Please report any bugs or feature requests to C<bug-swish-prog at rt.cpan.org>, or through
+Please report any bugs or feature requests to C<bug-dezi-app at rt.cpan.org>, or through
 the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Dezi-App>.  
-I will be notified, and then you'll
-automatically be notified of progress on your bug as I make changes.
+I will be notified, and then you'll automatically be notified of progress on your bug as I make changes.
 
 =head1 SUPPORT
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc Dezi
-
+    perldoc Dezi::InvIndex
 
 You can also look for information at:
 
 =over 4
 
+=item * Website
+
+L<http://dezi.org/>
+
+=item * IRC
+
+#dezisearch at freenode
+
 =item * Mailing list
 
-L<http://lists.swish-e.org/listinfo/users>
+L<https://groups.google.com/forum/#!forum/dezi-search>
 
 =item * RT: CPAN's request tracker
 
@@ -200,17 +198,17 @@ L<http://cpanratings.perl.org/d/Dezi-App>
 
 =item * Search CPAN
 
-L<http://search.cpan.org/dist/Dezi-App/>
+L<https://metacpan.org/dist/Dezi-App/>
 
 =back
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2008-2009 by Peter Karman
+Copyright 2014 by Peter Karman
 
 This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself. 
+it under the terms of the GPL v2 or later.
 
 =head1 SEE ALSO
 
-L<http://swish-e.org/>
+L<http://dezi.org/>, L<http://swish-e.org/>, L<http://lucy.apache.org/>

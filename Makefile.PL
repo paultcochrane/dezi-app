@@ -6,24 +6,26 @@ use 5.008003;
 name 'Dezi-App';
 all_from 'lib/Dezi/App.pm';
 
-requires 'Search::Tools'   => '1.000';
-requires 'File::Basename'  => 0;
-requires 'Time::HiRes'     => 0;
-requires 'MIME::Types'     => 0;
-requires 'Path::Class'     => 0;
-requires 'File::Rules'     => '0.02';
-requires 'SWISH::Filter'   => '0.15';
-requires 'Rose::DateTime'  => 0;  # TODO Moo equivalent?
-requires 'Moo'             => 0;          # Search::Tools also requires this
-requires 'File::Temp'      => 0;
-requires 'Data::Dump'      => 0;          # Search::Tools also requires this
-requires 'Config::General' => '2.31';
-requires 'Scalar::Util'    => 0;
-requires 'Test::More'      => 0;
-requires 'File::Slurp'     => 0;          # Search::Tools also requires this
-requires 'XML::Simple'     => 0;
-requires 'Search::Query'   => 0.17;
-requires 'SWISH::3'        => 1.000005;
+requires 'Search::Tools'              => '1.000';
+requires 'File::Basename'             => 0;
+requires 'Time::HiRes'                => 0;
+requires 'MIME::Types'                => 0;
+requires 'Path::Class'                => 0;
+requires 'File::Rules'                => '0.02';
+requires 'SWISH::Filter'              => '0.15';
+requires 'Rose::DateTime'             => 0;         # TODO Moose equivalent?
+requires 'Moose'                      => 0;
+requires 'MooseX::Types::Path::Class' => 0;
+requires 'File::Temp'                 => 0;
+requires 'Data::Dump'                 => 0;
+requires 'Config::General'            => '2.31';
+requires 'Scalar::Util'               => 0;
+requires 'Test::More'                 => 0;
+requires 'File::Slurp'   => 0;         # TODO SWISH::3->slurp already present?
+requires 'XML::Simple'   => 0;
+requires 'Search::Query' => '0.300';
+requires 'SWISH::3'      => 1.000007;
+requires 'Module::Load'  => 0;
 
 # recommended Aggregator support
 
