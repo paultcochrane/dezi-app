@@ -5,7 +5,7 @@ use Test::More tests => 17;
 use_ok('Dezi');
 use_ok('Dezi::Native::Indexer');
 use_ok('Dezi::Aggregator::FS');
-use_ok('Dezi::Config');
+use_ok('Dezi::Indexer::Config');
 
 SKIP: {
 
@@ -15,7 +15,7 @@ SKIP: {
         skip "swish-e not installed", 13;
     }
 
-    ok( my $config = Dezi::Config->new('t/test.conf'),
+    ok( my $config = Dezi::Indexer::Config->new('t/test.conf'),
         "config from t/test.conf" );
 
     # skip our local config test files

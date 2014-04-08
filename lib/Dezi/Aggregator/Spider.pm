@@ -322,7 +322,7 @@ sub init {
         $self->{md5_cache} ||= Dezi::Cache->new;
     }
 
-    # if Dezi::Config defined, use that for some items
+    # if Dezi::Indexer::Config defined, use that for some items
     if ( $self->{indexer} and $self->config ) {
         if ( $self->config->FileRules && !$self->{file_rules} ) {
             $self->{file_rules}

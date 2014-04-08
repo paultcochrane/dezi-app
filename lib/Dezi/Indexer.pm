@@ -5,7 +5,7 @@ use base qw( Dezi::Class );
 use Scalar::Util qw( blessed );
 use Carp;
 use Data::Dump qw( dump );
-use Dezi::Config;
+use Dezi::Indexer::Config;
 
 our $VERSION = '0.75';
 
@@ -23,7 +23,7 @@ Dezi::Indexer - base indexer class
  use Dezi::Indexer;
  my $indexer = Dezi::Indexer->new(
         invindex    => Dezi::InvIndex->new,
-        config      => Dezi::Config->new,
+        config      => Dezi::Indexer::Config->new,
         count       => 0,
         clobber     => 1,
         flush       => 10000,
@@ -58,7 +58,7 @@ Overrite any existing InvIndex.
 
 =item config
 
-A Dezi::Config object or file name.
+A Dezi::Indexer::Config object or file name.
 
 =item flush
 
@@ -93,7 +93,7 @@ sub init {
         $self->{config}
             = $self->verify_isa_swish_prog_config( $self->{config} );
     }
-    $self->{config} ||= Dezi::Config->new;
+    $self->{config} ||= Dezi::Indexer::Config->new;
     return $self;
 }
 
@@ -185,7 +185,7 @@ integer.
 
 # NOTE in _verify_swish3_config() below,
 # if config is already in swish3 format, must
-# override param value with Dezi::Config object
+# override param value with Dezi::Indexer::Config object
 # after adding to SWISH::3::Config object so that the
 # aggregator using this Indexer is happy.
 
@@ -209,7 +209,7 @@ sub _verify_swish3_config {
     # xml string
     elsif ( $self->{config} =~ m/<swish>|[\n\r]/ ) {
         $self->{s3}->config->add( $self->{config} );
-        $self->{config} = Dezi::Config->new();
+        $self->{config} = Dezi::Indexer::Config->new();
     }
 
     # file
@@ -218,7 +218,7 @@ sub _verify_swish3_config {
         # swish3 format
         if ( $self->{config} =~ m/\.xml/ ) {
             $self->{s3}->config->add( $self->{config} );
-            $self->{config} = Dezi::Config->new();
+            $self->{config} = Dezi::Indexer::Config->new();
         }
 
         # swish2 format
@@ -234,7 +234,7 @@ sub _verify_swish3_config {
     # no support
     else {
         croak
-            "Unsupported config format (not a XML string, filename or Dezi::Config object): $self->{config}";
+            "Unsupported config format (not a XML string, filename or Dezi::Indexer::Config object): $self->{config}";
     }
 
     return $self->{config};

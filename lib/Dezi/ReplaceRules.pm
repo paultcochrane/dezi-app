@@ -37,7 +37,7 @@ configuration feature in Swish-e.
 
 This class is typically used internally by Dezi. The filter()
 feature of Dezi is generated to use ReplaceRules if they are defined
-in a Dezi::Config object or config file.
+in a Dezi::Indexer::Config object or config file.
 
 =head1 METHODS
 

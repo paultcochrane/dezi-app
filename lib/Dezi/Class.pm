@@ -4,7 +4,7 @@ use warnings;
 use base qw( Rose::ObjectX::CAF );
 use Carp;
 use Data::Dump qw( dump );
-use Dezi::Config;
+use Dezi::Indexer::Config;
 use Scalar::Util qw( blessed );
 
 our $VERSION = '0.75';
@@ -86,9 +86,9 @@ inside an object or other scalar.
 
 =head2 verify_isa_swish_prog_config([I<config>])
 
-Returns a Dezi::Config object based on I<config>. 
+Returns a Dezi::Indexer::Config object based on I<config>. 
 
-I<config> may be a readable file name or a Dezi::Config object.
+I<config> may be a readable file name or a Dezi::Indexer::Config object.
 
 Will croak if I<config> is neither of the above.
 
@@ -102,18 +102,18 @@ sub verify_isa_swish_prog_config {
 
     my $config2_object;
     if ( !$config2 ) {
-        $config2_object = Dezi::Config->new();
+        $config2_object = Dezi::Indexer::Config->new();
     }
     elsif ( !blessed($config2) && -r $config2 ) {
-        $config2_object = Dezi::Config->new($config2);
+        $config2_object = Dezi::Indexer::Config->new($config2);
     }
     elsif ( !blessed($config2) && ref $config2 eq 'HASH' ) {
-        $config2_object = Dezi::Config->new($config2);
+        $config2_object = Dezi::Indexer::Config->new($config2);
     }
     elsif ( blessed($config2) ) {
-        if ( !$config2->isa('Dezi::Config') ) {
+        if ( !$config2->isa('Dezi::Indexer::Config') ) {
             croak
-                "config object does not inherit from Dezi::Config: $config2";
+                "config object does not inherit from Dezi::Indexer::Config: $config2";
         }
         else {
             $config2_object = $config2;

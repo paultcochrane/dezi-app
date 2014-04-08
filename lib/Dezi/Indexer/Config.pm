@@ -1,4 +1,4 @@
-package Dezi::Config;
+package Dezi::Indexer::Config;
 use strict;
 use warnings;
 use Carp;
@@ -126,13 +126,13 @@ __PACKAGE__->mk_accessors(qw( file debug verbose ));
 
 =head1 NAME
 
-Dezi::Config - read/write Swish-e config files
+Dezi::Indexer::Config - read/write Swish-e config files
 
 =head1 SYNOPSIS
 
- use Dezi::Config;
+ use Dezi::Indexer::Config;
  
- my $config = Dezi::Config->new;
+ my $config = Dezi::Indexer::Config->new;
  $config->write2();
  $config->read2('path/to/file.conf');
  $config->write3();
@@ -140,7 +140,7 @@ Dezi::Config - read/write Swish-e config files
  
 =head1 DESCRIPTION
 
-The Dezi::Config class is intended to be accessed via Dezi->new().
+The Dezi::Indexer::Config class is intended to be accessed via Dezi->new().
 
 See the Swish-e documentation for a list of configuration parameters.
 Each parameter has an accessor/mutator method as part of the Config object.
@@ -173,7 +173,7 @@ may be a Swish-e configuration parameter.
 
 Example:
 
- my $config = Dezi::Config->new( DefaultContents => 'HTML*' );
+ my $config = Dezi::Indexer::Config->new( DefaultContents => 'HTML*' );
  
  print "DefaultContents is ", $config->DefaultContents, "\n";
  
@@ -303,8 +303,8 @@ Returns parsed config file as a hashref or undef on failure to parse.
 
 Example:
 
- use Dezi::Config;
- my $config = Dezi::Config->new();
+ use Dezi::Indexer::Config;
+ my $config = Dezi::Indexer::Config->new();
  my $parsed = $config->read2( 'my/file.cfg' );
  
  # should print same thing
@@ -579,7 +579,7 @@ sub ver2_to_ver3 {
 
     my $xml = <<EOF;
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- converted with Dezi::Config ver2_to_ver3() $time -->
+<!-- converted with Dezi::Indexer::Config ver2_to_ver3() $time -->
 <swish>
 EOF
 

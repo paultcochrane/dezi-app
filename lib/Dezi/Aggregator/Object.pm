@@ -86,7 +86,7 @@ I<opts> may include:
 The B<methods> param takes an array ref of method names. Each method name
 will be called on each object in crawl(). Each method name will also be stored
 as a PropertyName in the Swish-e index, unless you explicitly create a 
-Dezi::Config object that that defines your PropertyNames.
+Dezi::Indexer::Config object that that defines your PropertyNames.
 
 =item class
 

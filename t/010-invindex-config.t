@@ -3,7 +3,7 @@ use warnings;
 use Test::More tests => 6;
 
 use_ok('Dezi');
-use_ok('Dezi::Config');
+use_ok('Dezi::Indexer::Config');
 use_ok('Dezi::Native::Indexer');
 
 SKIP: {
@@ -14,7 +14,7 @@ SKIP: {
         skip "swish-e not installed", 3;
     }
 
-    ok( my $config = Dezi::Config->new('t/test.conf'),
+    ok( my $config = Dezi::Indexer::Config->new('t/test.conf'),
         "config from t/test.conf" );
 
     $config->IndexFile("foo/bar");

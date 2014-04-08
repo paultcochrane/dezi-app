@@ -142,7 +142,7 @@ sub init {
 
 =head2 config
 
-Returns the Dezi::Config object from the Indexer
+Returns the Dezi::Indexer::Config object from the Indexer
 being used. This is a read-only method (accessor not mutator).
 
 =cut

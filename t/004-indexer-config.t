@@ -2,10 +2,10 @@ use strict;
 use warnings;
 use Test::More tests => 4;
 
-use Dezi::Config;
+use Dezi::Indexer::Config;
 
-my $config  = Dezi::Config->new;
-my $config2 = Dezi::Config->new;
+my $config  = Dezi::Indexer::Config->new;
+my $config2 = Dezi::Indexer::Config->new;
 
 $config->MetaNames(qw/ foo bar baz /);
 $config->AbsoluteLinks('yes');
