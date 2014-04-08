@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/!svn/ver/3326/perl/SWISH-Prog/trunk/lib/SWISH/Prog/Aggregator
+END
+Object.pm
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/!svn/ver/3326/perl/SWISH-Prog/trunk/lib/SWISH/Prog/Aggregator/Object.pm
+END
+Spider.pm
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/!svn/ver/3326/perl/SWISH-Prog/trunk/lib/SWISH/Prog/Aggregator/Spider.pm
+END
+FS.pm
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/!svn/ver/3326/perl/SWISH-Prog/trunk/lib/SWISH/Prog/Aggregator/FS.pm
+END
+MailFS.pm
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/!svn/ver/3326/perl/SWISH-Prog/trunk/lib/SWISH/Prog/Aggregator/MailFS.pm
+END
+DBI.pm
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/!svn/ver/3326/perl/SWISH-Prog/trunk/lib/SWISH/Prog/Aggregator/DBI.pm
+END
+Mail.pm
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/!svn/ver/3326/perl/SWISH-Prog/trunk/lib/SWISH/Prog/Aggregator/Mail.pm
+END
