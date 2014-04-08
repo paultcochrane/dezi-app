@@ -1,9 +1,9 @@
-package SWISH::Prog::Headers;
+package Dezi::Headers;
 
 use 5.008_003;
 use strict;
 use warnings;
-use base qw( SWISH::Prog::Class );
+use base qw( Dezi::Class );
 use Carp;
 __PACKAGE__->mk_accessors(qw( version ));
 use bytes;    # so length() measures bytes
@@ -86,20 +86,20 @@ __END__
 
 =head1 NAME
 
-SWISH::Prog::Headers - create document headers for Swish-e -S prog
+Dezi::Headers - create document headers for Swish-e -S prog
 
 =head1 SYNOPSIS
 
-  use SWISH::Prog::Headers;
+  use Dezi::Headers;
   use SWISH::3;
   my $f = 'some/file.html';
   my $buf = SWISH::3->slurp( $f ):
-  my $headers = SWISH::Prog::Headers->new;
+  my $headers = Dezi::Headers->new;
   print $headers->head( $buf, { url=>$f } ), $buf;
 
 =head1 DESCRIPTION
 
-SWISH::Prog::Headers generates the correct headers
+Dezi::Headers generates the correct headers
 for feeding documents to the indexer.
 
 =head1 VARIABLES
@@ -162,7 +162,7 @@ If not supplied, the current time() value is used.
 The parser type to be used for the document. If not supplied, it will not
 be included in the header and Swish-e will determine the parser type. See
 the Swish-e configuration documentation on determining parser type. See also
-the SWISH::Prog parser() method.
+the Dezi parser() method.
 
 =item type
 
@@ -230,7 +230,7 @@ automatically be notified of progress on your bug as I make changes.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc SWISH::Prog
+    perldoc Dezi
 
 
 You can also look for information at:

@@ -1,11 +1,11 @@
-package SWISH::Prog::Indexer;
+package Dezi::Indexer;
 use strict;
 use warnings;
-use base qw( SWISH::Prog::Class );
+use base qw( Dezi::Class );
 use Scalar::Util qw( blessed );
 use Carp;
 use Data::Dump qw( dump );
-use SWISH::Prog::Config;
+use Dezi::Config;
 
 our $VERSION = '0.75';
 
@@ -16,14 +16,14 @@ __PACKAGE__->mk_accessors(
 
 =head1 NAME
 
-SWISH::Prog::Indexer - base indexer class
+Dezi::Indexer - base indexer class
 
 =head1 SYNOPSIS
 
- use SWISH::Prog::Indexer;
- my $indexer = SWISH::Prog::Indexer->new(
-        invindex    => SWISH::Prog::InvIndex->new,
-        config      => SWISH::Prog::Config->new,
+ use Dezi::Indexer;
+ my $indexer = Dezi::Indexer->new(
+        invindex    => Dezi::InvIndex->new,
+        config      => Dezi::Config->new,
         count       => 0,
         clobber     => 1,
         flush       => 10000,
@@ -37,7 +37,7 @@ SWISH::Prog::Indexer - base indexer class
  
 =head1 DESCRIPTION
 
-SWISH::Prog::Indexer is a base class implementing the simplest of indexing
+Dezi::Indexer is a base class implementing the simplest of indexing
 APIs. It is intended to be subclassed, along with InvIndex, for each
 IR backend library.
 
@@ -58,7 +58,7 @@ Overrite any existing InvIndex.
 
 =item config
 
-A SWISH::Prog::Config object or file name.
+A Dezi::Config object or file name.
 
 =item flush
 
@@ -67,7 +67,7 @@ should be written to disk.
 
 =item invindex
 
-A SWISH::Prog::InvIndex object.
+A Dezi::InvIndex object.
 
 =item test_mode
 
@@ -93,7 +93,7 @@ sub init {
         $self->{config}
             = $self->verify_isa_swish_prog_config( $self->{config} );
     }
-    $self->{config} ||= SWISH::Prog::Config->new;
+    $self->{config} ||= Dezi::Config->new;
     return $self;
 }
 
@@ -125,7 +125,7 @@ sub start {
     eval { $meta = $invindex->meta; };
     if ( !$@ ) {
         my $format = $meta->Index->{Format};
-        if ( !$self->isa( 'SWISH::Prog::' . $format . '::Indexer' ) ) {
+        if ( !$self->isa( 'Dezi::' . $format . '::Indexer' ) ) {
             croak "Fatal error: found existing invindex '$invindex' "
                 . "with format $format.\n"
                 . "You tried to open it with "
@@ -140,7 +140,7 @@ sub start {
 
 =head2 process( I<doc> )
 
-I<doc> should be a SWISH::Prog::Doc-derived object.
+I<doc> should be a Dezi::Doc-derived object.
 
 process() should implement whatever the particular IR library
 API requires.
@@ -150,8 +150,8 @@ API requires.
 sub process {
     my $self = shift;
     my $doc  = shift;
-    unless ( $doc && blessed($doc) && $doc->isa('SWISH::Prog::Doc') ) {
-        croak "SWISH::Prog::Doc object required";
+    unless ( $doc && blessed($doc) && $doc->isa('Dezi::Doc') ) {
+        croak "Dezi::Doc object required";
     }
 
     $self->start unless $self->started;
@@ -185,7 +185,7 @@ integer.
 
 # NOTE in _verify_swish3_config() below,
 # if config is already in swish3 format, must
-# override param value with SWISH::Prog::Config object
+# override param value with Dezi::Config object
 # after adding to SWISH::3::Config object so that the
 # aggregator using this Indexer is happy.
 
@@ -209,7 +209,7 @@ sub _verify_swish3_config {
     # xml string
     elsif ( $self->{config} =~ m/<swish>|[\n\r]/ ) {
         $self->{s3}->config->add( $self->{config} );
-        $self->{config} = SWISH::Prog::Config->new();
+        $self->{config} = Dezi::Config->new();
     }
 
     # file
@@ -218,7 +218,7 @@ sub _verify_swish3_config {
         # swish3 format
         if ( $self->{config} =~ m/\.xml/ ) {
             $self->{s3}->config->add( $self->{config} );
-            $self->{config} = SWISH::Prog::Config->new();
+            $self->{config} = Dezi::Config->new();
         }
 
         # swish2 format
@@ -234,7 +234,7 @@ sub _verify_swish3_config {
     # no support
     else {
         croak
-            "Unsupported config format (not a XML string, filename or SWISH::Prog::Config object): $self->{config}";
+            "Unsupported config format (not a XML string, filename or Dezi::Config object): $self->{config}";
     }
 
     return $self->{config};
@@ -258,7 +258,7 @@ automatically be notified of progress on your bug as I make changes.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc SWISH::Prog
+    perldoc Dezi
 
 
 You can also look for information at:

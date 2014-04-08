@@ -1,7 +1,7 @@
-package SWISH::Prog::Aggregator::Spider::Response;
+package Dezi::Aggregator::Spider::Response;
 use strict;
 use warnings;
-use base qw( SWISH::Prog::Class );
+use base qw( Dezi::Class );
 use Carp;
 use Data::Dump qw( dump );
 use Search::Tools::UTF8;
@@ -23,22 +23,22 @@ __PACKAGE__->mk_accessors(
 
 =head1 NAME
 
-SWISH::Prog::Aggregator::Spider::Response - spider response
+Dezi::Aggregator::Spider::Response - spider response
 
 =head1 SYNOPSIS
 
- use SWISH::Prog::Aggregator::Spider::UA;
- my $ua = SWISH::Prog::Aggregator::Spider::UA->new;
+ use Dezi::Aggregator::Spider::UA;
+ my $ua = Dezi::Aggregator::Spider::UA->new;
  my $response = $ua->get('http://swish-e.org/');
  my $http_response = $response->http_response;
  
  # $ua isa LWP::RobotUA subclass
- # $response isa SWISH::Prog::Aggregator::Spider::Response
+ # $response isa Dezi::Aggregator::Spider::Response
  # $http_response isa HTTP::Response
 
 =head1 DESCRIPTION
 
-SWISH::Prog::Aggregator::Spider::Response wraps the
+Dezi::Aggregator::Spider::Response wraps the
 HTTP::Response class and provides some convenience methods.
 
 =head1 METHODS
@@ -149,14 +149,14 @@ sub links {
             # which tags to use
             my $attr = join ' ', map {qq[$_="$attr{$_}"]} keys %attr;
 
-            $debug and SWISH::Prog::Utils->write_log(
+            $debug and Dezi::Utils->write_log(
                 uri => $base,
                 msg => "extracted tag '<$tag $attr>'"
             );
 
             if ( !exists $self->link_tags->{$tag} ) {
                 $debug
-                    and SWISH::Prog::Utils->write_log(
+                    and Dezi::Utils->write_log(
                     uri => $base,
                     msg => "skipping tag '<$tag $attr>', not on whitelist"
                     );
@@ -179,7 +179,7 @@ sub links {
                     my $u = URI->new_abs( $attr{$attribute}, $base );
                     push @links, $u;
                     $debug
-                        and SWISH::Prog::Utils->write_log(
+                        and Dezi::Utils->write_log(
                         uri => $base,
                         msg => "added '$u' to links",
                         );
@@ -188,7 +188,7 @@ sub links {
             }
 
             if ( !$found && $debug ) {
-                SWISH::Prog::Utils->write_log(
+                Dezi::Utils->write_log(
                     uri => $base,
                     msg => "tag <$tag $attr> has no links or is a duplicate",
                 );
@@ -197,7 +197,7 @@ sub links {
         }
 
         $debug
-            and SWISH::Prog::Utils->write_log(
+            and Dezi::Utils->write_log(
             uri => $base,
             msg => sprintf( "found %d links", scalar @links ),
             );
@@ -276,7 +276,7 @@ automatically be notified of progress on your bug as I make changes.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc SWISH::Prog
+    perldoc Dezi
 
 
 You can also look for information at:

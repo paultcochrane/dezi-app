@@ -1,16 +1,16 @@
-package SWISH::Prog::Doc;
+package Dezi::Doc;
 use strict;
 use warnings;
 use Carp;
 use Data::Dump qw( dump );
-use base qw( SWISH::Prog::Class );
+use base qw( Dezi::Class );
 use overload(
     '""'     => \&as_string,
     'bool'   => sub {1},
     fallback => 1,
 );
 
-use SWISH::Prog::Headers;
+use Dezi::Headers;
 
 our $VERSION = '0.75';
 
@@ -35,15 +35,15 @@ my ( $locale, $lang, $charset );
 
 =head1 NAME
 
-SWISH::Prog::Doc - Document object class for passing to SWISH::Prog::Indexer
+Dezi::Doc - Document object class for passing to Dezi::Indexer
 
 =head1 SYNOPSIS
 
-  # subclass SWISH::Prog::Doc
+  # subclass Dezi::Doc
   # and override filter() method
   
   package MyDoc;
-  use base qw( SWISH::Prog::Doc );
+  use base qw( Dezi::Doc );
   
   sub filter {
     my $doc = shift;
@@ -63,11 +63,11 @@ SWISH::Prog::Doc - Document object class for passing to SWISH::Prog::Indexer
 
 =head1 DESCRIPTION
 
-SWISH::Prog::Doc is the base class for Doc objects in the SWISH::Prog
-framework. Doc objects are created by SWISH::Prog::Aggregator classes
-and processed by SWISH::Prog::Indexer classes.
+Dezi::Doc is the base class for Doc objects in the Dezi
+framework. Doc objects are created by Dezi::Aggregator classes
+and processed by Dezi::Indexer classes.
 
-You can subclass SWISH::Prog::Doc and add a filter() method to alter
+You can subclass Dezi::Doc and add a filter() method to alter
 the values of the Doc object before it is indexed.
 
 =head1 METHODS
@@ -134,7 +134,7 @@ being process()ed by the Indexer.
 
 The default is to do nothing.
 
-This method can also be set using the filter() callback in SWISH::Prog->new().
+This method can also be set using the filter() callback in Dezi->new().
 
 =cut
 
@@ -143,7 +143,7 @@ sub filter { }
 =head2 as_string
 
 Return the Doc object rendered as a scalar string, ready to be indexed.
-This will include the proper headers. See SWISH::Prog::Headers.
+This will include the proper headers. See Dezi::Headers.
 
 B<NOTE:> as_string() is also used if you use a Doc object as a string.
 Example:
@@ -154,7 +154,7 @@ Example:
 =cut
 
 # TODO cache this higher up? how else to set debug??
-my $headers = SWISH::Prog::Headers->new();
+my $headers = Dezi::Headers->new();
 
 sub as_string {
     my $self = shift;
@@ -192,7 +192,7 @@ automatically be notified of progress on your bug as I make changes.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc SWISH::Prog
+    perldoc Dezi
 
 
 You can also look for information at:

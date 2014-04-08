@@ -1,16 +1,16 @@
-package SWISH::Prog::Aggregator::Spider;
+package Dezi::Aggregator::Spider;
 use strict;
 use warnings;
-use base qw( SWISH::Prog::Aggregator );
+use base qw( Dezi::Aggregator );
 use Carp;
 use Scalar::Util qw( blessed );
 use URI;
 use HTTP::Cookies;
 use HTTP::Date;
-use SWISH::Prog::Utils;
-use SWISH::Prog::Queue;
-use SWISH::Prog::Cache;
-use SWISH::Prog::Aggregator::Spider::UA;
+use Dezi::Utils;
+use Dezi::Queue;
+use Dezi::Cache;
+use Dezi::Aggregator::Spider::UA;
 use Search::Tools::UTF8;
 use XML::Feed;
 use WWW::Sitemap::XML;
@@ -54,21 +54,21 @@ __PACKAGE__->mk_accessors(
 our $VERSION = '0.75';
 
 # TODO make these configurable
-my %parser_types = %SWISH::Prog::Utils::ParserTypes;
-my $default_ext  = $SWISH::Prog::Utils::ExtRE;
-my $utils        = 'SWISH::Prog::Utils';
+my %parser_types = %Dezi::Utils::ParserTypes;
+my $default_ext  = $Dezi::Utils::ExtRE;
+my $utils        = 'Dezi::Utils';
 
 =pod
 
 =head1 NAME
 
-SWISH::Prog::Aggregator::Spider - web aggregator
+Dezi::Aggregator::Spider - web aggregator
 
 =head1 SYNOPSIS
 
- use SWISH::Prog::Aggregator::Spider;
- my $spider = SWISH::Prog::Aggregator::Spider->new(
-     indexer => SWISH::Prog::Indexer->new
+ use Dezi::Aggregator::Spider;
+ my $spider = Dezi::Aggregator::Spider->new(
+     indexer => Dezi::Indexer->new
  );
  
  $spider->indexer->start;
@@ -77,14 +77,14 @@ SWISH::Prog::Aggregator::Spider - web aggregator
 
 =head1 DESCRIPTION
 
-SWISH::Prog::Aggregator::Spider is a web crawler similar to
+Dezi::Aggregator::Spider is a web crawler similar to
 the spider.pl script in the Swish-e 2.4 distribution. Internally,
-SWISH::Prog::Aggregator::Spider uses LWP::RobotUA to do the hard work.
-See L<SWISH::Prog::Aggregator::Spider::UA>.
+Dezi::Aggregator::Spider uses LWP::RobotUA to do the hard work.
+See L<Dezi::Aggregator::Spider::UA>.
 
 =head1 METHODS
 
-See L<SWISH::Prog::Aggregator>.
+See L<Dezi::Aggregator>.
 
 =head2 new( I<params> )
 
@@ -108,12 +108,12 @@ URIs and you only want to index it once.
 
 =item uri_cache I<cache_object>
 
-Get/set the SWISH::Prog::Cache-derived object used to track which URIs have
+Get/set the Dezi::Cache-derived object used to track which URIs have
 been fetched already.
 
 =item md5_cache I<cache_object>
 
-If use_md5() is true, this SWISH::Prog::Cache-derived object tracks
+If use_md5() is true, this Dezi::Cache-derived object tracks
 the URI fingerprints.
 
 =item file_rules I<File_Rules_or_ARRAY>
@@ -124,12 +124,12 @@ to File::Rules->new().
 
 =item queue I<queue_object>
 
-Get/set the SWISH::Prog::Queue-derived object for tracking which URIs still
+Get/set the Dezi::Queue-derived object for tracking which URIs still
 need to be fetched.
 
 =item ua I<lwp_useragent>
 
-Get/set the SWISH::Prog::Aggregagor::Spider::UA object.
+Get/set the Dezi::Aggregagor::Spider::UA object.
 
 =item max_depth I<n>
 
@@ -270,10 +270,10 @@ sub init {
         if defined $self->{credential_timeout}
         and $self->{credential_timeout} =~ m/\D/;
 
-    $self->{queue}     ||= SWISH::Prog::Queue->new;
-    $self->{uri_cache} ||= SWISH::Prog::Cache->new;
-    $self->{_auth_cache} = SWISH::Prog::Cache->new;    # ALWAYS inmemory cache
-    $self->{ua} ||= SWISH::Prog::Aggregator::Spider::UA->new( $self->{agent},
+    $self->{queue}     ||= Dezi::Queue->new;
+    $self->{uri_cache} ||= Dezi::Cache->new;
+    $self->{_auth_cache} = Dezi::Cache->new;    # ALWAYS inmemory cache
+    $self->{ua} ||= Dezi::Aggregator::Spider::UA->new( $self->{agent},
         $self->{email}, );
 
     # whitelist which HTML tags we consider "links"
@@ -319,10 +319,10 @@ sub init {
 
     if ( $self->{use_md5} ) {
         eval "require Digest::MD5" or croak $@;
-        $self->{md5_cache} ||= SWISH::Prog::Cache->new;
+        $self->{md5_cache} ||= Dezi::Cache->new;
     }
 
-    # if SWISH::Prog::Config defined, use that for some items
+    # if Dezi::Config defined, use that for some items
     if ( $self->{indexer} and $self->config ) {
         if ( $self->config->FileRules && !$self->{file_rules} ) {
             $self->{file_rules}
@@ -692,7 +692,7 @@ sub remove_from_queue {
 
 =head2 get_doc
 
-Returns the next URI from the queue() as a SWISH::Prog::Doc object,
+Returns the next URI from the queue() as a Dezi::Doc object,
 or the error message if there was one.
 
 Returns undef if the queue is empty or max_depth() has been reached.
@@ -1110,22 +1110,22 @@ sub crawl {
 
 =head2 write_log( I<args> )
 
-Passes I<args> to SWISH::Prog::Utils::write_log().
+Passes I<args> to Dezi::Utils::write_log().
 
 =cut
 
 sub write_log {
-    SWISH::Prog::Utils::write_log(@_);
+    Dezi::Utils::write_log(@_);
 }
 
 =head2 write_log_line([I<char>, I<width>])
 
-Pass through to SWISH::Prog::Utils::write_log_line().
+Pass through to Dezi::Utils::write_log_line().
 
 =cut
 
 sub write_log_line {
-    SWISH::Prog::Utils::write_log_line(@_);
+    Dezi::Utils::write_log_line(@_);
 }
 
 1;
@@ -1147,7 +1147,7 @@ automatically be notified of progress on your bug as I make changes.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc SWISH::Prog
+    perldoc Dezi
 
 
 You can also look for information at:

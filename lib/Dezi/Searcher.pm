@@ -1,7 +1,7 @@
-package SWISH::Prog::Searcher;
+package Dezi::Searcher;
 use strict;
 use warnings;
-use base qw( SWISH::Prog::Class );
+use base qw( Dezi::Class );
 use Carp;
 use Scalar::Util qw( blessed );
 
@@ -17,11 +17,11 @@ __PACKAGE__->mk_accessors(
 
 =head1 NAME
 
-SWISH::Prog::Searcher - base searcher class
+Dezi::Searcher - base searcher class
 
 =head1 SYNOPSIS
 
- my $searcher = SWISH::Prog::Searcher->new(
+ my $searcher = Dezi::Searcher->new(
                     invindex        => 'path/to/index',
                     max_hits        => 1000,
                 );
@@ -33,9 +33,9 @@ SWISH::Prog::Searcher - base searcher class
 
 =head1 DESCRIPTION
 
-SWISH::Prog::Searcher is a base searcher class. It defines
-the APIs that all SWISH::Prog storage backends adhere to in
-returning results from a SWISH::Prog::InvIndex.
+Dezi::Searcher is a base searcher class. It defines
+the APIs that all Dezi storage backends adhere to in
+returning results from a Dezi::InvIndex.
 
 =head1 METHODS
 
@@ -45,7 +45,7 @@ Overrides base method.
 
 =head2 invindex
 
-A SWISH::Prog::InvIndex object or directory path. Required. Set in new().
+A Dezi::InvIndex object or directory path. Required. Set in new().
 
 May be a single value or an array ref of values (for searching multiple
 indexes at once).
@@ -97,7 +97,7 @@ sub init {
 
 =head2 search( I<query> )
 
-Returns a SWISH::Prog::Results object.
+Returns a Dezi::Results object.
 
 =cut
 
@@ -124,7 +124,7 @@ automatically be notified of progress on your bug as I make changes.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc SWISH::Prog
+    perldoc Dezi
 
 
 You can also look for information at:

@@ -1,7 +1,7 @@
-package SWISH::Prog::Test::Indexer;
+package Dezi::Test::Indexer;
 use strict;
 use warnings;
-use base 'SWISH::Prog::Indexer';
+use base 'Dezi::Indexer';
 
 our $VERSION = '0.75';
 
@@ -17,21 +17,21 @@ __END__
 
 =head1 NAME
 
-SWISH::Prog::Test::Indexer - test indexer class
+Dezi::Test::Indexer - test indexer class
 
 =head1 SYNOPSIS
 
- use SWISH::Prog::Test::Indexer;
+ use Dezi::Test::Indexer;
  
- my $spider = SWISH::Prog::Aggregator::Spider->new(
-    indexer => SWISH::Prog::Test::Indexer->new()
+ my $spider = Dezi::Aggregator::Spider->new(
+    indexer => Dezi::Test::Indexer->new()
  );
  $spider->crawl('http://localhost/foo');
 
 =head1 DESCRIPTION
 
-SWISH::Prog::Test::Indexer is for testing other
-components of SWISH::Prog where no index is desired.
+Dezi::Test::Indexer is for testing other
+components of Dezi where no index is desired.
 For example, testing aggregator features without any need
 to store the documents aggregated.
 
@@ -61,7 +61,7 @@ automatically be notified of progress on your bug as I make changes.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc SWISH::Prog
+    perldoc Dezi
 
 
 You can also look for information at:

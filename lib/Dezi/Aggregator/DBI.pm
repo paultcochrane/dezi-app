@@ -1,12 +1,12 @@
-package SWISH::Prog::Aggregator::DBI;
+package Dezi::Aggregator::DBI;
 
 use strict;
 use warnings;
-use base qw( SWISH::Prog::Aggregator );
+use base qw( Dezi::Aggregator );
 use Carp;
 use Data::Dump qw( dump );
 use DBI;
-use SWISH::Prog::Utils;
+use Dezi::Utils;
 
 __PACKAGE__->mk_accessors(
     qw( db alias_columns schema use_quotes quote_char ));
@@ -19,14 +19,14 @@ my $XMLer = Search::Tools::XML->new();    # included in Utils
 
 =head1 NAME
 
-SWISH::Prog::Aggregator::DBI - index DB records with Swish-e
+Dezi::Aggregator::DBI - index DB records with Swish-e
 
 =head1 SYNOPSIS
     
-    use SWISH::Prog::Aggregator::DBI;
+    use Dezi::Aggregator::DBI;
     use Carp;
     
-    my $aggregator = SWISH::Prog::Aggregator::DBI->new(
+    my $aggregator = Dezi::Aggregator::DBI->new(
         db => [
             "DBI:mysql:database=movies;host=localhost;port=3306",
             'some_user', 'some_secret_pass',
@@ -51,7 +51,7 @@ SWISH::Prog::Aggregator::DBI - index DB records with Swish-e
         use_quotes      => 1,
         quote_char      => '`', # backtick
         alias_columns   => 1,
-        indexer         => SWISH::Prog::Indexer::Native->new,
+        indexer         => Dezi::Indexer::Native->new,
     );
     
     $aggregator->crawl();
@@ -59,12 +59,12 @@ SWISH::Prog::Aggregator::DBI - index DB records with Swish-e
 
 =head1 DESCRIPTION
 
-SWISH::Prog::Aggregator::DBI is a SWISH::Prog::Aggregator subclass 
+Dezi::Aggregator::DBI is a Dezi::Aggregator subclass 
 designed for providing full-text search for databases.
 
 =head1 METHODS
 
-Since SWISH::Prog::Aggregator::DBI inherits from SWISH::Prog::Aggregator, 
+Since Dezi::Aggregator::DBI inherits from Dezi::Aggregator, 
 read that documentation first. Any overridden methods are documented here.
 
 =head2 new( I<opts> )
@@ -98,7 +98,7 @@ in the StoreDescription value.
 
 =item indexer => I<indexer_obj>
 
-A SWISH::Prog::Indexer-derived object.
+A Dezi::Indexer-derived object.
 
 =back
 
@@ -110,7 +110,7 @@ The following I<opts> are optional:
 
 The C<alias_columns> flag indicates whether all columns should be searchable
 under the default MetaName of C<swishdefault>. The default is 1 (true). This
-is B<not> the default behaviour of swish-e; this is a feature of SWISH::Prog.
+is B<not> the default behaviour of swish-e; this is a feature of Dezi.
 
 =item use_quotes
 
@@ -124,12 +124,12 @@ The character to use when C<use_quotes> is true. Default is B<`> (backtick).
 
 =back
 
-B<NOTE:> The new() method simply inherits from SWISH::Prog::Aggregator, 
+B<NOTE:> The new() method simply inherits from Dezi::Aggregator, 
 so any params valid for that method are allowed here.
 
 =head2 init
 
-See SWISH::Prog::Class. This method does all the setup.
+See Dezi::Class. This method does all the setup.
 
 =cut
 
@@ -373,7 +373,7 @@ automatically be notified of progress on your bug as I make changes.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc SWISH::Prog
+    perldoc Dezi
 
 
 You can also look for information at:

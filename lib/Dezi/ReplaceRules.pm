@@ -1,7 +1,7 @@
-package SWISH::Prog::ReplaceRules;
+package Dezi::ReplaceRules;
 use strict;
 use warnings;
-use base qw( SWISH::Prog::Class );
+use base qw( Dezi::Class );
 use Scalar::Util qw( blessed );
 use Carp;
 use Data::Dump qw( dump );
@@ -15,12 +15,12 @@ __PACKAGE__->mk_accessors(qw( rules ));
 
 =head1 NAME
 
-SWISH::Prog::ReplaceRules - filename mangler
+Dezi::ReplaceRules - filename mangler
 
 =head1 SYNOPSIS
 
- use SWISH::Prog::ReplaceRules;
- my $rules = SWISH::Prog::ReplaceRules->new(
+ use Dezi::ReplaceRules;
+ my $rules = Dezi::ReplaceRules->new(
    qq(replace "the string you want replaced" "what to change it to"),
    qq(remove  "a string to remove"),
    qq(prepend "a string to add before the result"),
@@ -32,12 +32,12 @@ SWISH::Prog::ReplaceRules - filename mangler
 
 =head1 DESCRIPTION
 
-SWISH::Prog::ReplaceRules is a pure Perl replacement for the ReplaceRules
+Dezi::ReplaceRules is a pure Perl replacement for the ReplaceRules
 configuration feature in Swish-e.
 
-This class is typically used internally by SWISH::Prog. The filter()
-feature of SWISH::Prog is generated to use ReplaceRules if they are defined
-in a SWISH::Prog::Config object or config file.
+This class is typically used internally by Dezi. The filter()
+feature of Dezi is generated to use ReplaceRules if they are defined
+in a Dezi::Config object or config file.
 
 =head1 METHODS
 
@@ -191,7 +191,7 @@ automatically be notified of progress on your bug as I make changes.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc SWISH::Prog
+    perldoc Dezi
 
 
 You can also look for information at:

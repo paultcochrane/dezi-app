@@ -1,7 +1,7 @@
-package SWISH::Prog::InvIndex::Meta;
+package Dezi::InvIndex::Meta;
 use strict;
 use warnings;
-use base qw( SWISH::Prog::Class );
+use base qw( Dezi::Class );
 use Carp;
 use XML::Simple;
 use SWISH::3 qw( :constants );
@@ -86,13 +86,13 @@ __END__
 
 =head1 NAME
 
-SWISH::Prog::InvIndex::Meta - read/write InvIndex metadata
+Dezi::InvIndex::Meta - read/write InvIndex metadata
 
 =head1 SYNOPSIS
 
  use Data::Dump qw( dump );
- use SWISH::Prog::InvIndex;
- my $index = SWISH::Prog::InvIndex->new(path => 'path/to/index');
+ use Dezi::InvIndex;
+ my $index = Dezi::InvIndex->new(path => 'path/to/index');
  my $meta = $index->meta;
  for my $key (keys %{ $meta->data }) {
     dump $meta->$key;
@@ -100,7 +100,7 @@ SWISH::Prog::InvIndex::Meta - read/write InvIndex metadata
  
 =head1 DESCRIPTION
 
-A SWISH::Prog::InvIndex::Meta object represents the metadata for an
+A Dezi::InvIndex::Meta object represents the metadata for an
 InvIndex. It supports the Swish3 C<swish.xml> header file format only
 at this time.
 
@@ -126,7 +126,7 @@ The full path to the swish_header_file() file. This is a read-only accessor.
 
 =head2 invindex
 
-The SWISH::Prog::InvIndex object which the SWISH::Prog::InvIndex::Meta
+The Dezi::InvIndex object which the Dezi::InvIndex::Meta
 object represents.
 
 =head2 get_properties
@@ -158,7 +158,7 @@ automatically be notified of progress on your bug as I make changes.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc SWISH::Prog
+    perldoc Dezi
 
 
 You can also look for information at:

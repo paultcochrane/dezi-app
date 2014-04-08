@@ -1,11 +1,11 @@
-package SWISH::Prog::Aggregator;
+package Dezi::Aggregator;
 use strict;
 use warnings;
-use base qw( SWISH::Prog::Class );
+use base qw( Dezi::Class );
 use Carp;
-use SWISH::Prog::Utils;
+use Dezi::Utils;
 use SWISH::Filter;
-use SWISH::Prog::Doc;
+use Dezi::Doc;
 use Scalar::Util qw( blessed );
 use Data::Dump qw( dump );
 
@@ -28,18 +28,18 @@ __PACKAGE__->mk_ro_accessors(qw( count ));
 
 =head1 NAME
 
-SWISH::Prog::Aggregator - document aggregation base class
+Dezi::Aggregator - document aggregation base class
 
 =head1 SYNOPSIS
 
  package MyAggregator;
  use strict;
- use base qw( SWISH::Prog::Aggregator );
+ use base qw( Dezi::Aggregator );
  
  sub get_doc {
     my ($self, $url) = @_;
     
-    # do something to create a SWISH::Prog::Doc object from $url
+    # do something to create a Dezi::Doc object from $url
     
     return $doc;
  }
@@ -58,18 +58,18 @@ SWISH::Prog::Aggregator - document aggregation base class
 
 =head1 DESCRIPTION
 
-SWISH::Prog::Aggregator is a base class that defines the basic API for writing
+Dezi::Aggregator is a base class that defines the basic API for writing
 an aggregator. Only two methods are required: get_doc() and crawl(). See
 the SYNOPSIS for the prototypes.
 
-See SWISH::Prog::Aggregator::FS and SWISH::Prog::Aggregator::Spider for examples
+See Dezi::Aggregator::FS and Dezi::Aggregator::Spider for examples
 of aggregators that crawl the filesystem and web, respectively.
 
 =head1 METHODS
 
 =head2 init
 
-Set object flags per SWISH::Prog::Class API. These are also accessors, 
+Set object flags per Dezi::Class API. These are also accessors, 
 and include:
 
 =over
@@ -81,12 +81,12 @@ MIME type of the doc_class() object.
 
 =item indexer
 
-A SWISH::Prog::Indexer object.
+A Dezi::Indexer object.
 
 =item doc_class
 
-The name of the SWISH::Prog::Doc-derived class to use in get_doc().
-Default is SWISH::Prog::Doc.
+The name of the Dezi::Doc-derived class to use in get_doc().
+Default is Dezi::Doc.
 
 =item swish_filter_obj
 
@@ -131,7 +131,7 @@ sub init {
     $self->{__progress_so_far} = 0;
     $self->{__progress_next}   = 0;
 
-    $self->{doc_class} ||= 'SWISH::Prog::Doc';
+    $self->{doc_class} ||= 'Dezi::Doc';
     $self->{swish_filter_obj} ||= SWISH::Filter->new;
 
     if ($filter) {
@@ -142,7 +142,7 @@ sub init {
 
 =head2 config
 
-Returns the SWISH::Prog::Config object from the Indexer
+Returns the Dezi::Config object from the Indexer
 being used. This is a read-only method (accessor not mutator).
 
 =cut
@@ -197,8 +197,8 @@ See the SWISH::Filter documentation.
 sub swish_filter {
     my $self = shift;
     my $doc  = shift;
-    unless ( $doc && blessed($doc) && $doc->isa('SWISH::Prog::Doc') ) {
-        croak "SWISH::Prog::Doc-derived object required";
+    unless ( $doc && blessed($doc) && $doc->isa('Dezi::Doc') ) {
+        croak "Dezi::Doc-derived object required";
     }
 
     if ( $self->debug ) {
@@ -208,7 +208,7 @@ sub swish_filter {
     unless ( defined $doc->parser ) {
         if ( $self->set_parser_from_type ) {
             my $type = $doc->type || 'default';
-            $doc->parser( $SWISH::Prog::Utils::ParserTypes{$type} );
+            $doc->parser( $Dezi::Utils::ParserTypes{$type} );
         }
     }
 
@@ -374,7 +374,7 @@ automatically be notified of progress on your bug as I make changes.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc SWISH::Prog
+    perldoc Dezi
 
 
 You can also look for information at:

@@ -1,4 +1,4 @@
-package SWISH::Prog::Config;
+package Dezi::Config;
 use strict;
 use warnings;
 use Carp;
@@ -8,7 +8,7 @@ use Data::Dump qw( dump );
 use File::Temp ();
 use Search::Tools::XML;
 use Search::Tools::UTF8;
-use SWISH::Prog::Utils;
+use Dezi::Utils;
 use File::Spec;
 use overload(
     '""'     => \&stringify,
@@ -20,7 +20,7 @@ our $VERSION = '0.75';
 
 my $XML = Search::Tools::XML->new;
 
-use base qw( SWISH::Prog::Class );
+use base qw( Dezi::Class );
 
 my %unique = map { $_ => 1 } qw(
     MetaNames
@@ -126,13 +126,13 @@ __PACKAGE__->mk_accessors(qw( file debug verbose ));
 
 =head1 NAME
 
-SWISH::Prog::Config - read/write Swish-e config files
+Dezi::Config - read/write Swish-e config files
 
 =head1 SYNOPSIS
 
- use SWISH::Prog::Config;
+ use Dezi::Config;
  
- my $config = SWISH::Prog::Config->new;
+ my $config = Dezi::Config->new;
  $config->write2();
  $config->read2('path/to/file.conf');
  $config->write3();
@@ -140,7 +140,7 @@ SWISH::Prog::Config - read/write Swish-e config files
  
 =head1 DESCRIPTION
 
-The SWISH::Prog::Config class is intended to be accessed via SWISH::Prog->new().
+The Dezi::Config class is intended to be accessed via Dezi->new().
 
 See the Swish-e documentation for a list of configuration parameters.
 Each parameter has an accessor/mutator method as part of the Config object.
@@ -173,7 +173,7 @@ may be a Swish-e configuration parameter.
 
 Example:
 
- my $config = SWISH::Prog::Config->new( DefaultContents => 'HTML*' );
+ my $config = Dezi::Config->new( DefaultContents => 'HTML*' );
  
  print "DefaultContents is ", $config->DefaultContents, "\n";
  
@@ -303,8 +303,8 @@ Returns parsed config file as a hashref or undef on failure to parse.
 
 Example:
 
- use SWISH::Prog::Config;
- my $config = SWISH::Prog::Config->new();
+ use Dezi::Config;
+ my $config = Dezi::Config->new();
  my $parsed = $config->read2( 'my/file.cfg' );
  
  # should print same thing
@@ -579,7 +579,7 @@ sub ver2_to_ver3 {
 
     my $xml = <<EOF;
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- converted with SWISH::Prog::Config ver2_to_ver3() $time -->
+<!-- converted with Dezi::Config ver2_to_ver3() $time -->
 <swish>
 EOF
 
@@ -733,7 +733,7 @@ KEY: for my $k ( sort keys %$config ) {
                 for my $ext ( split( m/\ +/, $file_ext ) ) {
                     $ext =~ s/^\.//;
                     my $mime
-                        = SWISH::Prog::Utils->mime_type( "null.$ext", $ext )
+                        = Dezi::Utils->mime_type( "null.$ext", $ext )
                         || $parser_map{$parser_type};
                     if (    exists $conf3{Parsers}->{$parser_type}
                         and exists $conf3{Parsers}->{$parser_type}->{$mime} )
@@ -946,7 +946,7 @@ automatically be notified of progress on your bug as I make changes.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc SWISH::Prog
+    perldoc Dezi
 
 
 You can also look for information at:

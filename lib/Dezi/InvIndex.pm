@@ -1,12 +1,12 @@
-package SWISH::Prog::InvIndex;
+package Dezi::InvIndex;
 
 use strict;
 use warnings;
-use base qw( SWISH::Prog::Class );
+use base qw( Dezi::Class );
 use Carp;
 use Path::Class ();    # do not import file() and dir()
 use Scalar::Util qw( blessed );
-use SWISH::Prog::InvIndex::Meta;
+use Dezi::InvIndex::Meta;
 use overload(
     '""'     => sub { shift->path },
     'bool'   => sub {1},
@@ -39,7 +39,7 @@ sub new_from_meta {
     my $format = $meta->Index->{Format};
 
     # create new object and re-set $self
-    my $newclass = "SWISH::Prog::${format}::InvIndex";
+    my $newclass = "Dezi::${format}::InvIndex";
 
     warn "reblessing $self into $newclass";
 
@@ -79,13 +79,13 @@ sub close { 1; }
 
 sub meta {
     my $self = shift;
-    return SWISH::Prog::InvIndex::Meta->new( invindex => $self );
+    return Dezi::InvIndex::Meta->new( invindex => $self );
 }
 
 sub meta_file {
     my $self = shift;
     return $self->path->file(
-        SWISH::Prog::InvIndex::Meta->swish_header_file );
+        Dezi::InvIndex::Meta->swish_header_file );
 }
 
 1;
@@ -94,25 +94,25 @@ __END__
 
 =head1 NAME
 
-SWISH::Prog::InvIndex - base class for Swish-e inverted indexes
+Dezi::InvIndex - base class for Swish-e inverted indexes
 
 =head1 SYNOPSIS
 
- use SWISH::Prog::InvIndex;
- my $index = SWISH::Prog::InvIndex->new(path => 'path/to/index');
+ use Dezi::InvIndex;
+ my $index = Dezi::InvIndex->new(path => 'path/to/index');
  print $index;  # prints $index->path
- my $meta = $index->meta;  # $meta isa SWISH::Prog::InvIndex::Meta object
+ my $meta = $index->meta;  # $meta isa Dezi::InvIndex::Meta object
  
 =head1 DESCRIPTION
 
-A SWISH::Prog::InvIndex is a base class for defining different Swish-e
+A Dezi::InvIndex is a base class for defining different Swish-e
 inverted index formats.
 
 =head1 METHODS
 
 =head2 init
 
-Implements the base SWISH::Prog::Class method.
+Implements the base Dezi::Class method.
 
 =head2 path
 
@@ -122,7 +122,7 @@ index.
 
 =head2 meta
 
-Returns a SWISH::Prog::InvIndex::Meta object with which you can query 
+Returns a Dezi::InvIndex::Meta object with which you can query 
 information about the index.
 
 =head2 meta_file
@@ -175,7 +175,7 @@ automatically be notified of progress on your bug as I make changes.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc SWISH::Prog
+    perldoc Dezi
 
 
 You can also look for information at:

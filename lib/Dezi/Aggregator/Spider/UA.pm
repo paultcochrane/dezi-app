@@ -1,4 +1,4 @@
-package SWISH::Prog::Aggregator::Spider::UA;
+package Dezi::Aggregator::Spider::UA;
 use strict;
 use warnings;
 use base qw( LWP::RobotUA );
@@ -7,7 +7,7 @@ use URI;
 use Carp;
 use Data::Dump qw( dump );
 use Search::Tools::UTF8;
-use SWISH::Prog::Aggregator::Spider::Response;
+use Dezi::Aggregator::Spider::Response;
 
 our $VERSION = '0.75';
 
@@ -22,24 +22,24 @@ my $can_accept = HTTP::Message::decodable();
 
 our $Debug = $ENV{SPIDER_DEBUG} || 0;
 
-our $Response_Class = 'SWISH::Prog::Aggregator::Spider::Response';
+our $Response_Class = 'Dezi::Aggregator::Spider::Response';
 
 =pod
 
 =head1 NAME
 
-SWISH::Prog::Aggregator::Spider::UA - spider user agent
+Dezi::Aggregator::Spider::UA - spider user agent
 
 =head1 SYNOPSIS
 
- use SWISH::Prog::Aggregator::Spider::UA;
- my $ua = SWISH::Prog::Aggregator::Spider::UA->new;
+ use Dezi::Aggregator::Spider::UA;
+ my $ua = Dezi::Aggregator::Spider::UA->new;
  
  # $ua is a LWP::RobotUA object
 
 =head1 DESCRIPTION
 
-SWISH::Prog::Aggregator::Spider::UA is a subclass of 
+Dezi::Aggregator::Spider::UA is a subclass of 
 LWP::RobotUA.
 
 =head1 METHODS
@@ -182,7 +182,7 @@ sub set_link_tags {
 
 =head2 set_response_class( I<class> )
 
-Set the Response class. Default is B<SWISH::Prog::Aggregator::Spider::Response>.
+Set the Response class. Default is B<Dezi::Aggregator::Spider::Response>.
 
 =cut
 
@@ -220,7 +220,7 @@ automatically be notified of progress on your bug as I make changes.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc SWISH::Prog
+    perldoc Dezi
 
 
 You can also look for information at:

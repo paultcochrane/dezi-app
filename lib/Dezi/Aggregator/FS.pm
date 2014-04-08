@@ -1,7 +1,7 @@
-package SWISH::Prog::Aggregator::FS;
+package Dezi::Aggregator::FS;
 use strict;
 use warnings;
-use base qw( SWISH::Prog::Aggregator );
+use base qw( Dezi::Aggregator );
 
 use Carp;
 use File::Find;
@@ -20,13 +20,13 @@ our $DEFAULT_EXTENSION = 'txt';
 
 =head1 NAME
 
-SWISH::Prog::Aggregator::FS - crawl a filesystem
+Dezi::Aggregator::FS - crawl a filesystem
 
 =head1 SYNOPSIS
 
- use SWISH::Prog::Aggregator::FS;
- my $fs = SWISH::Prog::Aggregator::FS->new(
-        indexer => SWISH::Prog::Indexer->new
+ use Dezi::Aggregator::FS;
+ my $fs = Dezi::Aggregator::FS->new(
+        indexer => Dezi::Indexer->new
     );
     
  $fs->indexer->start;
@@ -35,15 +35,15 @@ SWISH::Prog::Aggregator::FS - crawl a filesystem
  
 =head1 DESCRIPTION
 
-SWISH::Prog::Aggregator::FS is a filesystem aggregator implementation
-of the SWISH::Prog::Aggregator API. It is similar to the DirTree.pl
+Dezi::Aggregator::FS is a filesystem aggregator implementation
+of the Dezi::Aggregator API. It is similar to the DirTree.pl
 script in the Swish-e 2.4 distribution.
 
 =cut
 
 =head1 METHODS
 
-See SWISH::Prog::Aggregator.
+See Dezi::Aggregator.
 
 =head2 init
 
@@ -62,7 +62,7 @@ sub init {
         $self->{_ext_re} = qr{\.($re)}io;
     }
     else {
-        $self->{_ext_re} = $SWISH::Prog::Utils::ExtRE;
+        $self->{_ext_re} = $Dezi::Utils::ExtRE;
     }
 
 }
@@ -85,7 +85,7 @@ sub file_ok {
     $self->debug and warn "checking file $full_path\n";
 
     my ( $path, $file, $ext )
-        = SWISH::Prog::Utils->path_parts( $full_path, $self->{_ext_re} );
+        = Dezi::Utils->path_parts( $full_path, $self->{_ext_re} );
 
     $self->debug and warn "path=$path file=$file ext=$ext\n";
 
@@ -178,7 +178,7 @@ sub get_doc {
 
     # TODO SWISH::3 has this function too.
     # might be faster since no OO overhead.
-    my $type = SWISH::Prog::Utils->mime_type( $url, $ext );
+    my $type = Dezi::Utils->mime_type( $url, $ext );
 
     if (    $self->ok_if_newer_than
         and $self->ok_if_newer_than >= $stat->[9] )
@@ -306,7 +306,7 @@ automatically be notified of progress on your bug as I make changes.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc SWISH::Prog
+    perldoc Dezi
 
 
 You can also look for information at:

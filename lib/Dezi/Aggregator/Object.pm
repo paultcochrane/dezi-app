@@ -1,13 +1,13 @@
-package SWISH::Prog::Aggregator::Object;
+package Dezi::Aggregator::Object;
 
 use strict;
 use warnings;
-use base qw( SWISH::Prog::Aggregator );
+use base qw( Dezi::Aggregator );
 
 use Carp;
 use YAML::Syck ();
 use JSON       ();
-use SWISH::Prog::Utils;
+use Dezi::Utils;
 use Scalar::Util qw( blessed );
 
 __PACKAGE__->mk_accessors(
@@ -21,17 +21,17 @@ my $XMLer = Search::Tools::XML->new();    # included in Utils
 
 =head1 NAME
 
-SWISH::Prog::Aggregator::Object - index Perl objects with Swish-e
+Dezi::Aggregator::Object - index Perl objects with Swish-e
 
 =head1 SYNOPSIS
     
-    my $aggregator = SWISH::Prog::Aggregator::Object->new(
+    my $aggregator = Dezi::Aggregator::Object->new(
         methods => [qw( foo bar something something_else )],
         class   => 'MyClass',
         title   => 'mytitle',
         url     => 'myurl',
         modtime => 'mylastmod'
-        indexer => SWISH::Prog::Indexer::Native->new,
+        indexer => Dezi::Indexer::Native->new,
     );
     
     my $data = my_func_for_fetching_data();
@@ -43,10 +43,10 @@ SWISH::Prog::Aggregator::Object - index Perl objects with Swish-e
 
 =head1 DESCRIPTION
 
-SWISH::Prog::Aggregator::Object is designed for providing full-text
+Dezi::Aggregator::Object is designed for providing full-text
 search for your Perl objects with Swish-e.
 
-Since SWISH::Prog::Aggregator::Object inherits from SWISH::Prog::Aggregator,
+Since Dezi::Aggregator::Object inherits from Dezi::Aggregator,
 read that documentation first. Any overridden methods are documented here.
 
 If it seems odd at first to think of indexing objects, consider the advantages:
@@ -61,7 +61,7 @@ value is greatly decreased thanks to Swish-e's pre-sorted properties.
 =item SWISH::API::Object integration
 
 If you use SWISH::API::Object, you can get a Storable-like freeze/thaw effect with
-SWISH::Prog::Aggregator::Object.
+Dezi::Aggregator::Object.
 
 =item caching
 
@@ -86,7 +86,7 @@ I<opts> may include:
 The B<methods> param takes an array ref of method names. Each method name
 will be called on each object in crawl(). Each method name will also be stored
 as a PropertyName in the Swish-e index, unless you explicitly create a 
-SWISH::Prog::Config object that that defines your PropertyNames.
+Dezi::Config object that that defines your PropertyNames.
 
 =item class
 
@@ -112,14 +112,14 @@ time().
 =item serial_format
 
 Which format to use in serialize(). Default is C<json>. You can also use C<yaml>.
-If you don't like either of those, subclass SWISH::Prog::Aggregator::Object 
+If you don't like either of those, subclass Dezi::Aggregator::Object 
 and override serialize() to provide your own format.
 
 =back
 
 =head2 init
 
-Initialize object. This overrides SWISH::Prog::Aggregator init() base method.
+Initialize object. This overrides Dezi::Aggregator init() base method.
 
 =cut
 
@@ -294,7 +294,7 @@ If the return value is already a scalar string (i.e., if ref() returns false)
 then the return value is returned untouched. Otherwise, the return value is serialized
 with either JSON or YAML, depending on how you configured C<serial_format> in new().
 
-If you subclass SWISH::Prog::Aggregator::Object, 
+If you subclass Dezi::Aggregator::Object, 
 then you can (of course) return whatever serialized format you prefer.
 
 =cut
@@ -328,7 +328,7 @@ __END__
 
 =head1 REQUIREMENTS
 
-L<SWISH::Prog>, L<YAML::Syck>, L<JSON::Syck>
+L<Dezi>, L<YAML::Syck>, L<JSON::Syck>
 
 =head1 AUTHOR
 
@@ -345,7 +345,7 @@ automatically be notified of progress on your bug as I make changes.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc SWISH::Prog
+    perldoc Dezi
 
 
 You can also look for information at:

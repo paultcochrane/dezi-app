@@ -1,7 +1,7 @@
-package SWISH::Prog::Queue;
+package Dezi::Queue;
 use strict;
 use warnings;
-use base qw( SWISH::Prog::Class );
+use base qw( Dezi::Class );
 use Carp;
 
 our $VERSION = '0.75';
@@ -10,12 +10,12 @@ our $VERSION = '0.75';
 
 =head1 NAME
 
-SWISH::Prog::Queue - simple in-memory FIFO queue class
+Dezi::Queue - simple in-memory FIFO queue class
 
 =head1 SYNOPSIS
 
- use SWISH::Prog::Queue;
- my $queue = SWISH::Prog::Queue->new;
+ use Dezi::Queue;
+ my $queue = Dezi::Queue->new;
  
  $queue->put( 'foo' );
  $queue->size;          # returns number of items in queue (1)
@@ -26,14 +26,14 @@ SWISH::Prog::Queue - simple in-memory FIFO queue class
 
 =head1 DESCRIPTION
 
-SWISH::Prog::Queue is basically a Perl array, but it defines an API
+Dezi::Queue is basically a Perl array, but it defines an API
 that can be implemented using any kind of storage and logic you want.
 One example would be a database that tracks items to be evaluated, or a flat
 file list.
 
 =head1 METHODS
 
-See SWISH::Prog::Class.
+See Dezi::Class.
 
 =cut
 
@@ -138,7 +138,7 @@ automatically be notified of progress on your bug as I make changes.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc SWISH::Prog
+    perldoc Dezi
 
 
 You can also look for information at:

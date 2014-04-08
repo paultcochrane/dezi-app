@@ -1,7 +1,7 @@
-package SWISH::Prog::Cache;
+package Dezi::Cache;
 use strict;
 use warnings;
-use base qw( SWISH::Prog::Class );
+use base qw( Dezi::Class );
 __PACKAGE__->mk_accessors(qw( cache ));
 use Carp;
 
@@ -11,12 +11,12 @@ our $VERSION = '0.75';
 
 =head1 NAME
 
-SWISH::Prog::Cache - simple in-memory cache class
+Dezi::Cache - simple in-memory cache class
 
 =head1 SYNOPSIS
 
- use SWISH::Prog::Cache;
- my $cache = SWISH::Prog::Cache->new;
+ use Dezi::Cache;
+ my $cache = Dezi::Cache->new;
  $cache->add( foo => 'bar' );
  $cache->has( 'foo' ); # returns true
  $cache->get( 'foo' ); # returns 'bar'
@@ -24,7 +24,7 @@ SWISH::Prog::Cache - simple in-memory cache class
 
 =head1 DESCRIPTION
 
-SWISH::Prog::Cache is a simple in-memory caching class. It's basically
+Dezi::Cache is a simple in-memory caching class. It's basically
 just a Perl hash, but implemented as a class so that you can subclass it
 and use different storage (e.g. Cache::* modules).
 
@@ -32,7 +32,7 @@ and use different storage (e.g. Cache::* modules).
 
 =head1 METHODS
 
-See SWISH::Prog::Class. Only new or overridden methods are documented here.
+See Dezi::Class. Only new or overridden methods are documented here.
 
 =head2 init
 
@@ -124,7 +124,7 @@ automatically be notified of progress on your bug as I make changes.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc SWISH::Prog
+    perldoc Dezi
 
 
 You can also look for information at:

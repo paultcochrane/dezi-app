@@ -1,4 +1,4 @@
-package SWISH::Prog::Utils;
+package Dezi::Utils;
 use strict;
 use warnings;
 use Carp;
@@ -12,18 +12,18 @@ our $VERSION = '0.75';
 
 =head1 NAME
 
-SWISH::Prog::Utils - utility variables and methods
+Dezi::Utils - utility variables and methods
 
 =head1 SYNOPSIS
 
- use SWISH::Prog::Utils;
+ use Dezi::Utils;
  
  # use the utils
  
 =head1 DESCRIPTION
 
 This class provides commonly used variables and methods
-shared by many classes in the SWISH::Prog project.
+shared by many classes in the Dezi project.
 
 =head1 VARIABLES
 
@@ -212,7 +212,7 @@ automatically be notified of progress on your bug as I make changes.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc SWISH::Prog
+    perldoc Dezi
 
 
 You can also look for information at:

@@ -1,4 +1,4 @@
-package SWISH::Prog::Aggregator::Mail;
+package Dezi::Aggregator::Mail;
 use strict;
 use warnings;
 
@@ -6,7 +6,7 @@ use Carp;
 use Data::Dump qw( dump );
 use Search::Tools::XML;
 use Mail::Box::Manager;
-use base qw( SWISH::Prog::Aggregator );
+use base qw( Dezi::Aggregator );
 
 our $VERSION = '0.75';
 
@@ -16,15 +16,15 @@ my $XMLer = Search::Tools::XML->new();
 
 =head1 NAME
 
-SWISH::Prog::Aggregator::Mail - crawl a mail box
+Dezi::Aggregator::Mail - crawl a mail box
 
 =head1 SYNOPSIS
     
-    use SWISH::Prog::Aggregator::Mail;
+    use Dezi::Aggregator::Mail;
     
     my $aggregator = 
-        SWISH::Prog::Aggregator::Mail->new( 
-            indexer => SWISH::Prog::Indexer::Native->new()
+        Dezi::Aggregator::Mail->new( 
+            indexer => Dezi::Indexer::Native->new()
         );
     
     $aggregator->indexer->start;
@@ -34,15 +34,15 @@ SWISH::Prog::Aggregator::Mail - crawl a mail box
 
 =head1 DESCRIPTION
 
-SWISH::Prog::Aggregator::Mail is a SWISH::Prog::Aggregator
+Dezi::Aggregator::Mail is a Dezi::Aggregator
 subclass designed for providing full-text search for your email.
 
-SWISH::Prog::Aggregator::Mail uses Mail::Box, available from CPAN.
+Dezi::Aggregator::Mail uses Mail::Box, available from CPAN.
 
 =head1 METHODS
 
-Since SWISH::Prog::Aggregator::Mail inherits from SWISH::Prog::Aggregator, 
-read the SWISH::Prog::Aggregator docs first. 
+Since Dezi::Aggregator::Mail inherits from Dezi::Aggregator, 
+read the Dezi::Aggregator docs first. 
 Any overridden methods are documented here.
 
 =head2 init
@@ -282,7 +282,7 @@ automatically be notified of progress on your bug as I make changes.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc SWISH::Prog
+    perldoc Dezi
 
 
 You can also look for information at:

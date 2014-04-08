@@ -1,7 +1,7 @@
-package SWISH::Prog::Result;
+package Dezi::Result;
 use strict;
 use warnings;
-use base qw( SWISH::Prog::Class );
+use base qw( Dezi::Class );
 use Carp;
 
 our $VERSION = '0.75';
@@ -10,7 +10,7 @@ __PACKAGE__->mk_accessors(qw( doc score ));
 
 =head1 NAME
 
-SWISH::Prog::Result - base result class
+Dezi::Result - base result class
 
 =head1 SYNOPSIS
                 
@@ -21,9 +21,9 @@ SWISH::Prog::Result - base result class
 
 =head1 DESCRIPTION
 
-SWISH::Prog::Results is a base results class. It defines
-the APIs that all SWISH::Prog storage backends adhere to in
-returning results from a SWISH::Prog::InvIndex.
+Dezi::Results is a base results class. It defines
+the APIs that all Dezi storage backends adhere to in
+returning results from a Dezi::InvIndex.
 
 =head1 METHODS
 
@@ -31,7 +31,7 @@ The following methods are all accessors (getters) only.
 
 =head2 doc
 
-Returns a SWISH::Prog::Doc instance.
+Returns a Dezi::Doc instance.
 
 =head2 score
 
@@ -109,7 +109,7 @@ automatically be notified of progress on your bug as I make changes.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc SWISH::Prog
+    perldoc Dezi
 
 
 You can also look for information at:

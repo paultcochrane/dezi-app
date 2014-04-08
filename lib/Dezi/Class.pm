@@ -1,10 +1,10 @@
-package SWISH::Prog::Class;
+package Dezi::Class;
 use strict;
 use warnings;
 use base qw( Rose::ObjectX::CAF );
 use Carp;
 use Data::Dump qw( dump );
-use SWISH::Prog::Config;
+use Dezi::Config;
 use Scalar::Util qw( blessed );
 
 our $VERSION = '0.75';
@@ -15,22 +15,22 @@ __PACKAGE__->mk_accessors(qw( debug verbose warnings ));
 
 =head1 NAME
 
-SWISH::Prog::Class - base class for SWISH::Prog classes
+Dezi::Class - base class for Dezi classes
 
 =head1 SYNOPSIS
 
  package My::Class;
- use base qw( SWISH::Prog::Class );
+ use base qw( Dezi::Class );
  1;
  
  # see METHODS for what you get for free
 
 =head1 DESCRIPTION
 
-SWISH::Prog::Class is a subclass of Rose::ObjectX::CAF.
+Dezi::Class is a subclass of Rose::ObjectX::CAF.
 It's a base class useful for making simple accessor/mutator methods.
-SWISH::Prog::Class implements some additional methods and features
-useful for SWISH::Prog projects.
+Dezi::Class implements some additional methods and features
+useful for Dezi projects.
 
 =head1 METHODS
 
@@ -86,9 +86,9 @@ inside an object or other scalar.
 
 =head2 verify_isa_swish_prog_config([I<config>])
 
-Returns a SWISH::Prog::Config object based on I<config>. 
+Returns a Dezi::Config object based on I<config>. 
 
-I<config> may be a readable file name or a SWISH::Prog::Config object.
+I<config> may be a readable file name or a Dezi::Config object.
 
 Will croak if I<config> is neither of the above.
 
@@ -102,18 +102,18 @@ sub verify_isa_swish_prog_config {
 
     my $config2_object;
     if ( !$config2 ) {
-        $config2_object = SWISH::Prog::Config->new();
+        $config2_object = Dezi::Config->new();
     }
     elsif ( !blessed($config2) && -r $config2 ) {
-        $config2_object = SWISH::Prog::Config->new($config2);
+        $config2_object = Dezi::Config->new($config2);
     }
     elsif ( !blessed($config2) && ref $config2 eq 'HASH' ) {
-        $config2_object = SWISH::Prog::Config->new($config2);
+        $config2_object = Dezi::Config->new($config2);
     }
     elsif ( blessed($config2) ) {
-        if ( !$config2->isa('SWISH::Prog::Config') ) {
+        if ( !$config2->isa('Dezi::Config') ) {
             croak
-                "config object does not inherit from SWISH::Prog::Config: $config2";
+                "config object does not inherit from Dezi::Config: $config2";
         }
         else {
             $config2_object = $config2;
@@ -145,7 +145,7 @@ automatically be notified of progress on your bug as I make changes.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc SWISH::Prog
+    perldoc Dezi
 
 
 You can also look for information at:
