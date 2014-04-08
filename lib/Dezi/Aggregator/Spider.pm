@@ -692,7 +692,7 @@ sub remove_from_queue {
 
 =head2 get_doc
 
-Returns the next URI from the queue() as a Dezi::Doc object,
+Returns the next URI from the queue() as a Dezi::Indexer::Doc object,
 or the error message if there was one.
 
 Returns undef if the queue is empty or max_depth() has been reached.

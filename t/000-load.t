@@ -1,9 +1,11 @@
-#!perl -T
+#!/usr/bin/env perl
+use Moo;
+use Test::More tests => 10;
 
-use Test::More tests => 1;
+use_ok('Dezi::App');
+diag( "Testing Dezi::App $Dezi::App::VERSION, Perl $], $^X" );
+use_ok('Dezi::Indexer');
+use_ok('Dezi::Aggregator');
+use_ok('Dezi::InvIndex');
+use_ok('Dezi::Searcher');
 
-BEGIN {
-    use_ok( 'Dezi::Indexer' );
-}
-
-diag( "Testing Dezi::Indexer $Dezi::Indexer::VERSION, Perl $], $^X" );

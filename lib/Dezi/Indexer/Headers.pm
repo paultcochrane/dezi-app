@@ -1,4 +1,4 @@
-package Dezi::Headers;
+package Dezi::Indexer::Headers;
 
 use 5.008_003;
 use strict;
@@ -86,20 +86,20 @@ __END__
 
 =head1 NAME
 
-Dezi::Headers - create document headers for Swish-e -S prog
+Dezi::Indexer::Headers - create document headers for Swish-e -S prog
 
 =head1 SYNOPSIS
 
-  use Dezi::Headers;
+  use Dezi::Indexer::Headers;
   use SWISH::3;
   my $f = 'some/file.html';
   my $buf = SWISH::3->slurp( $f ):
-  my $headers = Dezi::Headers->new;
+  my $headers = Dezi::Indexer::Headers->new;
   print $headers->head( $buf, { url=>$f } ), $buf;
 
 =head1 DESCRIPTION
 
-Dezi::Headers generates the correct headers
+Dezi::Indexer::Headers generates the correct headers
 for feeding documents to the indexer.
 
 =head1 VARIABLES

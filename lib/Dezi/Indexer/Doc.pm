@@ -1,4 +1,4 @@
-package Dezi::Doc;
+package Dezi::Indexer::Doc;
 use strict;
 use warnings;
 use Carp;
@@ -10,7 +10,7 @@ use overload(
     fallback => 1,
 );
 
-use Dezi::Headers;
+use Dezi::Indexer::Headers;
 
 our $VERSION = '0.75';
 
@@ -35,15 +35,15 @@ my ( $locale, $lang, $charset );
 
 =head1 NAME
 
-Dezi::Doc - Document object class for passing to Dezi::Indexer
+Dezi::Indexer::Doc - Document object class for passing to Dezi::Indexer
 
 =head1 SYNOPSIS
 
-  # subclass Dezi::Doc
+  # subclass Dezi::Indexer::Doc
   # and override filter() method
   
   package MyDoc;
-  use base qw( Dezi::Doc );
+  use base qw( Dezi::Indexer::Doc );
   
   sub filter {
     my $doc = shift;
@@ -63,11 +63,11 @@ Dezi::Doc - Document object class for passing to Dezi::Indexer
 
 =head1 DESCRIPTION
 
-Dezi::Doc is the base class for Doc objects in the Dezi
+Dezi::Indexer::Doc is the base class for Doc objects in the Dezi
 framework. Doc objects are created by Dezi::Aggregator classes
 and processed by Dezi::Indexer classes.
 
-You can subclass Dezi::Doc and add a filter() method to alter
+You can subclass Dezi::Indexer::Doc and add a filter() method to alter
 the values of the Doc object before it is indexed.
 
 =head1 METHODS
@@ -143,7 +143,7 @@ sub filter { }
 =head2 as_string
 
 Return the Doc object rendered as a scalar string, ready to be indexed.
-This will include the proper headers. See Dezi::Headers.
+This will include the proper headers. See Dezi::Indexer::Headers.
 
 B<NOTE:> as_string() is also used if you use a Doc object as a string.
 Example:
@@ -154,7 +154,7 @@ Example:
 =cut
 
 # TODO cache this higher up? how else to set debug??
-my $headers = Dezi::Headers->new();
+my $headers = Dezi::Indexer::Headers->new();
 
 sub as_string {
     my $self = shift;

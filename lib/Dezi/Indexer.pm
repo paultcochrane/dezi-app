@@ -140,7 +140,7 @@ sub start {
 
 =head2 process( I<doc> )
 
-I<doc> should be a Dezi::Doc-derived object.
+I<doc> should be a Dezi::Indexer::Doc-derived object.
 
 process() should implement whatever the particular IR library
 API requires.
@@ -150,8 +150,8 @@ API requires.
 sub process {
     my $self = shift;
     my $doc  = shift;
-    unless ( $doc && blessed($doc) && $doc->isa('Dezi::Doc') ) {
-        croak "Dezi::Doc object required";
+    unless ( $doc && blessed($doc) && $doc->isa('Dezi::Indexer::Doc') ) {
+        croak "Dezi::Indexer::Doc object required";
     }
 
     $self->start unless $self->started;

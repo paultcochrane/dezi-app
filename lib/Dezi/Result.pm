@@ -31,7 +31,7 @@ The following methods are all accessors (getters) only.
 
 =head2 doc
 
-Returns a Dezi::Doc instance.
+Returns a Dezi::Indexer::Doc instance.
 
 =head2 score
 

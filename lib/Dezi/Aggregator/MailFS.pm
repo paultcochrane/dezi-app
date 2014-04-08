@@ -109,9 +109,9 @@ sub file_ok {
 =head2 get_doc( I<url> )
 
 Overrides parent class to delegate the creation of the 
-Dezi::Doc object to Dezi::Aggregator::Mail->get_doc().
+Dezi::Indexer::Doc object to Dezi::Aggregator::Mail->get_doc().
 
-Returns a Dezi::Doc object.
+Returns a Dezi::Indexer::Doc object.
 
 =cut
 
@@ -119,7 +119,7 @@ sub get_doc {
     my $self = shift;
 
     # there's some wasted overhead here in creating a
-    # Dezi::Doc 2x. But we're optimizing here for
+    # Dezi::Indexer::Doc 2x. But we're optimizing here for
     # developer time...
 
     # mostly a slurp convenience
@@ -133,7 +133,7 @@ sub get_doc {
     # now convert the buffer to an email message
     my $msg = Mail::Message->read( \$doc->content );
 
-    # and finally convert to the Dezi::Doc we intend to return
+    # and finally convert to the Dezi::Indexer::Doc we intend to return
     my $mail = $self->{_mailer}->get_doc( $folder, $msg );
     
     # reinstate original url from filesystem

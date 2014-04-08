@@ -5,7 +5,7 @@ use base qw( Dezi::Class );
 use Carp;
 use Dezi::Utils;
 use SWISH::Filter;
-use Dezi::Doc;
+use Dezi::Indexer::Doc;
 use Scalar::Util qw( blessed );
 use Data::Dump qw( dump );
 
@@ -39,7 +39,7 @@ Dezi::Aggregator - document aggregation base class
  sub get_doc {
     my ($self, $url) = @_;
     
-    # do something to create a Dezi::Doc object from $url
+    # do something to create a Dezi::Indexer::Doc object from $url
     
     return $doc;
  }
@@ -85,8 +85,8 @@ A Dezi::Indexer object.
 
 =item doc_class
 
-The name of the Dezi::Doc-derived class to use in get_doc().
-Default is Dezi::Doc.
+The name of the Dezi::Indexer::Doc-derived class to use in get_doc().
+Default is Dezi::Indexer::Doc.
 
 =item swish_filter_obj
 
@@ -131,7 +131,7 @@ sub init {
     $self->{__progress_so_far} = 0;
     $self->{__progress_next}   = 0;
 
-    $self->{doc_class} ||= 'Dezi::Doc';
+    $self->{doc_class} ||= 'Dezi::Indexer::Doc';
     $self->{swish_filter_obj} ||= SWISH::Filter->new;
 
     if ($filter) {
@@ -197,8 +197,8 @@ See the SWISH::Filter documentation.
 sub swish_filter {
     my $self = shift;
     my $doc  = shift;
-    unless ( $doc && blessed($doc) && $doc->isa('Dezi::Doc') ) {
-        croak "Dezi::Doc-derived object required";
+    unless ( $doc && blessed($doc) && $doc->isa('Dezi::Indexer::Doc') ) {
+        croak "Dezi::Indexer::Doc-derived object required";
     }
 
     if ( $self->debug ) {
