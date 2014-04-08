@@ -3,7 +3,7 @@ use warnings;
 use inc::Module::Install;
 use 5.008003;
 
-name 'Dezi::App';
+name 'Dezi-App';
 all_from 'lib/Dezi/App.pm';
 requires 'Search::Tools'   => '1.000';
 requires 'File::Basename'  => 0;
