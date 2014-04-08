@@ -5,6 +5,7 @@ use 5.008003;
 
 name 'Dezi-App';
 all_from 'lib/Dezi/App.pm';
+
 requires 'Search::Tools'   => '1.000';
 requires 'File::Basename'  => 0;
 requires 'Time::HiRes'     => 0;
@@ -12,7 +13,7 @@ requires 'MIME::Types'     => 0;
 requires 'Path::Class'     => 0;
 requires 'File::Rules'     => '0.02';
 requires 'SWISH::Filter'   => '0.15';
-requires 'Rose::DateTime'  => 0;
+requires 'Rose::DateTime'  => 0;  # TODO Moo equivalent?
 requires 'Moo'             => 0;          # Search::Tools also requires this
 requires 'File::Temp'      => 0;
 requires 'Data::Dump'      => 0;          # Search::Tools also requires this
@@ -48,7 +49,7 @@ perl_version '5.8.3';
 license 'http://dev.perl.org/licenses/';
 homepage 'http://dezi.org/';
 bugtracker 'http://rt.cpan.org/NoAuth/Bugs.html?Dist=Dezi-App';
-repository 'https://github.com/karpet/dezi-indexer';
+repository 'https://github.com/karpet/dezi-app';
 
 install_script 'bin/dezicli';
 

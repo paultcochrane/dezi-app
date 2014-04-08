@@ -3,7 +3,7 @@ use warnings;
 use Test::More tests => 5;
 use Path::Class::Dir;
 
-use_ok('Dezi::Native::Indexer');
+use_ok('Dezi::Test::Indexer');
 
 SKIP: {
 
@@ -15,7 +15,7 @@ SKIP: {
 
     # is executable present?
     my $indexer
-        = Dezi::Native::Indexer->new( 'invindex' => 't/mail.index' );
+        = Dezi::Test::Indexer->new( 'invindex' => 't/mail.index' );
     if ( !$indexer->swish_check ) {
         skip "swish-e not installed", 4;
     }

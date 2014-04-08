@@ -3,14 +3,14 @@ use warnings;
 use Test::More tests => 17;
 
 use_ok('Dezi');
-use_ok('Dezi::Native::Indexer');
+use_ok('Dezi::Test::Indexer');
 use_ok('Dezi::Aggregator::FS');
 use_ok('Dezi::Indexer::Config');
 
 SKIP: {
 
     # is executable present?
-    my $test = Dezi::Native::Indexer->new;
+    my $test = Dezi::Test::Indexer->new;
     if ( !$test->swish_check ) {
         skip "swish-e not installed", 13;
     }
@@ -27,11 +27,11 @@ SKIP: {
     $config->FileRules( 'dirname contains mailfs',              1 );
 
     ok( my $invindex
-            = Dezi::Native::InvIndex->new( path => 't/testindex', ),
+            = Dezi::Test::InvIndex->new( path => 't/testindex', ),
         "new invindex"
     );
 
-    ok( my $indexer = Dezi::Native::Indexer->new(
+    ok( my $indexer = Dezi::Test::Indexer->new(
             invindex => $invindex,
             config   => $config,
         ),
@@ -64,12 +64,12 @@ SKIP: {
     # test with a search
 SKIP: {
 
-        eval { require Dezi::Native::Searcher; };
+        eval { require Dezi::Test::Searcher; };
         if ($@) {
             skip "Cannot test Searcher without SWISH::API", 6;
         }
         ok( my $searcher
-                = Dezi::Native::Searcher->new( invindex => $invindex,
+                = Dezi::Test::Searcher->new( invindex => $invindex,
                 ),
             "new searcher"
         );

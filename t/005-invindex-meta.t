@@ -10,4 +10,4 @@ ok( my $invindex = Dezi::InvIndex->new( path => 't/' ),
 
 ok( my $meta = $invindex->meta, "get meta()" );
 
-is( $meta->Index->{Format}, 'Native', "Native index format" );
+is( $meta->Index->{Format}, 'Test', "Test index format" );

@@ -4,12 +4,12 @@ use Test::More tests => 6;
 
 use_ok('Dezi');
 use_ok('Dezi::Indexer::Config');
-use_ok('Dezi::Native::Indexer');
+use_ok('Dezi::Test::Indexer');
 
 SKIP: {
 
     # is executable present?
-    my $test = Dezi::Native::Indexer->new;
+    my $test = Dezi::Test::Indexer->new;
     if ( !$test->swish_check ) {
         skip "swish-e not installed", 3;
     }

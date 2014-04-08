@@ -45,7 +45,7 @@
   <au>foo/bar</au>
  </MIME>
  <Index>
-  <Format>Native</Format>
+  <Format>Test</Format>
   <Name>index.swish</Name>
   <Locale>en_US.UTF-8</Locale>
  </Index>

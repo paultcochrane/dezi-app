@@ -10,12 +10,12 @@ use Data::Dump qw( dump );
 #use Devel::LeakGuard::Object qw( GLOBAL_bless :at_end leakguard );
 
 use_ok('Dezi');
-use_ok('Dezi::Native::Indexer');
+use_ok('Dezi::Test::Indexer');
 
 SKIP: {
 
     # is executable present?
-    my $indexer = Dezi::Native::Indexer->new;
+    my $indexer = Dezi::Test::Indexer->new;
     my $version = $indexer->swish_check;
     if ( !$version ) {
         skip "swish-e not installed", 1;

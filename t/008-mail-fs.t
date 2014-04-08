@@ -12,7 +12,7 @@ use Test::More tests => 10;
 use Path::Class::Dir;
 use Data::Dump qw( dump );
 
-use_ok('Dezi::Native::Indexer');
+use_ok('Dezi::Test::Indexer');
 
 SKIP: {
 
@@ -23,7 +23,7 @@ SKIP: {
     }
 
     # is executable present?
-    my $indexer = Dezi::Native::Indexer->new(
+    my $indexer = Dezi::Test::Indexer->new(
         verbose    => $ENV{PERL_DEBUG},
         debug      => $ENV{PERL_DEBUG},
         'invindex' => 't/mail.index',
@@ -49,11 +49,11 @@ SKIP: {
     # test with a search
 SKIP: {
 
-        eval { require Dezi::Native::Searcher; };
+        eval { require Dezi::Test::Searcher; };
         if ($@) {
             skip "Cannot test Searcher without SWISH::API::More", 5;
         }
-        ok( my $searcher = Dezi::Native::Searcher->new(
+        ok( my $searcher = Dezi::Test::Searcher->new(
                 invindex => 't/mail.index',
             ),
             "new searcher"
