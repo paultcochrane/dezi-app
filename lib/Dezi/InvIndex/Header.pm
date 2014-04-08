@@ -1,4 +1,4 @@
-package Dezi::InvIndex::Meta;
+package Dezi::InvIndex::Header;
 use Moose;
 extends 'Dezi::Class';
 use MooseX::Types::Path::Class;
@@ -8,7 +8,7 @@ use SWISH::3 qw( :constants );
 
 use namespace::sweep;
 
-our $VERSION = '0.75';
+our $VERSION = '0.001';
 
 has 'invindex' => ( is => 'rw', isa => 'Dezi::InvIndex', required => 1 );
 has 'file'     => ( is => 'ro', isa => 'Path::Class::File' );

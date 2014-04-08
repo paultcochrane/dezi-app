@@ -2,9 +2,9 @@ package Dezi::InvIndex;
 use Moose;
 extends 'Dezi::Class';
 use Carp;
-use Dezi::InvIndex::Meta;
+use Dezi::InvIndex::Header;
 use MooseX::Types::Path::Class;
-use Module::Load ();
+use Class::Load ();
 use Try::Tiny;
 use overload(
     '""'     => sub { shift->path },
@@ -14,7 +14,7 @@ use overload(
 
 use namespace::sweep;
 
-our $VERSION = '0.75';
+our $VERSION = '0.001';
 
 has 'path' => (
     is      => 'rw',
@@ -24,21 +24,21 @@ has 'path' => (
 );
 has 'clobber' => ( is => 'rw', isa => 'Bool', default => 0 );
 
-sub new_from_meta {
+sub new_from_header {
     my $self = shift;
 
     # open swish.xml meta file
-    my $meta = $self->meta;
+    my $header = $self->get_header();
 
     # parse for index format
-    my $format = $meta->Index->{Format};
+    my $format = $header->Index->{Format};
 
     # create new object and re-set $self
     my $newclass = "Dezi::${format}::InvIndex";
 
     #warn "reblessing $self into $newclass";
 
-    Module::Load::load($newclass);
+    Class::Load::load_class($newclass);
 
     return $newclass->new(
         path    => $self->{path},
@@ -71,14 +71,14 @@ sub open_ro {
 
 sub close { 1; }
 
-sub meta {
+sub get_header {
     my $self = shift;
-    return Dezi::InvIndex::Meta->new( invindex => $self );
+    return Dezi::InvIndex::Header->new( invindex => $self );
 }
 
-sub meta_file {
+sub header_file {
     my $self = shift;
-    return $self->path->file( Dezi::InvIndex::Meta->swish_header_file );
+    return $self->path->file( Dezi::InvIndex::Header->header_file );
 }
 
 1;
@@ -94,7 +94,7 @@ Dezi::InvIndex - base class for Dezi inverted indexes
  use Dezi::InvIndex;
  my $index = Dezi::InvIndex->new(path => 'path/to/index');
  print $index;  # prints $index->path
- my $meta = $index->meta;  # $meta isa Dezi::InvIndex::Meta object
+ my $header = $index->get_header();  # $meta isa Dezi::InvIndex::Header object
  
 =head1 DESCRIPTION
 
@@ -112,12 +112,12 @@ Returns a Path::Class::Dir object representing the directory path to the index.
 The path is a directory which contains the various files that comprise the 
 index.
 
-=head2 meta
+=head2 get_header
 
-Returns a Dezi::InvIndex::Meta object with which you can query 
+Returns a Dezi::InvIndex::Header object with which you can query 
 information about the index.
 
-=head2 meta_file
+=head2 header_file
 
 Returns Path::Class::File object pointing at the header_file.
 
