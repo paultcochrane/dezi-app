@@ -8,7 +8,7 @@ my $num_tests = 4;
 
 SKIP: {
 
-    eval "use SWISH::Prog::Aggregator::Spider";
+    eval "use Dezi::Aggregator::Spider";
     if ( $@ && $@ =~ m/([\w:]+)/ ) {
         skip "$1 required for spider test: $@", $num_tests;
     }
@@ -218,7 +218,7 @@ XML
         }
     }
 
-    use_ok('SWISH::Prog::Test::Indexer');
+    use_ok('Dezi::Test::Indexer');
 
     my $port     = 5002;
     my $server   = MyServer->new($port);
@@ -228,7 +228,7 @@ XML
     }
     my $debug    = $ENV{PERL_DEBUG};
 
-    ok( my $spider = SWISH::Prog::Aggregator::Spider->new(
+    ok( my $spider = Dezi::Aggregator::Spider->new(
             verbose => $debug,
             debug   => $debug,
             email   => 'noone@swish-e.org',

@@ -2,15 +2,15 @@ use strict;
 use warnings;
 use Test::More tests => 5;
 
-use_ok('SWISH::Prog');
-use_ok('SWISH::Prog::Native::Indexer');
+use_ok('Dezi');
+use_ok('Dezi::Native::Indexer');
 
-diag("testing SWISH::Prog version $SWISH::Prog::VERSION");
+diag("testing Dezi version $Dezi::VERSION");
 
 SKIP: {
 
     # is executable present?
-    my $indexer = SWISH::Prog::Native::Indexer->new;
+    my $indexer = Dezi::Native::Indexer->new;
     my $version = $indexer->swish_check;
     if ( !$version ) {
         skip "swish-e not installed", 3;
@@ -18,7 +18,7 @@ SKIP: {
 
     diag("$version installed");
 
-    ok( my $program = SWISH::Prog->new(
+    ok( my $program = Dezi->new(
             invindex   => 't/testindex',
             aggregator => 'fs',
             indexer    => 'native',

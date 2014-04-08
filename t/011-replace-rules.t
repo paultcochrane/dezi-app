@@ -4,8 +4,8 @@ use warnings;
 use Test::More tests => 3;
 use Data::Dump qw( dump );
 
-use_ok('SWISH::Prog::ReplaceRules');
-my $rules = SWISH::Prog::ReplaceRules->new(
+use_ok('Dezi::ReplaceRules');
+my $rules = Dezi::ReplaceRules->new(
     qq(replace "foo" "flip"),
     qq(remove  "bar/"),
     qq(prepend "http://"),

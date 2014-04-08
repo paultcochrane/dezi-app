@@ -9,13 +9,13 @@ use Data::Dump qw( dump );
 
 #use Devel::LeakGuard::Object qw( GLOBAL_bless :at_end leakguard );
 
-use_ok('SWISH::Prog');
-use_ok('SWISH::Prog::Native::Indexer');
+use_ok('Dezi');
+use_ok('Dezi::Native::Indexer');
 
 SKIP: {
 
     # is executable present?
-    my $indexer = SWISH::Prog::Native::Indexer->new;
+    my $indexer = Dezi::Native::Indexer->new;
     my $version = $indexer->swish_check;
     if ( !$version ) {
         skip "swish-e not installed", 1;
@@ -30,7 +30,7 @@ SKIP: {
         }
 
         leaks_cmp_ok {
-            my $program = SWISH::Prog->new(
+            my $program = Dezi->new(
                 invindex   => 't/testindex',
                 aggregator => 'fs',
                 indexer    => 'native',

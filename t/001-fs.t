@@ -2,20 +2,20 @@ use strict;
 use warnings;
 use Test::More tests => 17;
 
-use_ok('SWISH::Prog');
-use_ok('SWISH::Prog::Native::Indexer');
-use_ok('SWISH::Prog::Aggregator::FS');
-use_ok('SWISH::Prog::Config');
+use_ok('Dezi');
+use_ok('Dezi::Native::Indexer');
+use_ok('Dezi::Aggregator::FS');
+use_ok('Dezi::Config');
 
 SKIP: {
 
     # is executable present?
-    my $test = SWISH::Prog::Native::Indexer->new;
+    my $test = Dezi::Native::Indexer->new;
     if ( !$test->swish_check ) {
         skip "swish-e not installed", 13;
     }
 
-    ok( my $config = SWISH::Prog::Config->new('t/test.conf'),
+    ok( my $config = Dezi::Config->new('t/test.conf'),
         "config from t/test.conf" );
 
     # skip our local config test files
@@ -27,18 +27,18 @@ SKIP: {
     $config->FileRules( 'dirname contains mailfs',              1 );
 
     ok( my $invindex
-            = SWISH::Prog::Native::InvIndex->new( path => 't/testindex', ),
+            = Dezi::Native::InvIndex->new( path => 't/testindex', ),
         "new invindex"
     );
 
-    ok( my $indexer = SWISH::Prog::Native::Indexer->new(
+    ok( my $indexer = Dezi::Native::Indexer->new(
             invindex => $invindex,
             config   => $config,
         ),
         "new indexer"
     );
 
-    ok( my $aggregator = SWISH::Prog::Aggregator::FS->new(
+    ok( my $aggregator = Dezi::Aggregator::FS->new(
             indexer => $indexer,
             config  => $config,
 
@@ -48,7 +48,7 @@ SKIP: {
         "new filesystem aggregator"
     );
 
-    ok( my $prog = SWISH::Prog->new(
+    ok( my $prog = Dezi->new(
             aggregator => $aggregator,
 
             #verbose    => 1,
@@ -64,12 +64,12 @@ SKIP: {
     # test with a search
 SKIP: {
 
-        eval { require SWISH::Prog::Native::Searcher; };
+        eval { require Dezi::Native::Searcher; };
         if ($@) {
             skip "Cannot test Searcher without SWISH::API", 6;
         }
         ok( my $searcher
-                = SWISH::Prog::Native::Searcher->new( invindex => $invindex,
+                = Dezi::Native::Searcher->new( invindex => $invindex,
                 ),
             "new searcher"
         );

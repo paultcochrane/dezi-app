@@ -10,12 +10,12 @@ SKIP: {
         skip "set TEST_SPIDER env var to test the spider", 2;
     }
 
-    eval "use SWISH::Prog::Aggregator::Spider";
+    eval "use Dezi::Aggregator::Spider";
     if ( $@ && $@ =~ m/([\w:]+)/ ) {
         skip "$1 required for spider test: $@", 3;
     }
 
-    ok( my $spider = SWISH::Prog::Aggregator::Spider->new(
+    ok( my $spider = Dezi::Aggregator::Spider->new(
             verbose   => $ENV{PERL_DEBUG},
             max_depth => 2,
             delay     => 1,

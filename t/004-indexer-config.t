@@ -2,10 +2,10 @@ use strict;
 use warnings;
 use Test::More tests => 4;
 
-use SWISH::Prog::Config;
+use Dezi::Config;
 
-my $config  = SWISH::Prog::Config->new;
-my $config2 = SWISH::Prog::Config->new;
+my $config  = Dezi::Config->new;
+my $config2 = Dezi::Config->new;
 
 $config->MetaNames(qw/ foo bar baz /);
 $config->AbsoluteLinks('yes');

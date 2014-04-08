@@ -3,9 +3,9 @@ use strict;
 use warnings;
 use Test::More tests => 5;
 
-use_ok('SWISH::Prog::Utils');
+use_ok('Dezi::Utils');
 
-my $utils = 'SWISH::Prog::Utils';    # static methods only
+my $utils = 'Dezi::Utils';    # static methods only
 
 is( $utils->mime_type('foo.json'), "application/json", "got json mime type" );
 is( $utils->mime_type('foo.yml'), "application/x-yaml",
@@ -15,7 +15,7 @@ is( $utils->parser_for('foo.json'), "HTML*", "json -> HTML* parser" );
 # override default
 {
     no warnings;
-    $SWISH::Prog::Utils::ParserTypes{'application/json'} = 'XML*';
+    $Dezi::Utils::ParserTypes{'application/json'} = 'XML*';
 }
 is( $utils->parser_for('foo.json'),
     "XML*", "json -> XML* parser, overriden via package hash" );

@@ -3,11 +3,11 @@ use warnings;
 use Test::More tests => 5;
 use Path::Class::Dir;
 
-use_ok('SWISH::Prog::Native::Indexer');
+use_ok('Dezi::Native::Indexer');
 
 SKIP: {
 
-    eval "use SWISH::Prog::Aggregator::Mail";
+    eval "use Dezi::Aggregator::Mail";
     if ($@) {
         diag "install Mail::Box to test Mail aggregator";
         skip "mail test requires Mail::Box", 4;
@@ -15,7 +15,7 @@ SKIP: {
 
     # is executable present?
     my $indexer
-        = SWISH::Prog::Native::Indexer->new( 'invindex' => 't/mail.index' );
+        = Dezi::Native::Indexer->new( 'invindex' => 't/mail.index' );
     if ( !$indexer->swish_check ) {
         skip "swish-e not installed", 4;
     }
@@ -28,7 +28,7 @@ SKIP: {
         push( @dirs, $dir );
     }
 
-    ok( my $mail = SWISH::Prog::Aggregator::Mail->new(
+    ok( my $mail = Dezi::Aggregator::Mail->new(
             indexer => $indexer,
             verbose => $ENV{PERL_DEBUG},
         ),

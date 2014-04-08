@@ -8,7 +8,7 @@ use Path::Class::Dir;
 my $generate_xml = $ENV{GEN_XML} || 0;
 
 # test ver2 to ver3 conversion
-use_ok('SWISH::Prog::Config');
+use_ok('Dezi::Config');
 
 my $ver2_dir = Path::Class::Dir->new('t/config2');
 my $ver3_dir = Path::Class::Dir->new('t/config3');
@@ -18,7 +18,7 @@ if (@ARGV) {
     # dev only
     for my $file (@ARGV) {
         diag("converting $file");
-        my $xml = SWISH::Prog::Config->ver2_to_ver3( "$file", 1 );
+        my $xml = Dezi::Config->ver2_to_ver3( "$file", 1 );
         diag($xml);
     }
 }
@@ -28,7 +28,7 @@ else {
         next if -d $file;
 
         #diag("converting $file");
-        my $xml = SWISH::Prog::Config->ver2_to_ver3( "$file", 1 );
+        my $xml = Dezi::Config->ver2_to_ver3( "$file", 1 );
 
         #diag($xml);
 

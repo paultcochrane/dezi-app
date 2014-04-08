@@ -12,18 +12,18 @@ use Test::More tests => 10;
 use Path::Class::Dir;
 use Data::Dump qw( dump );
 
-use_ok('SWISH::Prog::Native::Indexer');
+use_ok('Dezi::Native::Indexer');
 
 SKIP: {
 
-    eval "use SWISH::Prog::Aggregator::MailFS";
+    eval "use Dezi::Aggregator::MailFS";
     if ($@) {
         diag "install Mail::Box to test MailFS aggregator";
         skip "mail test requires Mail::Box", 9;
     }
 
     # is executable present?
-    my $indexer = SWISH::Prog::Native::Indexer->new(
+    my $indexer = Dezi::Native::Indexer->new(
         verbose    => $ENV{PERL_DEBUG},
         debug      => $ENV{PERL_DEBUG},
         'invindex' => 't/mail.index',
@@ -32,7 +32,7 @@ SKIP: {
         skip "swish-e not installed", 9;
     }
 
-    ok( my $mail = SWISH::Prog::Aggregator::MailFS->new(
+    ok( my $mail = Dezi::Aggregator::MailFS->new(
             indexer => $indexer,
             verbose => $ENV{PERL_DEBUG},
             debug   => $ENV{PERL_DEBUG},
@@ -49,11 +49,11 @@ SKIP: {
     # test with a search
 SKIP: {
 
-        eval { require SWISH::Prog::Native::Searcher; };
+        eval { require Dezi::Native::Searcher; };
         if ($@) {
             skip "Cannot test Searcher without SWISH::API::More", 5;
         }
-        ok( my $searcher = SWISH::Prog::Native::Searcher->new(
+        ok( my $searcher = Dezi::Native::Searcher->new(
                 invindex => 't/mail.index',
             ),
             "new searcher"
