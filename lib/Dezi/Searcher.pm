@@ -1,19 +1,17 @@
 package Dezi::Searcher;
-use strict;
-use warnings;
-use base qw( Dezi::Class );
+use Moose;
+extends 'Dezi::Class';
+use Dezi::Types;
 use Carp;
 use Scalar::Util qw( blessed );
+use namespace::sweep;
 
 our $VERSION = '0.001';
 
-__PACKAGE__->mk_accessors(
-    qw(
-        max_hits
-        invindex
-        qp_config
-        ),
-);
+has 'max_hits' => ( is => 'rw', isa => 'Int', default => 1000 );
+has 'invindex' =>
+    ( is => 'rw', isa => 'Dezi::Type::InvIndexArr', required => 1, );
+has 'qp_config' => ( is => 'rw', isa => 'HashRef' );
 
 =head1 NAME
 
@@ -63,8 +61,6 @@ Optional hashref passed to Search::Query::Parser->new().
 sub init {
     my $self = shift;
     $self->SUPER::init(@_);
-
-    $self->{max_hits} ||= 1000;
 
     # set up invindex
     if ( !$self->{invindex} ) {

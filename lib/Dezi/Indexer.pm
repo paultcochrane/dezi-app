@@ -1,7 +1,7 @@
 package Dezi::Indexer;
 use Moose;
 extends 'Dezi::Class';
-with 'Dezi::CoerceConfig';
+use Dezi::Types;
 use MooseX::Types::DateTime;
 use Scalar::Util qw( blessed );
 use Carp;
@@ -12,7 +12,8 @@ use namespace::sweep;
 
 our $VERSION = '0.001';
 
-has 'invindex' => ( is => 'rw', isa => 'Dezi::InvIndex' );
+has 'invindex' =>
+    ( is => 'rw', isa => 'Dezi::Type::InvIndex', required => 1, );
 has 'config' => (
     is      => 'rw',
     isa     => 'Dezi::Type::IndexerConfig',
@@ -115,6 +116,8 @@ sub start {
     # sanity check. if this is an existing index
     # does our Format match what already exists?
     my $meta;
+
+    # TODO Try::Tiny
     eval { $meta = $invindex->meta; };
     if ( !$@ ) {
         my $format = $meta->Index->{Format};

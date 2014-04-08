@@ -8,6 +8,6 @@ use_ok('Dezi::InvIndex');
 ok( my $invindex = Dezi::InvIndex->new( path => 't/' ),
     "new invindex" );
 
-ok( my $meta = $invindex->meta, "get meta()" );
+ok( my $header = $invindex->get_header, "get meta()" );
 
-is( $meta->Index->{Format}, 'Test', "Test index format" );
+is( $header->Index->{Format}, 'Test', "Test index format" );
