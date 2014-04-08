@@ -51,7 +51,7 @@ homepage 'http://dezi.org/';
 bugtracker 'http://rt.cpan.org/NoAuth/Bugs.html?Dist=Dezi-App';
 repository 'https://github.com/karpet/dezi-app';
 
-install_script 'bin/dezicli';
+install_script 'bin/deziapp';
 
 WriteMakefile(
     PL_FILES => {},
