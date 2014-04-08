@@ -1,6 +1,6 @@
-Dezi-Indexer
+Dezi-App
 
-Dezi::Indexer is a Moo port of SWISH::Prog.
+Dezi::App is a Moo port of SWISH::Prog.
 
 INSTALLATION
 
@@ -16,21 +16,21 @@ SUPPORT AND DOCUMENTATION
 After installing, you can find documentation for this module with the
 perldoc command.
 
-    perldoc Dezi::Indexer
+    perldoc Dezi::App
 
 You can also look for information at:
 
     RT, CPAN's request tracker
-        http://rt.cpan.org/NoAuth/Bugs.html?Dist=Dezi-Indexer
+        http://rt.cpan.org/NoAuth/Bugs.html?Dist=Dezi-App
 
     AnnoCPAN, Annotated CPAN documentation
-        http://annocpan.org/dist/Dezi-Indexer
+        http://annocpan.org/dist/Dezi-App
 
     CPAN Ratings
-        http://cpanratings.perl.org/d/Dezi-Indexer
+        http://cpanratings.perl.org/d/Dezi-App
 
     Search CPAN
-        http://search.cpan.org/dist/Dezi-Indexer/
+        http://search.cpan.org/dist/Dezi-App/
 
 
 COPYRIGHT AND LICENCE
@@ -38,8 +38,7 @@ COPYRIGHT AND LICENCE
 Copyright (C) 2014 Peter Karman
 
 This program is free software; you can redistribute it and/or modify it
-under the terms of either: the GNU General Public License as published
-by the Free Software Foundation; or the Artistic License.
+under the terms of the GNU General Public License version 2.
 
 See http://dev.perl.org/licenses/ for more information.
 

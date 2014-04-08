@@ -250,7 +250,7 @@ Peter Karman, E<lt>perl@peknet.comE<gt>
 =head1 BUGS
 
 Please report any bugs or feature requests to C<bug-swish-prog at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=SWISH-Prog>.  
+the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Dezi-App>.  
 I will be notified, and then you'll
 automatically be notified of progress on your bug as I make changes.
 
@@ -271,19 +271,19 @@ L<http://lists.swish-e.org/listinfo/users>
 
 =item * RT: CPAN's request tracker
 
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=SWISH-Prog>
+L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Dezi-App>
 
 =item * AnnoCPAN: Annotated CPAN documentation
 
-L<http://annocpan.org/dist/SWISH-Prog>
+L<http://annocpan.org/dist/Dezi-App>
 
 =item * CPAN Ratings
 
-L<http://cpanratings.perl.org/d/SWISH-Prog>
+L<http://cpanratings.perl.org/d/Dezi-App>
 
 =item * Search CPAN
 
-L<http://search.cpan.org/dist/SWISH-Prog/>
+L<http://search.cpan.org/dist/Dezi-App/>
 
 =back
 

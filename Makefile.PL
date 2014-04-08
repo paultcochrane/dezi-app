@@ -3,8 +3,8 @@ use warnings;
 use inc::Module::Install;
 use 5.008003;
 
-name 'Dezi::Indexer';
-all_from 'lib/Dezi/Indexer.pm';
+name 'Dezi::App';
+all_from 'lib/Dezi/App.pm';
 requires 'Search::Tools'   => '1.000';
 requires 'File::Basename'  => 0;
 requires 'Time::HiRes'     => 0;
@@ -47,7 +47,7 @@ recommends 'Term::ProgressBar'            => 0;
 perl_version '5.8.3';
 license 'http://dev.perl.org/licenses/';
 homepage 'http://dezi.org/';
-bugtracker 'http://rt.cpan.org/NoAuth/Bugs.html?Dist=Dezi-Indexer';
+bugtracker 'http://rt.cpan.org/NoAuth/Bugs.html?Dist=Dezi-App';
 repository 'https://github.com/karpet/dezi-indexer';
 
 install_script 'bin/dezicli';
@@ -64,7 +64,7 @@ WriteMakefile(
                 t/index.swish
                 t/spider.index
                 t/mail.index
-                Dezi-Indexer-*
+                Dezi-App-*
                 )
         )
     }
