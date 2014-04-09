@@ -70,7 +70,7 @@ sub open {
     }
 
     if ( !-d $self->path ) {
-        cluck("no path $self->{path} -- mkpath");
+        $self->warnings and Carp::cluck("no path $self->{path} -- mkpath");
         $self->path->mkpath( $self->verbose );
     }
 

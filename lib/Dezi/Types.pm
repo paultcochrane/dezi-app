@@ -7,21 +7,29 @@ use Dezi::InvIndex;
 use Dezi::Indexer::Config;
 use File::Rules;
 
+# Indexer::Config
 subtype 'Dezi::Type::Indexer::Config' => as class_type
     'Dezi::Indexer::Config';
 coerce 'Dezi::Type::Indexer::Config' => from 'Path::Class::File' =>
     via { coerce_indexer_config($_) } =>
     from 'Str' => via { coerce_indexer_config($_) };
 
+# InvIndex
 subtype 'Dezi::Type::InvIndex' => as class_type 'Dezi::InvIndex';
 coerce 'Dezi::Type::InvIndex'  => from 'Path::Class::File' =>
     via { coerce_invindex($_) } => from 'Str' => via { coerce_invindex($_) };
+subtype 'Dezi::Type::InvIndexArr' => as 'ArrayRef[Dezi::Type::InvIndex]';
+coerce 'Dezi::Type::InvIndexArr' => from 'ArrayRef' => via {
+    [ map { coerce_invindex($_) } @$_ ];
+} => from 'Dezi::Type::InvIndex' => via { [$_] };
 
+# filter
 subtype 'Dezi::Type::FileOrCodeRef' => as 'CodeRef';
 coerce 'Dezi::Type::FileOrCodeRef' => from 'Str' => via {
     if ( -s $_ and -r $_ ) { return do $_ }
 };
 
+# File::Rules
 subtype 'Dezi::Type::File::Rules' => as class_type 'File::Rules';
 coerce 'Dezi::Type::File::Rules'  => from 'ArrayRef' =>
     via { File::Rules->new($_) };

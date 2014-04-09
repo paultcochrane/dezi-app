@@ -4,14 +4,20 @@ with 'Dezi::Role';
 use Dezi::Types;
 use Carp;
 use Scalar::Util qw( blessed );
+use Class::Load;
 use namespace::sweep;
 
 our $VERSION = '0.001';
 
 has 'max_hits' => ( is => 'rw', isa => 'Int', default => 1000 );
-has 'invindex' =>
-    ( is => 'rw', isa => 'Dezi::Type::InvIndexArr', required => 1, );
+has 'invindex' => (
+    is       => 'rw',
+    isa      => 'Dezi::Type::InvIndexArr',
+    required => 1,
+    coerce   => 1,
+);
 has 'qp_config' => ( is => 'rw', isa => 'HashRef' );
+has 'qp'        => ( is => 'rw', isa => 'Search::Query::Parser' );
 
 =head1 NAME
 
@@ -37,9 +43,9 @@ returning results from a Dezi::InvIndex.
 
 =head1 METHODS
 
-=head2 init
+=head2 BUILD
 
-Overrides base method.
+Build searcher object. Called internally by new().
 
 =head2 invindex
 
@@ -58,47 +64,43 @@ Optional hashref passed to Search::Query::Parser->new().
 
 =cut
 
-sub init {
+sub BUILD {
     my $self = shift;
-    $self->SUPER::init(@_);
-
-    # set up invindex
-    if ( !$self->{invindex} ) {
-        croak "invindex required";
-    }
-
-    # force into an array
-    if ( ref $self->{invindex} ne 'ARRAY' ) {
-        $self->{invindex} = [ $self->{invindex} ];
-    }
 
     for my $invindex ( @{ $self->{invindex} } ) {
-        if ( !blessed($invindex) ) {
 
-            # assume a InvIndex in the same namespace as $self
-            my $class = ref($self);
-            $class =~ s/::Searcher$/::InvIndex/;
-            eval "require $class";
-            croak $@ if $@;
-            $invindex = $class->new( path => $invindex, clobber => 0 );
-
-            #warn "new invindex in $class";
-
+        # make sure invindex is blessed into invindex_class
+        # and re-bless if necessary
+        if ( !$invindex->isa( $self->invindex_class ) ) {
+            Class::Load::load_class( $self->invindex_class );
+            $invindex = $self->invindex_class->new( path => "$invindex" );
         }
+
         $invindex->open_ro;
     }
 
-    return $self;
+    # init query parser
+    $self->{qp} ||= Search::Query::Parser->new( %{ $self->qp_config } );
 }
 
-=head2 search( I<query> )
+sub invindex_class {'Dezi::InvIndex'}
+
+=head2 search( I<query>, I<opts> )
 
 Returns a Dezi::Results object.
+
+I<query> should be a L<Search::Query::Dialect> object or a string parse-able
+by L<Search::Query::Parser>.
+
+I<opts> should be a Dezi::SearchOpts object or a hashref.
 
 =cut
 
 sub search {
-    croak "you must override search() in your subclass";
+    my $self = shift;
+    my ( $query, $opts ) = @_;
+
+    confess "$_[0] does not implement search() method";
 }
 
 1;
@@ -120,7 +122,7 @@ automatically be notified of progress on your bug as I make changes.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc Dezi
+    perldoc Dezi::Searcher
 
 
 You can also look for information at:
