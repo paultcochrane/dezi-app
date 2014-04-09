@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- converted with SWISH::Prog::Config ver2_to_ver3()  -->
+<!-- converted with Dezi::Indexer::Config ver2_to_ver3()  -->
 <swish>
  <!-- WARNING: BeginCharacters ignored by Swish3 -->
  <BeginCharacters>abcdefghijklmnopqrstuvwxyz0123456789</BeginCharacters>
