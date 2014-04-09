@@ -5,6 +5,8 @@ use Dezi::Types;
 use Carp;
 use Scalar::Util qw( blessed );
 use Class::Load;
+use Search::Query;
+use Search::Query::Parser;
 use namespace::sweep;
 
 our $VERSION = '0.001';
@@ -16,8 +18,8 @@ has 'invindex' => (
     required => 1,
     coerce   => 1,
 );
-has 'qp_config' => ( is => 'rw', isa => 'HashRef' );
-has 'qp'        => ( is => 'rw', isa => 'Search::Query::Parser' );
+has 'qp_config' => ( is => 'rw', isa => 'HashRef', default => sub { {} } );
+has 'qp' => ( is => 'rw', isa => 'Search::Query::Parser' );
 
 =head1 NAME
 
@@ -100,7 +102,7 @@ sub search {
     my $self = shift;
     my ( $query, $opts ) = @_;
 
-    confess "$_[0] does not implement search() method";
+    confess "$self does not implement search() method";
 }
 
 1;

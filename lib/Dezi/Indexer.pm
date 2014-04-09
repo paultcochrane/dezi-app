@@ -90,6 +90,29 @@ build index.
 
 =back
 
+=head2 BUILD
+
+Setup object. Called internally by new().
+
+=cut
+
+sub BUILD {
+    my $self = shift;
+
+    # if our invindex path != config->IndexFile,
+    # prefer config
+    if (    $self->config->IndexFile
+        and $self->config->IndexFile ne $self->invindex->path )
+    {
+        $self->warnings
+            and warn sprintf(
+            "Overriding invindex->path '%s' with IndexFile value from config '%s'\n",
+            $self->invindex->path, $self->config->IndexFile );
+        $self->invindex->path( $self->config->IndexFile );
+    }
+
+}
+
 =head2 start
 
 Opens the invindex() object and sets the started() time to time().
@@ -101,10 +124,7 @@ this method since it provides sanity checking on the InvIndex.
 
 sub start {
     my $self = shift;
-    if ( !defined $self->invindex ) {
-        croak "Missing invindex object";
-    }
-    my $invindex = $self->invindex;
+    my $invindex = $self->invindex or confess "No invindex object defined";
     if (   !blessed($invindex)
         or !$invindex->can('open') )
     {
@@ -114,14 +134,11 @@ sub start {
 
     # sanity check. if this is an existing index
     # does our Format match what already exists?
-    my $meta;
-
-    # TODO Try::Tiny
-    eval { $meta = $invindex->meta; };
-    if ( !$@ ) {
-        my $format = $meta->Index->{Format};
+    my $header = try { $invindex->get_header };
+    if ($header) {
+        my $format = $header->Index->{Format};
         if ( !$self->isa( 'Dezi::' . $format . '::Indexer' ) ) {
-            croak "Fatal error: found existing invindex '$invindex' "
+            confess "Fatal error: found existing invindex '$invindex' "
                 . "with format $format.\n"
                 . "You tried to open it with "
                 . ref($self);
@@ -183,6 +200,8 @@ integer.
 # override param value with Dezi::Indexer::Config object
 # after adding to SWISH::3::Config object so that the
 # aggregator using this Indexer is happy.
+
+# TODO port this to TypeConstraint ??
 
 sub _verify_swish3_config {
     my $self = shift;

@@ -2,27 +2,17 @@ use strict;
 use warnings;
 use Test::More tests => 6;
 
-use_ok('Dezi');
+use_ok('Dezi::App');
 use_ok('Dezi::Indexer::Config');
 use_ok('Dezi::Test::Indexer');
 
-SKIP: {
+ok( my $config = Dezi::Indexer::Config->new('t/test.conf'),
+    "config from t/test.conf" );
 
-    # is executable present?
-    my $test = Dezi::Test::Indexer->new;
-    if ( !$test->swish_check ) {
-        skip "swish-e not installed", 3;
-    }
+$config->IndexFile("foo/bar");
 
-    ok( my $config = Dezi::Indexer::Config->new('t/test.conf'),
-        "config from t/test.conf" );
+ok( my $app = Dezi::App->new( config => $config, indexer => 'test', ),
+    "new App" );
 
-    $config->IndexFile("foo/bar");
+is( $app->indexer->invindex->path, "foo/bar", "ad hoc IndexFile config" );
 
-    ok( my $prog = Dezi->new( config => $config, ),
-        "new prog object" );
-
-    is( $prog->indexer->invindex->path, "foo/bar",
-        "ad hoc IndexFile config" );
-
-}

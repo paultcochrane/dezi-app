@@ -17,7 +17,9 @@ coerce 'Dezi::Type::Indexer::Config' => from 'Path::Class::File' =>
 # InvIndex
 subtype 'Dezi::Type::InvIndex' => as class_type 'Dezi::InvIndex';
 coerce 'Dezi::Type::InvIndex'  => from 'Path::Class::File' =>
-    via { coerce_invindex($_) } => from 'Str' => via { coerce_invindex($_) };
+    via { coerce_invindex($_) } => from 'Str' =>
+    via { coerce_invindex($_) } => from 'Undef' =>
+    via { Dezi::InvIndex->new() };
 subtype 'Dezi::Type::InvIndexArr' => as 'ArrayRef[Dezi::Type::InvIndex]';
 coerce 'Dezi::Type::InvIndexArr' => from 'ArrayRef' => via {
     [ map { coerce_invindex($_) } @$_ ];
