@@ -1,7 +1,6 @@
 package Dezi::Queue;
-use strict;
-use warnings;
-use base qw( Dezi::Class );
+use Moose;
+with 'Dezi::Role';
 use Carp;
 
 our $VERSION = '0.001';
@@ -43,9 +42,8 @@ Overrides base method.
 
 =cut
 
-sub init {
+sub BUILD {
     my $self = shift;
-    $self->SUPER::init(@_);
     $self->{q} ||= [];
 }
 

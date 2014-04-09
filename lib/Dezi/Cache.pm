@@ -1,11 +1,14 @@
 package Dezi::Cache;
-use strict;
-use warnings;
-use base qw( Dezi::Class );
-__PACKAGE__->mk_accessors(qw( cache ));
+use Moose;
+with 'Dezi::Role';
 use Carp;
+use namespace::sweep;
 
 our $VERSION = '0.001';
+
+has 'cache' => ( is => 'rw' );
+
+no Moose;  # since we have our own 'has' method
 
 =pod
 
@@ -41,9 +44,8 @@ call this yourself.
 
 =cut
 
-sub init {
+sub BUILD {
     my $self = shift;
-    $self->SUPER::init(@_);
     $self->{cache} ||= {};
 }
 

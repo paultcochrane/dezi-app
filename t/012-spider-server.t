@@ -3,33 +3,43 @@ use strict;
 use warnings;
 use Test::More tests => 4;
 use HTTP::Date;
+use Try::Tiny;
+use Class::Load;
 
 my $num_tests = 4;
 
 SKIP: {
 
-    eval "use Dezi::Aggregator::Spider";
-    if ( $@ && $@ =~ m/([\w:]+)/ ) {
-        skip "$1 required for spider test: $@", $num_tests;
-    }
-
-    eval "use Test::HTTP::Server::Simple";
-    if ($@) {
-        skip "Test::HTTP::Server::Simple required for spider-server test: $@",
-            $num_tests;
-    }
-
-    eval "use HTTP::Server::Simple::CGI";
-    if ($@) {
-        skip "HTTP::Server::Simple::CGI required for spider-server test: $@",
-            $num_tests;
-    }
-
-    eval "use HTTP::Server::Simple::Authen";
-    if ($@) {
-        skip
-            "HTTP::Server::Simple::Authen required for spider-server test: $@",
-            $num_tests;
+    my @required = qw(
+        Dezi::Aggregator::Spider
+        Test::HTTP::Server::Simple
+        HTTP::Server::Simple::CGI
+        HTTP::Server::Simple::Authen
+    );
+    for my $cls (@required) {
+        diag("Checking on $cls");
+        my $missing;
+        my $loaded = try {
+            Class::Load::load_class($cls);
+        }
+        catch {
+            warn $_;
+            if ( $_ =~ m/Can't locate (\S+)/ ) {
+                $missing = $1;
+                $missing =~ s/\//::/g;
+                $missing =~ s/\.pm//;
+            }
+            return 0;
+        };
+        if ( !$loaded ) {
+            if ($missing) {
+                diag( '-' x 40 );
+                diag("Do you need to install $missing ?");
+                diag( '-' x 40 );
+            }
+            skip "$cls required for spider test", $num_tests;
+            last;
+        }
     }
 
     # define our test server
@@ -223,10 +233,10 @@ XML
     my $port     = 5002;
     my $server   = MyServer->new($port);
     my $base_uri = $server->started_ok('start http server');
-    if (!$base_uri) {
+    if ( !$base_uri ) {
         die "server failed to start";
     }
-    my $debug    = $ENV{PERL_DEBUG};
+    my $debug = $ENV{PERL_DEBUG};
 
     ok( my $spider = Dezi::Aggregator::Spider->new(
             verbose => $debug,

@@ -1,7 +1,6 @@
 package Dezi::Aggregator::Spider;
-use strict;
-use warnings;
-use base qw( Dezi::Aggregator );
+use Moose;
+extends 'Dezi::Aggregator';
 use Carp;
 use Scalar::Util qw( blessed );
 use URI;
@@ -15,39 +14,53 @@ use Search::Tools::UTF8;
 use XML::Feed;
 use WWW::Sitemap::XML;
 use File::Rules;
+use Class::Load;
 
 #
 # TODO tests for cookies, non-text urls needing filters
 #
 #
 
-__PACKAGE__->mk_accessors(
-    qw(
-        agent
-        authn_callback
-        credential_timeout
-        credentials
-        delay
-        email
-        file_rules
-        follow_redirects
-        keep_alive
-        link_tags
-        max_depth
-        max_files
-        max_size
-        max_time
-        md5_cache
-        modified_since
-        queue
-        remove_leading_dots
-        same_hosts
-        timeout
-        ua
-        uri_cache
-        use_md5
-        )
+has 'agent' => (
+    is      => 'rw',
+    isa     => 'Str',
+    default => sub {'dezi-spider http://dezi.org/'},
 );
+has 'authn_callback'     => ( is => 'rw', isa => 'CodeRef' );
+has 'credential_timeout' => ( is => 'rw', isa => 'Int', default => sub {30} );
+has 'credentials'        => ( is => 'rw', isa => 'Str' );
+has 'delay'              => ( is => 'rw', isa => 'Int', default => sub {5} );
+has 'email' => (
+    is      => 'rw',
+    isa     => 'Str',
+    default => sub {'dezi@user.failed.to.set.email.invalid'},
+);
+has 'file_rules' =>
+    ( is => 'rw', isa => 'Dezi::Type::File::Rules', coerce => 1, );
+has 'follow_redirects' => ( is => 'rw', isa => 'Bool', default => {1} );
+has 'keep_alive' => ( is => 'rw', isa => 'Int', default => sub {0} );
+
+# whitelist which HTML tags we consider "links"
+# should be subset of what HTML::LinkExtor considers links
+has 'link_tags' =>
+    ( is => 'rw', isa => 'ArrayRef', default => [ 'a', 'frame', 'iframe' ] );
+
+has 'max_depth' => ( is => 'rw', isa => 'Maybe[Int]' );
+has 'max_files' => ( is => 'rw', isa => 'Int', default => sub {0} );
+has 'max_time'  => ( is => 'rw', isa => 'Int', );                      # TODO
+has 'md5_cache' =>
+    ( is => 'rw', isa => 'Dezi::Cache', default => sub { Dezi::Cache->new } );
+has 'modified_since' => ( is => 'rw', );    # TODO str2time
+has 'queue' =>
+    ( is => 'rw', isa => 'Dezi::Queue', default => sub { Dezi::Queue->new } );
+has 'remove_leading_dots' =>
+    ( is => 'rw', isa => 'Bool', default => sub {1} );
+has 'same_hosts' => ( is => 'rw', isa => 'ArrayRef', default => [] );
+has 'timeout' => ( is => 'rw', isa => 'Int', default => sub {30} );
+has 'ua'         => ( is => 'rw', isa => 'LWP::UserAgent' );
+has 'uri_cache'  => ( is => 'rw', isa => 'Dezi::Cache' );
+has 'use_md5'    => ( is => 'rw', isa => 'Bool', default => sub {0} );
+has 'use_cookes' => ( is => 'rw', isa => 'Bool', default => sub {1} );
 
 #use LWP::Debug qw(+);
 
@@ -230,80 +243,51 @@ links to different hosts.
 
 =back
 
-=head2 init
+=head2 BUILD
 
 Initializes a new spider object. Called by new().
 
 =cut
 
-sub init {
+sub BUILD {
     my $self = shift;
-    $self->SUPER::init(@_);
 
-    # defaults
-    $self->{agent} ||= 'swish-prog-spider http://swish-e.org/';
-    $self->{email} ||= 'swish@user.failed.to.set.email.invalid';
-    $self->{use_cookies}      = 1 unless defined $self->{use_cookies};
-    $self->{follow_redirects} = 1 unless defined $self->{follow_redirects};
-    $self->{max_files}        = 0 unless defined $self->{max_files};
-    $self->{max_size}  = 5_000_000 unless defined $self->{max_size};
-    $self->{max_depth} = undef     unless defined( $self->{max_depth} );
-    $self->{delay}     = 5         unless defined $self->{delay};
-    croak "delay must be expressed in seconds" if $self->{delay} =~ m/\D/;
-
-    if ( $self->{modified_since} ) {
+    if ( $self->modified_since ) {
         my $epoch
-            = $self->{modified_since} =~ m/\D/
-            ? str2time( $self->{modified_since} )
-            : $self->{modified_since};
+            = $self->modified_since =~ m/\D/
+            ? str2time( $self->modified_since )
+            : $self->modified_since;
 
         if ( !defined $epoch ) {
-            croak
-                "Invalid datetime in modified_since: $self->{modified_since}";
+            confess "Invalid datetime in modified_since: "
+                . $self->modified_since;
         }
-        $self->{modified_since} = $epoch;
+        $self->modified_since($epoch);
     }
 
-    $self->{credential_timeout} = 30
-        unless exists $self->{credential_timeout};
-    croak "credential_timeout must be a number"
-        if defined $self->{credential_timeout}
-        and $self->{credential_timeout} =~ m/\D/;
-
-    $self->{queue}     ||= Dezi::Queue->new;
-    $self->{uri_cache} ||= Dezi::Cache->new;
     $self->{_auth_cache} = Dezi::Cache->new;    # ALWAYS inmemory cache
-    $self->{ua} ||= Dezi::Aggregator::Spider::UA->new( $self->{agent},
-        $self->{email}, );
 
-    # whitelist which HTML tags we consider "links"
-    # should be subset of what HTML::LinkExtor considers links
-    $self->{link_tags} = [ 'a', 'frame', 'iframe' ]
-        unless ref $self->{link_tags} eq 'ARRAY';
+    $self->{ua}
+        ||= Dezi::Aggregator::Spider::UA->new( $self->agent, $self->email, );
+
     $self->{ua}
         ->set_link_tags( { map { lc($_) => 1 } @{ $self->{link_tags} } } );
-
-    $self->{timeout} = 10 unless defined $self->{timeout};
-    croak "timeout must be a number" if $self->{timeout} =~ m/\D/;
 
     # we handle our own delay
     $self->{ua}->delay(0);
 
-    $self->{ua}->timeout( $self->{timeout} );
+    $self->{ua}->timeout( $self->timeout );
 
     # TODO we test this using HEAD request. Set here too?
     #$self->{ua}->max_size( $self->{max_size} ) if $self->{max_size};
 
-    if ( $self->{use_cookies} ) {
+    if ( $self->use_cookies ) {
         $self->{ua}->cookie_jar( HTTP::Cookies->new() );
     }
-    if ( $self->{keep_alive} ) {
+    if ( $self->keep_alive ) {
         if ( $self->{ua}->can('conn_cache') ) {
-            my $keep_alive
-                = $self->{keep_alive} =~ m/^\d+$/
-                ? $self->{keep_alive}
-                : 1;
-            $self->{ua}->conn_cache( { total_capacity => $keep_alive } );
+            $self->{ua}
+                ->conn_cache( { total_capacity => $self->keep_alive } );
         }
         else {
             warn
@@ -314,30 +298,23 @@ sub init {
 
     $self->{_current_depth} = 1;
 
-    $self->{same_hosts} ||= [];
     $self->{same_host_lookup} = { map { $_ => 1 } @{ $self->{same_hosts} } };
 
-    if ( $self->{use_md5} ) {
-        eval "require Digest::MD5" or croak $@;
-        $self->{md5_cache} ||= Dezi::Cache->new;
+    if ( $self->use_md5 ) {
+        Class::Load::load_class('Digest::MD5');
     }
 
     # if Dezi::Indexer::Config defined, use that for some items
-    if ( $self->{indexer} and $self->config ) {
-        if ( $self->config->FileRules && !$self->{file_rules} ) {
-            $self->{file_rules}
-                = File::Rules->new( $self->config->FileRules );
+    if ( $self->indexer and $self->indexer->config ) {
+        if ( $self->indexer->config->FileRules && !$self->file_rules ) {
+            $self->file_rules(
+                File::Rules->new( $self->indexer->config->FileRules ) );
         }
-    }
-
-    # make it an object if it is just an array
-    if ( $self->{file_rules} and !blessed( $self->{file_rules} ) ) {
-        $self->{file_rules} = File::Rules->new( $self->{file_rules} );
     }
 
     # from spider.pl. not sure if we need it or not.
     # Lame Microsoft
-    $URI::ABS_REMOTE_LEADING_DOTS = $self->{remove_leading_dots} ? 1 : 0;
+    $URI::ABS_REMOTE_LEADING_DOTS = $self->remove_leading_dots;
 
     return $self;
 }

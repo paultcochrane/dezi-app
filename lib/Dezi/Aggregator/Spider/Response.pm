@@ -1,7 +1,6 @@
 package Dezi::Aggregator::Spider::Response;
-use strict;
-use warnings;
-use base qw( Dezi::Class );
+use Moose;
+with 'Dezi::Role';
 use Carp;
 use Data::Dump qw( dump );
 use Search::Tools::UTF8;
@@ -10,14 +9,12 @@ use URI;
 use HTML::Tagset;
 use HTML::HeadParser;
 
+use namespace::sweep;
+
 our $VERSION = '0.001';
 
-__PACKAGE__->mk_accessors(
-    qw(
-        http_response
-        link_tags
-        )
-);
+has 'http_response' => ( is => 'rw', isa => 'HTTP::Response' );
+has 'link_tags'     => ( is => 'rw', isa => 'HashRef' );
 
 =pod
 
@@ -45,19 +42,17 @@ HTTP::Response class and provides some convenience methods.
 
 =cut
 
-=head2 init
+=head2 BUILD
 
-Override internal constructor setup method.
+Setup method.
 
 =cut
 
-sub init {
+sub BUILD {
     my $self = shift;
-    $self->SUPER::init(@_);
 
     # TODO set by our UA. duplicate?
     #$self->{link_tags} ||= { a => 1, frame => 1, iframe => 1, };
-    return $self;
 }
 
 =head2 http_response

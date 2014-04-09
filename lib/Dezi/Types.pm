@@ -5,6 +5,7 @@ use MooseX::Types::Path::Class;
 use Carp;
 use Dezi::InvIndex;
 use Dezi::Indexer::Config;
+use File::Rules;
 
 subtype 'Dezi::Type::Indexer::Config' => as class_type
     'Dezi::Indexer::Config';
@@ -20,6 +21,10 @@ subtype 'Dezi::Type::FileOrCodeRef' => as 'CodeRef';
 coerce 'Dezi::Type::FileOrCodeRef' => from 'Str' => via {
     if ( -s $_ and -r $_ ) { return do $_ }
 };
+
+subtype 'Dezi::Type::File::Rules' => as class_type 'File::Rules';
+coerce 'Dezi::Type::File::Rules'  => from 'ArrayRef' =>
+    via { File::Rules->new($_) };
 
 use namespace::sweep;
 
