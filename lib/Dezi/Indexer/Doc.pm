@@ -1,6 +1,6 @@
 package Dezi::Indexer::Doc;
 use Moose;
-extends 'Dezi::Class';
+with 'Dezi::Role';
 use Carp;
 use Data::Dump qw( dump );
 use overload(

@@ -1,6 +1,6 @@
 package Dezi::Indexer;
 use Moose;
-extends 'Dezi::Class';
+with 'Dezi::Role';
 use Dezi::Types;
 use MooseX::Types::DateTime;
 use Scalar::Util qw( blessed );

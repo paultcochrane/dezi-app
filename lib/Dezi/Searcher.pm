@@ -1,6 +1,6 @@
 package Dezi::Searcher;
 use Moose;
-extends 'Dezi::Class';
+with 'Dezi::Role';
 use Dezi::Types;
 use Carp;
 use Scalar::Util qw( blessed );

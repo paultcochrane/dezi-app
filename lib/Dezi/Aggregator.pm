@@ -1,6 +1,6 @@
 package Dezi::Aggregator;
 use Moose;
-extends 'Dezi::Class';
+with 'Dezi::Role';
 use Carp;
 use Dezi::Utils;
 use SWISH::Filter;

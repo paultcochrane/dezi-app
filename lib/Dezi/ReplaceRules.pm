@@ -1,6 +1,6 @@
 package Dezi::ReplaceRules;
 use Moose;
-extends 'Dezi::Class';
+with 'Dezi::Role';
 use Scalar::Util qw( blessed );
 use Carp;
 use Data::Dump qw( dump );

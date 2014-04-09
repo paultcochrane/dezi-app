@@ -1,5 +1,5 @@
-package Dezi::Class;
-use Moose;
+package Dezi::Role;
+use Moose::Role;
 
 our $VERSION = '0.001';
 
@@ -14,13 +14,13 @@ has 'warnings' =>
 
 =head1 NAME
 
-Dezi::Class - base class for Dezi classes
+Dezi::Role - common attributes for Dezi classes
 
 =head1 SYNOPSIS
 
  package My::Class;
  use Moose;
- extends 'Dezi::Class';
+ with 'Dezi::Role';
  # other stuff
  1;
  
@@ -28,10 +28,8 @@ Dezi::Class - base class for Dezi classes
 
 =head1 DESCRIPTION
 
-Dezi::Class is a subclass of Moose.
-It's a base class useful for making simple accessor/mutator methods.
-Dezi::Class implements some additional methods and features
-useful for Dezi projects.
+Dezi::Role isa Moose::Role. It creates a few attributes (see L<METHODS>)
+common to most Dezi classes.
 
 =head1 METHODS
 

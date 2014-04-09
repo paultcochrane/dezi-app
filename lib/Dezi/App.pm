@@ -1,6 +1,6 @@
 package Dezi::App;
 use Moose;
-extends 'Dezi::Class';
+with 'Dezi::Role';
 use Carp;
 use Data::Dump qw( dump );
 use Scalar::Util qw( blessed );

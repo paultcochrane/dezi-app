@@ -1,6 +1,6 @@
 package Dezi::InvIndex;
 use Moose;
-extends 'Dezi::Class';
+with 'Dezi::Role';
 use Carp;
 use Dezi::InvIndex::Header;
 use MooseX::Types::Path::Class;

@@ -1,6 +1,6 @@
 package Dezi::Indexer::Headers;
 use Moose;
-extends 'Dezi::Class';
+with 'Dezi::Role';
 use Carp;
 use bytes;    # so length() measures bytes
 
