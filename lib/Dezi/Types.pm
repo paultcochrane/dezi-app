@@ -1,6 +1,7 @@
 package Dezi::Types;
 use Moose;
 use Moose::Util::TypeConstraints;
+use MooseX::Types::Path::Class;
 
 subtype 'Dezi::Type::Indexer::Config' => as class_type
     'Dezi::Indexer::Config';

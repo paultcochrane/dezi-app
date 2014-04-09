@@ -16,7 +16,7 @@ has 'invindex' =>
     ( is => 'rw', isa => 'Dezi::Type::InvIndex', required => 1, );
 has 'config' => (
     is      => 'rw',
-    isa     => 'Dezi::Type::IndexerConfig',
+    isa     => 'Dezi::Type::Indexer::Config',
     coerce  => 1,
     default => sub { Dezi::Indexer::Config->new() },
 );
