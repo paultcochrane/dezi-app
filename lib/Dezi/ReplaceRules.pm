@@ -1,15 +1,15 @@
 package Dezi::ReplaceRules;
-use strict;
-use warnings;
-use base qw( Dezi::Class );
+use Moose;
+extends 'Dezi::Class';
 use Scalar::Util qw( blessed );
 use Carp;
 use Data::Dump qw( dump );
 use Text::ParseWords;
+use namespace::sweep;
 
 our $VERSION = '0.001';
 
-__PACKAGE__->mk_accessors(qw( rules ));
+has 'rules' => ( is => 'rw', isa => 'ArrayRef' );
 
 =pod
 
@@ -47,9 +47,13 @@ Constructor for new ReplaceRules object. I<rules> should be an array
 of strings as defined in
 L<http://swish-e.org/docs/swish-config.html#replacerules>.
  
-=head2 init
+=head2 BUILDARGS
 
-Internal method called by new(). Expects an array of rule strings.
+Internal method. Allows for single argument to new().
+
+=head2 BUILD
+
+Parses the I<rules> and initializes the object.
 
 =head2 rules
 
@@ -57,18 +61,15 @@ Get/set the array ref of parsed rules.
 
 =cut
 
-# override new() to allow for single argument string instead of hashref.
-sub new {
+around BUILDARGS => sub {
+    my $orig  = shift;
     my $class = shift;
-    my $self = bless {}, $class;
-    $self->init(@_);
-    return $self;
-}
+    return $class->$orig( rules => [@_] );
+};
 
-sub init {
+sub BUILD {
     my $self = shift;
-    $self->SUPER::init( rules => $self->_parse_rules(@_) );
-    return $self;
+    $self->{rules} = $self->_parse_rules( @{ $self->{rules} } );
 }
 
 sub _parse_rules {
@@ -191,7 +192,7 @@ automatically be notified of progress on your bug as I make changes.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc Dezi
+    perldoc Dezi::ReplaceRules
 
 
 You can also look for information at:

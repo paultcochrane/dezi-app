@@ -24,6 +24,18 @@ has 'path' => (
 );
 has 'clobber' => ( is => 'rw', isa => 'Bool', default => 0 );
 
+around BUILDARGS => sub {
+    my $orig  = shift;
+    my $class = shift;
+
+    if ( @_ == 1 && !ref $_[0] ) {
+        return $class->$orig( path => $_[0] );
+    }
+    else {
+        return $class->$orig(@_);
+    }
+};
+
 sub new_from_header {
     my $self = shift;
 

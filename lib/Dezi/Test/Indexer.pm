@@ -1,7 +1,6 @@
 package Dezi::Test::Indexer;
-use strict;
-use warnings;
-use base 'Dezi::Indexer';
+use Moose;
+extends 'Dezi::Indexer';
 
 our $VERSION = '0.001';
 

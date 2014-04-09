@@ -22,6 +22,10 @@ use namespace::sweep;
 
 our $VERSION = '0.001';
 
+# only one explicitly named attribute.
+# everything else is through AUTOLOAD
+has 'file' => ( is => 'rw', isa => 'Path::Class::File', coerce => 1, );
+
 my $XML = Search::Tools::XML->new;
 
 my %unique = map { $_ => 1 } qw(
@@ -123,9 +127,24 @@ my @Opts = qw(
     XMLClassAttributes
 );
 
+# easy lookup for AUTOLOAD
 my %Opts = map { $_ => $_ } @Opts;
 
-has 'file' => (is => 'rw', isa => 'Path::Class::File');
+sub AUTOLOAD {
+    my $self   = shift;
+    my $method = our $AUTOLOAD;
+    $method =~ s/.*://;
+    return if $method eq 'DESTROY';
+    if ( !exists $Opts{$method} ) {
+        confess("method '$method' not implemented in $self");
+    }
+    if (@_) {
+        return $self->_set( $method, @_ );
+    }
+    else {
+        return $self->_get($method);
+    }
+}
 
 =head1 NAME
 
@@ -182,35 +201,27 @@ Example:
  
 =cut
 
-sub new {
+around BUILDARGS => sub {
+    my $orig  = shift;
     my $class = shift;
-    my ( %args, $file2read );
+
     if ( @_ == 1 && !ref $_[0] ) {
-        $file2read = shift;
-    }
-    elsif ( !ref $_[0] ) {
-        %args = @_;
+        return $class->$orig( file => $_[0] );
     }
     else {
-        %args = %{ $_[0] };
+        return $class->$orig(@_);
+    }
+};
+
+sub BUILD {
+    my $self = shift;
+
+    if ( $self->file ) {
+        $self->read2( $self->file );
     }
 
-    # do our own init here because we rely on AUTOLOAD magic
-    my $self = bless {}, $class;
-    for my $k ( keys %args ) {
-        $self->$k( $args{$k} );
-    }
-
-    # set some defaults
-    $self->{'_start'} = time;
     $self->IgnoreTotalWordCountWhenRanking(0)
         unless defined $self->IgnoreTotalWordCountWhenRanking;
-
-    if ($file2read) {
-        $self->read2($file2read);
-    }
-
-    return $self;
 }
 
 =head2 debug
@@ -338,8 +349,14 @@ sub read2 {
 
     my %conf = $c->getall;
 
+    # not sure why \0 appears sometimes
+    delete $conf{"\0"};
+
+    $self->debug and carp "Parsed $file: " . dump \%conf;
+
     for ( keys %conf ) {
         my $v = $conf{$_};
+        next unless defined($v) and $_;
         $self->$_( $v, 1 );
     }
 
@@ -904,22 +921,6 @@ sub get_stemmer_lang {
         return $1;
     }
     return 'none';
-}
-
-sub AUTOLOAD {
-    my $self   = shift;
-    my $method = our $AUTOLOAD;
-    $method =~ s/.*://;
-    return if $method eq 'DESTROY';
-    if ( !exists $Opts{$method} ) {
-        croak("method '$method' not implemented in $self");
-    }
-    if (@_) {
-        return $self->_set( $method, @_ );
-    }
-    else {
-        return $self->_get($method);
-    }
 }
 
 1;

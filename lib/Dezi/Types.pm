@@ -2,6 +2,9 @@ package Dezi::Types;
 use Moose;
 use Moose::Util::TypeConstraints;
 use MooseX::Types::Path::Class;
+use Carp;
+use Dezi::InvIndex;
+use Dezi::Indexer::Config;
 
 subtype 'Dezi::Type::Indexer::Config' => as class_type
     'Dezi::Indexer::Config';
@@ -13,12 +16,15 @@ subtype 'Dezi::Type::InvIndex' => as class_type 'Dezi::InvIndex';
 coerce 'Dezi::Type::InvIndex'  => from 'Path::Class::File' =>
     via { coerce_invindex($_) } => from 'Str' => via { coerce_invindex($_) };
 
+subtype 'Dezi::Type::FileOrCodeRef' => as 'CodeRef';
+coerce 'Dezi::Type::FileOrCodeRef' => from 'Str' => via {
+    if ( -s $_ and -r $_ ) { return do $_ }
+};
+
 use namespace::sweep;
 
 sub coerce_indexer_config {
     my $config2 = shift;
-
-    require Dezi::Indexer::Config;
 
     #carp "verify_isa_config: $config2";
 
@@ -27,14 +33,14 @@ sub coerce_indexer_config {
         $config2_object = Dezi::Indexer::Config->new();
     }
     elsif ( !blessed($config2) && -r $config2 ) {
-        $config2_object = Dezi::Indexer::Config->new($config2);
+        $config2_object = Dezi::Indexer::Config->new( file => $config2 );
     }
     elsif ( !blessed($config2) && ref $config2 eq 'HASH' ) {
         $config2_object = Dezi::Indexer::Config->new($config2);
     }
     elsif ( blessed($config2) ) {
         if ( $config2->isa('Path::Class::File') ) {
-            $config2_object = Dezi::Indexer::Config->new("$config2");
+            $config2_object = Dezi::Indexer::Config->new( file => $config2 );
         }
         elsif ( $config2->isa('Dezi::Indexer::Config') ) {
             $config2_object = $config2;
@@ -53,8 +59,6 @@ sub coerce_indexer_config {
 
 sub coerce_invindex {
     my $inv = shift or confess "InvIndex required";
-
-    require Dezi::InvIndex;
 
     if ( blessed($inv) and $inv->isa('Path::Class::Dir') ) {
         return Dezi::InvIndex->new("$inv");

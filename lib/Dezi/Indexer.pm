@@ -12,8 +12,7 @@ use namespace::sweep;
 
 our $VERSION = '0.001';
 
-has 'invindex' =>
-    ( is => 'rw', isa => 'Dezi::Type::InvIndex', required => 1, );
+has 'invindex' => ( is => 'rw', isa => 'Dezi::Type::InvIndex', coerce => 1, );
 has 'config' => (
     is      => 'rw',
     isa     => 'Dezi::Type::Indexer::Config',
