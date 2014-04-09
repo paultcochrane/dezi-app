@@ -44,7 +44,7 @@ SKIP: {
             $program->run('t/');
 
             # clean up header so other test counts work
-            unlink('t/testindex/swish.xml') unless $ENV{PERL_DEBUG};
+            unlink('t/testindex/swish.xml') unless $ENV{DEZI_DEBUG};
 
         }
         '<=', 2;    # 2 outside our control

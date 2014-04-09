@@ -24,8 +24,8 @@ SKIP: {
 
     # is executable present?
     my $indexer = Dezi::Test::Indexer->new(
-        verbose    => $ENV{PERL_DEBUG},
-        debug      => $ENV{PERL_DEBUG},
+        verbose    => $ENV{DEZI_DEBUG},
+        debug      => $ENV{DEZI_DEBUG},
         'invindex' => 't/mail.index',
     );
     if ( !$indexer->swish_check ) {
@@ -34,13 +34,13 @@ SKIP: {
 
     ok( my $mail = Dezi::Aggregator::MailFS->new(
             indexer => $indexer,
-            verbose => $ENV{PERL_DEBUG},
-            debug   => $ENV{PERL_DEBUG},
+            verbose => $ENV{DEZI_DEBUG},
+            debug   => $ENV{DEZI_DEBUG},
         ),
         "new mail aggregator"
     );
 
-    $ENV{PERL_DEBUG} and diag( dump($mail) );
+    $ENV{DEZI_DEBUG} and diag( dump($mail) );
 
     ok( $mail->indexer->start, "start" );
     is( $mail->crawl('t/mailfs'), 1, "crawl" );

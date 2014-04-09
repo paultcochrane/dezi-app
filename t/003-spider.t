@@ -16,7 +16,7 @@ SKIP: {
     }
 
     ok( my $spider = Dezi::Aggregator::Spider->new(
-            verbose   => $ENV{PERL_DEBUG},
+            verbose   => $ENV{DEZI_DEBUG},
             max_depth => 2,
             delay     => 1,
             filter    => sub { diag( "doc filter on " . $_[0]->url ) },

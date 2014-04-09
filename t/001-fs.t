@@ -1,97 +1,53 @@
 use strict;
 use warnings;
-use Test::More tests => 17;
+use Test::More tests => 11;
 
-use_ok('Dezi');
+use_ok('Dezi::App');
 use_ok('Dezi::Test::Indexer');
 use_ok('Dezi::Aggregator::FS');
 use_ok('Dezi::Indexer::Config');
 
-SKIP: {
+ok( my $config = Dezi::Indexer::Config->new('t/test.conf'),
+    "config from t/test.conf" );
 
-    # is executable present?
-    my $test = Dezi::Test::Indexer->new;
-    if ( !$test->swish_check ) {
-        skip "swish-e not installed", 13;
-    }
+# skip our local config test files
+$config->FileRules( 'dirname contains config',              1 );
+$config->FileRules( 'filename is swish.xml',                1 );
+$config->FileRules( 'filename contains \.t',                1 );
+$config->FileRules( 'dirname contains (testindex|\.index)', 1 );
+$config->FileRules( 'filename contains \.conf',             1 );
+$config->FileRules( 'dirname contains mailfs',              1 );
 
-    ok( my $config = Dezi::Indexer::Config->new('t/test.conf'),
-        "config from t/test.conf" );
+ok( my $invindex = Dezi::InvIndex->new( path => 't/testindex', ),
+    "new invindex" );
 
-    # skip our local config test files
-    $config->FileRules( 'dirname contains config',              1 );
-    $config->FileRules( 'filename is swish.xml',                1 );
-    $config->FileRules( 'filename contains \.t',                1 );
-    $config->FileRules( 'dirname contains (testindex|\.index)', 1 );
-    $config->FileRules( 'filename contains \.conf',             1 );
-    $config->FileRules( 'dirname contains mailfs',              1 );
+ok( my $indexer = Dezi::Test::Indexer->new(
+        invindex => $invindex,
+        config   => $config,
+    ),
+    "new indexer"
+);
 
-    ok( my $invindex
-            = Dezi::Test::InvIndex->new( path => 't/testindex', ),
-        "new invindex"
-    );
+ok( my $aggregator = Dezi::Aggregator::FS->new(
+        indexer => $indexer,
+        config  => $config,
 
-    ok( my $indexer = Dezi::Test::Indexer->new(
-            invindex => $invindex,
-            config   => $config,
-        ),
-        "new indexer"
-    );
+        #verbose => 1,
+        #debug   => 1,
+    ),
+    "new filesystem aggregator"
+);
 
-    ok( my $aggregator = Dezi::Aggregator::FS->new(
-            indexer => $indexer,
-            config  => $config,
+ok( my $app = Dezi::App->new(
+        aggregator => $aggregator,
 
-            #verbose => 1,
-            #debug   => 1,
-        ),
-        "new filesystem aggregator"
-    );
+        #verbose    => 1,
+        config => $config,
+    ),
+    "new program"
+);
 
-    ok( my $prog = Dezi->new(
-            aggregator => $aggregator,
+ok( $app->run('t/'), "run program" );
 
-            #verbose    => 1,
-            config => $config,
-        ),
-        "new program"
-    );
+is( $app->count, 7, "indexed test docs" );
 
-    ok( $prog->run('t/'), "run program" );
-
-    is( $prog->count, 7, "indexed test docs" );
-
-    # test with a search
-SKIP: {
-
-        eval { require Dezi::Test::Searcher; };
-        if ($@) {
-            skip "Cannot test Searcher without SWISH::API", 6;
-        }
-        ok( my $searcher
-                = Dezi::Test::Searcher->new( invindex => $invindex,
-                ),
-            "new searcher"
-        );
-        ok( my $results = $searcher->search('gzip'), "do search" );
-        is( $results->hits, 2, "2 gzip hits" );
-
-        ok( my $results_OR = $searcher->search(
-                qq/some words/, { default_boolop => 'OR' }
-            ),
-            "default_boolop=OR"
-        );
-        ok( my $results_AND = $searcher->search(
-                qq/some words/, { default_boolop => 'AND' }
-            ),
-            "default_boolop=AND"
-        );
-        cmp_ok( $results_OR->hits, '>', $results_AND->hits,
-            "OR hits > AND hits" );
-
-    }
-
-    # clean up header so other test counts work
-    unlink('t/testindex/swish.xml') unless $ENV{PERL_DEBUG};
-
-}

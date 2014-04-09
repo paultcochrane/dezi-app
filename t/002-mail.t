@@ -30,7 +30,7 @@ SKIP: {
 
     ok( my $mail = Dezi::Aggregator::Mail->new(
             indexer => $indexer,
-            verbose => $ENV{PERL_DEBUG},
+            verbose => $ENV{DEZI_DEBUG},
         ),
         "new mail aggregator"
     );

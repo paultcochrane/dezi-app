@@ -18,10 +18,9 @@ has 'config' =>
 has 'indexer' => ( is => 'rw', );       # we do our own isa check
 has 'indexer_opts' => ( is => 'rw', isa => 'HashRef' );
 has 'invindex' => (
-    is       => 'rw',
-    isa      => 'Dezi::Type::InvIndex',
-    required => 1,
-    coerce   => 1,
+    is     => 'rw',
+    isa    => 'Dezi::Type::InvIndex',
+    coerce => 1,
 );
 has 'filter' => ( is => 'rw', isa => 'Dezi::Type::FileOrCodeRef' );
 has 'test_mode' => ( is => 'rw', isa => 'Bool', default => 0 );
