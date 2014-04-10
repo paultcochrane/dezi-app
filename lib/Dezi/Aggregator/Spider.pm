@@ -5,7 +5,6 @@ use Carp;
 use Scalar::Util qw( blessed );
 use URI;
 use HTTP::Cookies;
-use HTTP::Date;
 use Dezi::Types;
 use Dezi::Utils;
 use Dezi::Queue;
@@ -39,7 +38,7 @@ has 'email' => (
 has 'file_rules' =>
     ( is => 'rw', isa => 'Dezi::Type::File::Rules', coerce => 1, );
 has 'follow_redirects' => ( is => 'rw', isa => 'Bool', default => sub {1} );
-has 'keep_alive'       => ( is => 'rw', isa => 'Int',  default => sub {0} );
+has 'keep_alive'       => ( is => 'rw', isa => 'Bool', default => sub {0} );
 
 # whitelist which HTML tags we consider "links"
 # should be subset of what HTML::LinkExtor considers links
@@ -51,20 +50,26 @@ has 'link_tags' => (
 
 has 'max_depth' => ( is => 'rw', isa => 'Maybe[Int]' );
 has 'max_files' => ( is => 'rw', isa => 'Int', default => sub {0} );
-has 'max_time'  => ( is => 'rw', isa => 'Int', );                      # TODO
+has 'max_size'  => ( is => 'rw', isa => 'Int', default => sub {5_000_000} );
+has 'max_time' => ( is => 'rw', isa => 'Int', );    # TODO
 has 'md5_cache' =>
     ( is => 'rw', isa => 'Dezi::Cache', default => sub { Dezi::Cache->new } );
-has 'modified_since' => ( is => 'rw', );    # TODO str2time
+has 'modified_since' =>
+    ( is => 'rw', isa => 'Dezi::Type::Epoch', coerce => 1, );
 has 'queue' =>
     ( is => 'rw', isa => 'Dezi::Queue', default => sub { Dezi::Queue->new } );
 has 'remove_leading_dots' =>
     ( is => 'rw', isa => 'Bool', default => sub {1} );
 has 'same_hosts' => ( is => 'rw', isa => 'ArrayRef', default => sub { [] } );
 has 'timeout'    => ( is => 'rw', isa => 'Int',      default => sub {30} );
-has 'ua'         => ( is => 'rw', isa => 'LWP::UserAgent' );
-has 'uri_cache'  => ( is => 'rw', isa => 'Dezi::Cache' );
-has 'use_md5'    => ( is => 'rw', isa => 'Bool', default => sub {0} );
-has 'use_cookes' => ( is => 'rw', isa => 'Bool', default => sub {1} );
+has 'ua' => ( is => 'rw', isa => 'LWP::UserAgent' );
+has 'uri_cache' => (
+    is      => 'rw',
+    isa     => 'Dezi::Cache',
+    default => sub { Dezi::Cache->new },
+);
+has 'use_md5'     => ( is => 'rw', isa => 'Bool', default => sub {0} );
+has 'use_cookies' => ( is => 'rw', isa => 'Bool', default => sub {1} );
 
 #use LWP::Debug qw(+);
 
@@ -255,19 +260,6 @@ Initializes a new spider object. Called by new().
 
 sub BUILD {
     my $self = shift;
-
-    if ( $self->modified_since ) {
-        my $epoch
-            = $self->modified_since =~ m/\D/
-            ? str2time( $self->modified_since )
-            : $self->modified_since;
-
-        if ( !defined $epoch ) {
-            confess "Invalid datetime in modified_since: "
-                . $self->modified_since;
-        }
-        $self->modified_since($epoch);
-    }
 
     $self->{_auth_cache} = Dezi::Cache->new;    # ALWAYS inmemory cache
 

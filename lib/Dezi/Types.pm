@@ -6,6 +6,7 @@ use Carp;
 use Dezi::InvIndex;
 use Dezi::Indexer::Config;
 use File::Rules;
+use HTTP::Date;
 
 # Indexer::Config
 subtype 'Dezi::Type::Indexer::Config' => as class_type
@@ -35,6 +36,16 @@ coerce 'Dezi::Type::FileOrCodeRef' => from 'Str' => via {
 subtype 'Dezi::Type::File::Rules' => as class_type 'File::Rules';
 coerce 'Dezi::Type::File::Rules'  => from 'ArrayRef' =>
     via { File::Rules->new($_) };
+
+# URI (coerce to Str)
+subtype 'Dezi::Type::Uri' => as 'Str';
+coerce 'Dezi::Type::Uri' => from 'Object' => via {"$_"};
+
+# Epoch
+subtype 'Dezi::Type::Epoch' => as 'Maybe[Int]';
+coerce 'Dezi::Type::Epoch' => from 'Defined' => via {
+    m/\D/ ? str2time($_) : $_;
+};
 
 use namespace::sweep;
 

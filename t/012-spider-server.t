@@ -236,7 +236,7 @@ XML
     if ( !$base_uri ) {
         die "server failed to start";
     }
-    my $debug = $ENV{DEZI_DEBUG};
+    my $debug = $ENV{DEZI_DEBUG} || 0;
 
     ok( my $spider = Dezi::Aggregator::Spider->new(
             verbose => $debug,

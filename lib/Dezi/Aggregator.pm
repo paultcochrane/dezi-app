@@ -2,6 +2,7 @@ package Dezi::Aggregator;
 use Moose;
 with 'Dezi::Role';
 use Carp;
+use Dezi::Types;
 use Dezi::Utils;
 use SWISH::Filter;
 use Dezi::Indexer::Doc;
@@ -13,7 +14,7 @@ use namespace::sweep;
 our $VERSION = '0.001';
 
 has 'set_parser_from_type' => ( is => 'rw', isa => 'Bool', default => 0 );
-has 'indexer' => ( is => 'rw', isa => 'Dezi::Indexer', required => 1 );
+has 'indexer' => ( is => 'rw', isa => 'Dezi::Indexer', );
 has 'doc_class' =>
     ( is => 'rw', required => 1, default => 'Dezi::Indexer::Doc' );
 has 'swish_filter_obj' => (
@@ -22,7 +23,8 @@ has 'swish_filter_obj' => (
     default => sub { SWISH::Filter->new }
 );
 has 'test_mode' => ( is => 'rw', isa => 'Bool', default => 0 );
-has 'filter' => ( is => 'rw', isa => 'CodeRef' );
+has 'filter' =>
+    ( is => 'rw', isa => 'Dezi::Type::FileOrCodeRef', coerce => 1, );
 has 'ok_if_newer_than' => ( is => 'rw', isa => 'Int' );
 has 'progress'         => ( is => 'rw', isa => 'Object' ); # Term::ProgressBar
 has 'count'            => ( is => 'ro', isa => 'Int' );
@@ -102,8 +104,9 @@ build index.
 
 =item filter
 
-Value should be a CODE ref. This is passed through to set_filter();
-there is no C<filter> mutator method.
+Value should be a CODE ref. This is passed through to set_filter()
+internally at BUILD() time. If you need to adjust the filter
+after the Aggregator object is created, use set_filter().
 
 =item ok_if_newer_than
 
@@ -125,20 +128,13 @@ just like count() is.
 
 =cut
 
-sub BUILDARGS {
-    my $self   = shift;
-    my %arg    = @_;
-    my $filter = delete $arg{filter};
-    if ($filter) {
-        $arg{filter} = $self->set_filter($filter);
-    }
-    return \%arg;
-}
-
 sub BUILD {
     my $self = shift;
     $self->{__progress_so_far} = 0;
     $self->{__progress_next}   = 0;
+    if ( $self->filter ) {
+        $self->set_filter( $self->filter );
+    }
 }
 
 =head2 config
@@ -149,7 +145,7 @@ being used. This is a read-only method (accessor not mutator).
 =cut
 
 sub config {
-    return shift->{indexer}->config;
+    return shift->indexer->config;
 }
 
 =head2 count
@@ -274,7 +270,7 @@ sub swish_filter {
 
 =head2 set_filter( I<code_ref> )
 
-Use I<code_ref> as the C<doc_class> filter. This method called by init() if
+Use I<code_ref> as the C<doc_class> filter. This method called by BUILD() if
 C<filter> param set in constructor.
 
 =cut
@@ -291,6 +287,8 @@ sub set_filter {
     {
         no strict 'refs';
         no warnings 'redefine';
+
+        #warn "setting filter as method: " . $self->{doc_class} . '::filter';
         *{ $self->{doc_class} . '::filter' } = $filter;
     }
 
