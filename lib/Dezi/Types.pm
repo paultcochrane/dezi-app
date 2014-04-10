@@ -3,8 +3,6 @@ use Moose;
 use Moose::Util::TypeConstraints;
 use MooseX::Types::Path::Class;
 use Carp;
-use Dezi::InvIndex;
-use Dezi::Indexer::Config;
 use File::Rules;
 use HTTP::Date;
 
@@ -47,10 +45,16 @@ coerce 'Dezi::Type::Epoch' => from 'Defined' => via {
     m/\D/ ? str2time($_) : $_;
 };
 
+# LogLevel
+subtype 'Dezi::Type::LogLevel' => as 'Int';
+coerce 'Dezi::Type::LogLevel' => from 'Undef' => via {0};
+
 use namespace::sweep;
 
 sub coerce_indexer_config {
     my $config2 = shift;
+
+    require Dezi::Indexer::Config;
 
     #carp "verify_isa_config: $config2";
 
@@ -85,6 +89,8 @@ sub coerce_indexer_config {
 
 sub coerce_invindex {
     my $inv = shift or confess "InvIndex required";
+
+    require Dezi::InvIndex;
 
     if ( blessed($inv) and $inv->isa('Path::Class::Dir') ) {
         return Dezi::InvIndex->new("$inv");

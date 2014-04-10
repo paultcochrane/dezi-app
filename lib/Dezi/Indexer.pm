@@ -7,6 +7,7 @@ use Scalar::Util qw( blessed );
 use Carp;
 use Data::Dump qw( dump );
 use Dezi::Indexer::Config;
+use Dezi::InvIndex;
 
 use namespace::sweep;
 

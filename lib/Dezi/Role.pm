@@ -1,23 +1,27 @@
 package Dezi::Role;
 use Moose::Role;
+use Dezi::Types;
 
 our $VERSION = '0.001';
 
 has 'debug' => (
     is      => 'rw',
-    isa     => 'Maybe[Int]',
-    default => sub { $ENV{DEZI_DEBUG} || 0 }
+    isa     => 'Dezi::Type::LogLevel',
+    default => sub { $ENV{DEZI_DEBUG} || 0 },
+    coerce  => 1,
 );
 has 'verbose' => (
     is      => 'rw',
-    isa     => 'Maybe[Int]',
-    default => sub { $ENV{DEZI_VERBOSE} || 0 }
+    isa     => 'Dezi::Type::LogLevel',
+    default => sub { $ENV{DEZI_VERBOSE} || 0 },
+    coerce  => 1,
 );
 has 'warnings' => (
     is  => 'rw',
-    isa => 'Maybe[Int]',
+    isa => 'Dezi::Type::LogLevel',
     default =>
-        sub { return 1 unless $ENV{DEZI_WARNINGS}; $ENV{DEZI_WARNINGS} || 0 }
+        sub { return 1 unless $ENV{DEZI_WARNINGS}; $ENV{DEZI_WARNINGS} || 0 },
+    #coerce => 1,
 );
 
 =pod
@@ -53,7 +57,7 @@ Get/set the debug level. Default is C<DEZI_DEBUG> env var or 0.
 
 =head2 warnings
 
-Get/set the warnings level. Default is C<DEZI_WARNINGS> env var or 0.
+Get/set the warnings level. Default is C<DEZI_WARNINGS> env var or 1.
 
 =head2 verbose
 
