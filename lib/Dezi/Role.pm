@@ -3,13 +3,19 @@ use Moose::Role;
 
 our $VERSION = '0.001';
 
-has 'debug' =>
-    ( is => 'rw', isa => 'Int', default => sub { $ENV{DEZI_DEBUG} || 0 } );
-has 'verbose' =>
-    ( is => 'rw', isa => 'Int', default => sub { $ENV{DEZI_VERBOSE} || 0 } );
+has 'debug' => (
+    is      => 'rw',
+    isa     => 'Maybe[Int]',
+    default => sub { $ENV{DEZI_DEBUG} || 0 }
+);
+has 'verbose' => (
+    is      => 'rw',
+    isa     => 'Maybe[Int]',
+    default => sub { $ENV{DEZI_VERBOSE} || 0 }
+);
 has 'warnings' => (
     is  => 'rw',
-    isa => 'Int',
+    isa => 'Maybe[Int]',
     default =>
         sub { return 1 unless $ENV{DEZI_WARNINGS}; $ENV{DEZI_WARNINGS} || 0 }
 );
