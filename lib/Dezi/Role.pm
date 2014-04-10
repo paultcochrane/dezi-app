@@ -17,11 +17,13 @@ has 'verbose' => (
     coerce  => 1,
 );
 has 'warnings' => (
-    is  => 'rw',
-    isa => 'Dezi::Type::LogLevel',
-    default =>
-        sub { return 1 unless $ENV{DEZI_WARNINGS}; $ENV{DEZI_WARNINGS} || 0 },
-    #coerce => 1,
+    is      => 'rw',
+    isa     => 'Dezi::Type::LogLevel',
+    default => sub {
+        return 1 unless exists $ENV{DEZI_WARNINGS};
+        $ENV{DEZI_WARNINGS} || 0;
+    },
+    coerce => 1,
 );
 
 =pod
