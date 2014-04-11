@@ -13,7 +13,8 @@ use namespace::sweep;
 
 our $VERSION = '0.001';
 
-has 'set_parser_from_type' => ( is => 'rw', isa => 'Bool', default => 0 );
+has 'set_parser_from_type' =>
+    ( is => 'rw', isa => 'Bool', default => sub {1} );
 has 'indexer' => ( is => 'rw', isa => 'Dezi::Indexer', );
 has 'doc_class' =>
     ( is => 'rw', required => 1, default => 'Dezi::Indexer::Doc' );
@@ -22,7 +23,7 @@ has 'swish_filter_obj' => (
     isa     => 'SWISH::Filter',
     default => sub { SWISH::Filter->new }
 );
-has 'test_mode' => ( is => 'rw', isa => 'Bool', default => 0 );
+has 'test_mode' => ( is => 'rw', isa => 'Bool', default => sub {0} );
 has 'filter' =>
     ( is => 'rw', isa => 'Dezi::Type::FileOrCodeRef', coerce => 1, );
 has 'ok_if_newer_than' => ( is => 'rw', isa => 'Int' );
@@ -180,7 +181,7 @@ sub get_doc {
 
 =head2 swish_filter( I<doc_class_object> )
 
-Passes the content() of the SPD object through SWISH::Filter
+Passes the content() of the I<doc_class_object> through SWISH::Filter
 and transforms it to something index-able. Returns
 the I<doc_class_object>, filtered.
 
