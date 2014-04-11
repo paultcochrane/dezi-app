@@ -1,5 +1,6 @@
 package Dezi::InvIndex;
 use Moose;
+use MooseX::StrictConstructor;
 with 'Dezi::Role';
 use Carp;
 use Dezi::InvIndex::Header;

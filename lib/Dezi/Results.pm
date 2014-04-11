@@ -1,17 +1,16 @@
 package Dezi::Results;
-use strict;
-use warnings;
-use base qw( Dezi::Class );
+use Moose;
+use MooseX::StrictConstructor;
+with 'Dezi::Role';
 use Carp;
+use namespace::sweep;
 
 our $VERSION = '0.001';
 
-__PACKAGE__->mk_accessors(
-    qw(
-        hits
-        query
-        ),
-);
+has 'hits' => ( is => 'ro', isa => 'Int', required => 1 );
+has 'query' => ( is => 'ro', isa => 'Search::Query::Dialect', required => 1 );
+has 'payload'      => ( is => 'ro', isa => 'Object',  required => 1 );
+has 'property_map' => ( is => 'ro', isa => 'HashRef', required => 1 );
 
 =head1 NAME
 
@@ -41,10 +40,19 @@ returning results from a Dezi::InvIndex.
 =head2 query
 
 Should return the search query as it was evaluated by the Searcher.
+Will be a Search::Query::Dialect object.
 
 =head2 hits
 
 Returns the number of matching documents for the query.
+
+=head2 payload
+
+The internal object holding the backend results.
+
+=head2 property_map
+
+Set by the parent Searcher, a hashref of property aliases to real names.
 
 =head2 next
 
@@ -53,7 +61,7 @@ Return the next Result.
 =cut
 
 sub next {
-    croak "must override next() in your subclass";
+    confess "$_[0] must implement next()";
 }
 
 1;
@@ -62,29 +70,35 @@ __END__
 
 =head1 AUTHOR
 
-Peter Karman, E<lt>perl@peknet.comE<gt>
+Peter Karman, E<lt>karpet@dezi.orgE<gt>
 
 =head1 BUGS
 
-Please report any bugs or feature requests to C<bug-swish-prog at rt.cpan.org>, or through
+Please report any bugs or feature requests to C<bug-dezi-app at rt.cpan.org>, or through
 the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Dezi-App>.  
-I will be notified, and then you'll
-automatically be notified of progress on your bug as I make changes.
+I will be notified, and then you'll automatically be notified of progress on your bug as I make changes.
 
 =head1 SUPPORT
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc Dezi
-
+    perldoc Dezi::Results
 
 You can also look for information at:
 
 =over 4
 
+=item * Website
+
+L<http://dezi.org/>
+
+=item * IRC
+
+#dezisearch at freenode
+
 =item * Mailing list
 
-L<http://lists.swish-e.org/listinfo/users>
+L<https://groups.google.com/forum/#!forum/dezi-search>
 
 =item * RT: CPAN's request tracker
 
@@ -100,17 +114,18 @@ L<http://cpanratings.perl.org/d/Dezi-App>
 
 =item * Search CPAN
 
-L<http://search.cpan.org/dist/Dezi-App/>
+L<https://metacpan.org/dist/Dezi-App/>
 
 =back
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2008-2009 by Peter Karman
+Copyright 2014 by Peter Karman
 
 This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself. 
+it under the terms of the GPL v2 or later.
 
 =head1 SEE ALSO
 
-L<http://swish-e.org/>
+L<http://dezi.org/>, L<http://swish-e.org/>, L<http://lucy.apache.org/>
+

@@ -1,12 +1,69 @@
 package Dezi::Test::Indexer;
 use Moose;
 extends 'Dezi::Indexer';
+use Dezi::Test::Doc;
+use SWISH::3 qw( :constants );
+use Search::Tools::UTF8;
+use Data::Dump qw( dump );
 
 our $VERSION = '0.001';
 
-sub test_mode {1}
-sub start     { }
-sub finish    { }
+sub invindex_class       {'Dezi::Test::InvIndex'}
+sub use_swish3_tokenizer {1}
+
+my $doc_prop_map = SWISH_DOC_PROP_MAP();
+
+sub swish3_handler {
+    my ( $self, $payload ) = @_;
+    my $s3config = $payload->config;
+    my $s3props  = $s3config->get_properties;
+    my $s3metas  = $s3config->get_metanames;
+
+    # will hold all the parsed text, keyed by field name
+    my %doc;
+
+    # Swish built-in fields first
+    for my $propname ( keys %$doc_prop_map ) {
+        my $attr = $doc_prop_map->{$propname};
+        $doc{$propname} = [ $payload->doc->$attr ];
+    }
+
+    # fields parsed from document
+    my $props = $payload->properties;
+    my $metas = $payload->metanames;
+
+    #dump $props;
+    #dump $metas;
+
+    # flesh out %doc
+    for my $field ( keys %$props ) {
+        push @{ $doc{$field} }, @{ $props->{$field} };
+    }
+    for my $field ( keys %$metas ) {
+        next if exists $doc{$field};    # prefer property over metaname
+        push @{ $doc{$field} }, @{ $metas->{$field} };
+    }
+    for my $k ( keys %doc ) {
+        $doc{$k} = to_utf8( join( SWISH_TOKENPOS_BUMPER(), @{ $doc{$k} } ) );
+    }
+
+    $self->invindex->put_doc( Dezi::Test::Doc->new(%doc) );
+
+    # add tokens to our invindex
+    my $term_cache = $self->invindex->term_cache;
+    my $tokens     = $payload->tokens;
+    my $uri        = $doc{swishdocpath};
+    while ( my $token = $tokens->next ) {
+        my $str = $token->value;
+        if ( !$term_cache->has($str) ) {
+            $term_cache->add( $str => { $uri => 1 } );
+        }
+        else {
+            $term_cache->get($str)->{$uri}++;
+        }
+    }
+
+}
 
 1;
 
@@ -29,21 +86,15 @@ Dezi::Test::Indexer - test indexer class
 
 =head1 DESCRIPTION
 
-Dezi::Test::Indexer is for testing other
-components of Dezi where no index is desired.
-For example, testing aggregator features without any need
-to store the documents aggregated.
+Dezi::Test::Indexer uses Dezi::Test::InvIndex for 
+running tests on the API, particularly Aggregator classes.
 
 =head1 METHODS
 
-These methods are overridden as no-ops.
+=head2 process( I<doc> )
 
-=head2 test_mode
-
-=head2 start
-
-=head2 finish
-
+Tokenizes content in I<doc> and adds each term
+to the InvIndex.
 
 =head1 AUTHOR
 

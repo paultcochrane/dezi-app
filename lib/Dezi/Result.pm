@@ -1,16 +1,19 @@
 package Dezi::Result;
-use strict;
-use warnings;
-use base qw( Dezi::Class );
+use Moose;
+use MooseX::StrictConstructor;
+with 'Dezi::Role';
 use Carp;
+use namespace::sweep;
 
 our $VERSION = '0.001';
 
-__PACKAGE__->mk_accessors(qw( doc score ));
+has 'doc'          => ( is => 'ro', isa => 'Object',  required => 1, );
+has 'score'        => ( is => 'ro', isa => 'Num',     required => 1 );
+has 'property_map' => ( is => 'ro', isa => 'HashRef', required => 1 );
 
 =head1 NAME
 
-Dezi::Result - base result class
+Dezi::Result - abstract result class
 
 =head1 SYNOPSIS
                 
@@ -21,8 +24,8 @@ Dezi::Result - base result class
 
 =head1 DESCRIPTION
 
-Dezi::Results is a base results class. It defines
-the APIs that all Dezi storage backends adhere to in
+Dezi::Result is a abstract class. It defines
+the APIs that all Dezi engines adhere to in
 returning results from a Dezi::InvIndex.
 
 =head1 METHODS
@@ -31,7 +34,7 @@ The following methods are all accessors (getters) only.
 
 =head2 doc
 
-Returns a Dezi::Indexer::Doc instance.
+Returns an object for the backend engine.
 
 =head2 score
 
@@ -61,18 +64,23 @@ Alias for title().
 
 Alias for summary().
 
+=head2 swishrank
+
+Alias for score().
+
 =cut
 
-sub uri     { croak "must implement uri" }
-sub mtime   { croak "must implement mtime" }
-sub title   { croak "must implement title" }
-sub summary { croak "must implement summary" }
+sub uri     { shift->doc->swishdocpath }
+sub mtime   { shift->doc->swishlastmodified }
+sub summary { shift->doc->swishdescription }
+sub title   { shift->doc->swishtitle }
 
 # version 2 names for the faithful
 sub swishdocpath      { shift->uri }
 sub swishlastmodified { shift->mtime }
 sub swishtitle        { shift->title }
 sub swishdescription  { shift->summary }
+sub swishrank         { shift->score }
 
 =head2 get_property( I<property> )
 
@@ -87,8 +95,24 @@ behavior.
 sub get_property {
     my $self = shift;
     my $propname = shift or croak "propname required";
+
+    # if $propname is an alias, use the real property name (how it is stored)
+    if ( exists $self->property_map->{$propname} ) {
+        $propname = $self->property_map->{$propname};
+    }
+
+    if ( $self->can($propname) ) {
+        return $self->$propname;
+    }
     return $self->doc->property($propname);
 }
+
+=head2 property_map
+
+Set by the parent Results, a hashref of property aliases to real names.
+Used by get_property().
+
+=cut
 
 1;
 
@@ -96,29 +120,35 @@ __END__
 
 =head1 AUTHOR
 
-Peter Karman, E<lt>perl@peknet.comE<gt>
+Peter Karman, E<lt>karpet@dezi.orgE<gt>
 
 =head1 BUGS
 
-Please report any bugs or feature requests to C<bug-swish-prog at rt.cpan.org>, or through
+Please report any bugs or feature requests to C<bug-dezi-app at rt.cpan.org>, or through
 the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Dezi-App>.  
-I will be notified, and then you'll
-automatically be notified of progress on your bug as I make changes.
+I will be notified, and then you'll automatically be notified of progress on your bug as I make changes.
 
 =head1 SUPPORT
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc Dezi
-
+    perldoc Dezi::Result
 
 You can also look for information at:
 
 =over 4
 
+=item * Website
+
+L<http://dezi.org/>
+
+=item * IRC
+
+#dezisearch at freenode
+
 =item * Mailing list
 
-L<http://lists.swish-e.org/listinfo/users>
+L<https://groups.google.com/forum/#!forum/dezi-search>
 
 =item * RT: CPAN's request tracker
 
@@ -134,17 +164,18 @@ L<http://cpanratings.perl.org/d/Dezi-App>
 
 =item * Search CPAN
 
-L<http://search.cpan.org/dist/Dezi-App/>
+L<https://metacpan.org/dist/Dezi-App/>
 
 =back
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2008-2009 by Peter Karman
+Copyright 2014 by Peter Karman
 
 This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself. 
+it under the terms of the GPL v2 or later.
 
 =head1 SEE ALSO
 
-L<http://swish-e.org/>
+L<http://dezi.org/>, L<http://swish-e.org/>, L<http://lucy.apache.org/>
+

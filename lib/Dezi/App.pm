@@ -1,5 +1,6 @@
 package Dezi::App;
 use Moose;
+use MooseX::StrictConstructor;
 with 'Dezi::Role';
 use Carp;
 use Data::Dump qw( dump );

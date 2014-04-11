@@ -1,8 +1,8 @@
 #!/usr/bin/env perl
-
 use strict;
 use warnings;
-use Test::More tests => 38;
+use Test::More tests => 131;
+use Data::Dump qw( dump );
 
 use_ok('Dezi::App');
 use_ok('Dezi::Test::Indexer');
@@ -10,7 +10,7 @@ use_ok('Dezi::Test::InvIndex');
 use_ok('Dezi::Aggregator::FS');
 use_ok('Dezi::Indexer::Config');
 
-ok( my $invindex = Dezi::Test::InvIndex->new( path => 't/testindex', ),
+ok( my $invindex = Dezi::Test::InvIndex->new( path => 'no/such/path', ),
     "new invindex" );
 
 ok( my $config = Dezi::Indexer::Config->new('t/test.conf'),
@@ -55,8 +55,12 @@ ok( $app->run('t/'), "run program" );
 is( $app->count, 7, "indexed test docs" );
 
 use_ok('Dezi::Test::Searcher');
-ok( my $searcher = Dezi::Test::Searcher->new( invindex => $invindex, ),
-    "new searcher" );
+ok( my $searcher = Dezi::Test::Searcher->new(
+        invindex      => $invindex,
+        swish3_config => $indexer->swish3->get_config
+    ),
+    "new searcher"
+);
 
 my $query = 'foo or words';
 ok( my $results
@@ -64,31 +68,37 @@ ok( my $results
     "do search"
 );
 is( $results->hits, 5, "5 hits" );
-ok( my $result = $results->next, "results->next" );
-diag( $result->swishdocpath );
-is( $result->swishtitle, 'test gzip html doc', "get swishtitle" );
-is( $result->get_property('swishtitle'),
-    $result->swishtitle, "get_property(swishtitle)" );
+while ( my $result = $results->next ) {
+    ok( $result, "results->next" );
 
-# test all the built-in properties and their method shortcuts
-my @methods = qw(
-    swishdocpath
-    uri
-    swishlastmodified
-    mtime
-    swishtitle
-    title
-    swishdescription
-    summary
-    swishrank
-    score
-);
+    #diag( dump $result );
+    diag( $result->swishdocpath );
+    is( $result->get_property('swishtitle'),
+        $result->swishtitle, "get_property(swishtitle)" );
 
-for my $m (@methods) {
-    ok( defined $result->$m,               "get $m" );
-    ok( defined $result->get_property($m), "get_property($m)" );
+    # test all the built-in properties and their method shortcuts
+    my @methods = qw(
+        swishdocpath
+        uri
+        swishlastmodified
+        mtime
+        swishtitle
+        title
+        swishdescription
+        summary
+        swishrank
+        score
+    );
+
+    for my $m (@methods) {
+        ok( defined $result->$m,               "get $m" );
+        ok( defined $result->get_property($m), "get_property($m)" );
+    }
+
+    # test an aliased property
+    is( $result->get_property('lastmod'),
+        $result->swishlastmodified,
+        "aliased PropertyName fetched"
+    );
+
 }
-
-# test an aliased property
-is( $result->get_property('lastmod'),
-    $result->swishlastmodified, "aliased PropertyName fetched" );

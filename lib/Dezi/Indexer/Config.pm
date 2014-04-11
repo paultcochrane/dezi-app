@@ -162,12 +162,11 @@ Dezi::Indexer::Config - read/write Swish-e config files
  
 =head1 DESCRIPTION
 
-The Dezi::Indexer::Config class is intended to be accessed via Dezi->new().
+The Dezi::Indexer::Config class reads and writes Swish-e 2.x configuration files,
+and converts them to Swish3-style XML configuration format.
 
 See the Swish-e documentation for a list of configuration parameters.
 Each parameter has an accessor/mutator method as part of the Config object.
-Some preliminary compatability is offered for SWISH::3::Config
-with XML format config files.
 
 B<NOTE:> Every config parameter can take either a scalar or an array ref as a value.
 In addition, you may append config values to any existing values by passing an additional

@@ -1,5 +1,6 @@
 package Dezi::Searcher;
 use Moose;
+use MooseX::StrictConstructor;
 with 'Dezi::Role';
 use Dezi::Types;
 use Carp;
@@ -19,7 +20,8 @@ has 'invindex' => (
     coerce   => 1,
 );
 has 'qp_config' => ( is => 'rw', isa => 'HashRef', default => sub { {} } );
-has 'qp' => ( is => 'rw', isa => 'Search::Query::Parser' );
+has 'qp'           => ( is => 'rw', isa => 'Search::Query::Parser' );
+has 'property_map' => ( is => 'ro', isa => 'HashRef' );
 
 =head1 NAME
 
@@ -83,6 +85,17 @@ sub BUILD {
 
     # init query parser
     $self->{qp} ||= Search::Query::Parser->new( %{ $self->qp_config } );
+
+    # subclasses can cache however they need to. e.g. Test::Searcher
+    $self->_cache_property_map();
+}
+
+sub _cache_property_map {
+    my $self = shift;
+
+    # assumes same for every invindex so grab the first one.
+    $self->{property_map}
+        = $self->invindex->[0]->get_header->get_property_map();
 }
 
 sub invindex_class {'Dezi::InvIndex'}
@@ -94,7 +107,7 @@ Returns a Dezi::Results object.
 I<query> should be a L<Search::Query::Dialect> object or a string parse-able
 by L<Search::Query::Parser>.
 
-I<opts> should be a Dezi::SearchOpts object or a hashref.
+I<opts> should be a Dezi::Searcher::SearchOpts object or a hashref.
 
 =cut
 
@@ -104,6 +117,28 @@ sub search {
 
     confess "$self does not implement search() method";
 }
+
+sub _coerce_search_opts {
+    my $self = shift;
+    my $opts = shift or confess "opts required";
+    if ( !blessed($opts) ) {
+        if ( ref $opts ne 'HASH' ) {
+            confess "opts must be a hashref";
+        }
+        $opts = Dezi::Searcher::SearchOpts->new($opts);
+    }
+    elsif ( !$opts->isa('Dezi::Searcher::SearchOpts') ) {
+        confess "opts must be a hashref or Dezi::Searcher::SearchOpts object";
+    }
+    return $opts;
+}
+
+=head2 property_map
+
+Build from the InvIndex::Header, a hashref of property aliases to real names.
+A read-only attribute propagated to the Results from search().
+
+=cut
 
 1;
 

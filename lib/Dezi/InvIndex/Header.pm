@@ -18,7 +18,7 @@ has 'data'     => ( is => 'ro', isa => 'HashRef' );
 #
 
 sub header_file {
-    return 'swish.xml';
+    return SWISH_HEADER_FILE();
 }
 
 # back compat
@@ -33,6 +33,12 @@ sub BUILD {
     $self->{data} = XMLin("$self->{file}");
 
     #warn Data::Dump::dump( $self->{data} );
+
+    $self->_build_property_maps();
+}
+
+sub _build_property_maps {
+    my $self = shift;
 
     my $props = $self->{data}->{PropertyNames};
 

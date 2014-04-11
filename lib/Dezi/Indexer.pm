@@ -1,19 +1,23 @@
 package Dezi::Indexer;
 use Moose;
+use MooseX::StrictConstructor;
 with 'Dezi::Role';
 use Dezi::Types;
-use MooseX::Types::DateTime;
 use Scalar::Util qw( blessed );
 use Carp;
 use Data::Dump qw( dump );
 use Dezi::Indexer::Config;
 use Dezi::InvIndex;
+use SWISH::3 qw( :constants );
+use Try::Tiny;
 
 use namespace::sweep;
 
 our $VERSION = '0.001';
 
 has 'invindex' => ( is => 'rw', isa => 'Dezi::Type::InvIndex', coerce => 1, );
+has 'invindex_class' =>
+    ( is => 'rw', isa => 'Str', default => sub {'Dezi::InvIndex'} );
 has 'config' => (
     is      => 'rw',
     isa     => 'Dezi::Type::Indexer::Config',
@@ -23,9 +27,15 @@ has 'config' => (
 has 'count'   => ( is => 'rw', isa => 'Int' );
 has 'clobber' => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'flush'   => ( is => 'rw', isa => 'Int' );
-has 'started' =>
-    ( is => 'rw', isa => 'DateTime', coerce => 1, default => sub { time() } );
+has 'started' => ( is => 'ro', isa => 'Int' );
+has 'swish3' => (
+    is      => 'rw',
+    isa     => 'SWISH::3',
+    builder => 'init_swish3',
+);
 has 'test_mode' => ( is => 'rw', isa => 'Bool', default => 0 );
+has 'use_swish3_tokenizer' =>
+    ( is => 'rw', isa => 'Bool', default => sub {0} );
 
 =pod
 
@@ -112,6 +122,49 @@ sub BUILD {
         $self->invindex->path( $self->config->IndexFile );
     }
 
+    # make sure our invindex class matches invindex_class
+    if ( !$self->invindex->isa( $self->invindex_class ) ) {
+        Class::Load::load_class( $self->invindex_class );
+        $self->invindex(
+            $self->invindex_class->new( path => $self->invindex->path ) );
+    }
+
+    # merge any manual config with swish3 header
+    $self->_merge_swish3_header_with_config();
+
+}
+
+=head2 init_swish3
+
+Returns a SWISH::3 object that uses B<swish3_handler>. This builder
+method is called on Indexer construction if B<swish3> is uninitialized.
+
+=cut
+
+sub init_swish3 {
+    my $self = shift;
+    return SWISH::3->new(
+        handler => sub {
+            $self->swish3_handler(@_);
+        }
+    );
+}
+
+sub _merge_swish3_header_with_config {
+    my $self = shift;
+
+    # 1. any existing header file.
+    my $swish_3_header = $self->invindex->header_file;
+    if ( -r $swish_3_header ) {
+        $self->swish3->config->add($swish_3_header);
+    }
+
+    # 2. merge config in this Indexer
+    my $ver3_xml = $self->config->ver2_to_ver3();
+    $self->swish3->config->add($ver3_xml);
+
+    # 3. conditionally turn off tokenizer, preferring engine to do it.
+    $self->swish3->analyzer->set_tokenize( $self->use_swish3_tokenizer );
 }
 
 =head2 start
@@ -129,7 +182,7 @@ sub start {
     if (   !blessed($invindex)
         or !$invindex->can('open') )
     {
-        croak "Invalid invindex $invindex: "
+        confess "Invalid invindex $invindex: "
             . "either not blessed object or does not implement 'open' method";
     }
 
@@ -148,7 +201,11 @@ sub start {
     }
     $self->invindex->open;
     $self->{started} = time();
-    $self->invindex->path->file('swish_last_start')->touch();
+    if ( -d $self->invindex->path ) {
+
+        # for backcompat use swish3 name
+        $self->invindex->path->file('swish_last_start')->touch();
+    }
 }
 
 =head2 process( I<doc> )
@@ -156,7 +213,7 @@ sub start {
 I<doc> should be a Dezi::Indexer::Doc-derived object.
 
 process() should implement whatever the particular IR library
-API requires.
+API requires. The default action calls B<swish3_handler> on I<doc>.
 
 =cut
 
@@ -168,11 +225,22 @@ sub process {
     }
 
     $self->start unless $self->started;
-
+    $self->swish3->parse_buffer("$doc");
     $self->{count}++;
 
     return $doc;
 }
+
+=head2 swish3_handler( I<swish3_payload> )
+
+This method is called on every document passed to process(). See
+the L<SWISH::3> documentation for what to expect in I<swish3_payload>.
+
+This is an abstract method. Subclasses must implement it.
+
+=cut
+
+sub swish3_handler { confess "$_[0] must implement swish3_handler" }
 
 =head2 finish
 
@@ -191,69 +259,11 @@ Returns the number of documents processed.
 
 =head2 started
 
-The time at which the Indexer object was created. Returns a Unix epoch
+The time at which the Indexer start() method was called. Returns a Unix epoch
 integer.
 
 =cut
 
-# NOTE in _verify_swish3_config() below,
-# if config is already in swish3 format, must
-# override param value with Dezi::Indexer::Config object
-# after adding to SWISH::3::Config object so that the
-# aggregator using this Indexer is happy.
-
-# TODO port this to TypeConstraint ??
-
-sub _verify_swish3_config {
-    my $self = shift;
-
-    if ( !exists $self->{config} ) {
-        return;
-    }
-
-    #carp dump $self->{config};
-
-    # isa object
-    if ( blessed( $self->{config} ) ) {
-        $self->{config}
-            = $self->verify_isa_swish_prog_config( $self->{config} );
-        my $swish_3_config = $self->{config}->ver2_to_ver3();
-        $self->{s3}->config->add($swish_3_config);
-    }
-
-    # xml string
-    elsif ( $self->{config} =~ m/<swish>|[\n\r]/ ) {
-        $self->{s3}->config->add( $self->{config} );
-        $self->{config} = Dezi::Indexer::Config->new();
-    }
-
-    # file
-    elsif ( -r $self->{config} ) {
-
-        # swish3 format
-        if ( $self->{config} =~ m/\.xml/ ) {
-            $self->{s3}->config->add( $self->{config} );
-            $self->{config} = Dezi::Indexer::Config->new();
-        }
-
-        # swish2 format
-        else {
-            $self->{config}
-                = $self->verify_isa_swish_prog_config( $self->{config} );
-            my $swish_3_config = $self->{config}->ver2_to_ver3();
-            $self->{s3}->config->add($swish_3_config);
-        }
-
-    }
-
-    # no support
-    else {
-        croak
-            "Unsupported config format (not a XML string, filename or Dezi::Indexer::Config object): $self->{config}";
-    }
-
-    return $self->{config};
-}
 1;
 
 __END__
