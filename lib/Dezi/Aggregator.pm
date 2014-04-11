@@ -206,7 +206,11 @@ sub swish_filter {
     unless ( defined $doc->parser ) {
         if ( $self->set_parser_from_type ) {
             my $type = $doc->type || 'default';
-            $doc->parser( $Dezi::Utils::ParserTypes{$type} );
+            $doc->parser(
+                Dezi::Utils->get_parser_for_mime(
+                    $type, $self->indexer->swish3,
+                )
+            );
         }
     }
 

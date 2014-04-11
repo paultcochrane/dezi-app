@@ -4,6 +4,16 @@ use Carp;
 use Data::Dump qw( dump );
 use File::Basename;
 use Search::Tools::XML;
+use SWISH::3 qw( :constants );
+
+# this class differs from SWISH::Prog::Utils chiefly in that
+# it uses SWISH::3::Config rather than hardcoding mime types
+# and parser mappings. This is to ensure consistency with
+# the SWISH::3 parser used in Indexer and Aggregator.
+
+# singletons
+my $SWISH3 = SWISH::3->new();
+my $XML    = Search::Tools::XML->new;
 
 our $VERSION = '0.001';
 
@@ -17,7 +27,12 @@ Dezi::Utils - utility variables and methods
 
  use Dezi::Utils;
  
- # use the utils
+ my $ext = Dezi::Utils->get_file_ext( $filename );
+ my $mime = Dezi::Utils->get_mime( $filename );
+ if (Dezi::Utils->looks_like_gz( $filename )) {
+     $mime = Dezi::Utils->get_real_mime( $filename );
+ }
+ my $parser = Dezi::Utils->get_parser_for_mime( $mime );
  
 =head1 DESCRIPTION
 
@@ -34,29 +49,30 @@ Regular expression of common file type extensions.
 
 =item %ParserTypes
 
-Hash of MIME types to their equivalent parser.
+Hash of MIME types to their equivalent parser. This hash is
+used to cache lookups in get_parser_for_mime().
+You really don't want to mess with this, but documented
+in case you're brave or foolish.
+
+=item $DefaultExtension
+
+Defaults to C<html>.
+
+=item $DefaultMIME
+
+Defaults to C<text/html>.
 
 =back
 
 =cut
 
-our $ExtRE       = qr{\.(\w+)(\.gz)?$}io;
-our %ParserTypes = (
-
-    # mime                  parser type
-    'text/html'          => 'HTML*',
-    'text/xml'           => 'XML*',
-    'application/xml'    => 'XML*',
-    'text/plain'         => 'TXT*',
-    'application/pdf'    => 'HTML*',
-    'application/msword' => 'HTML*',
-    'audio/mpeg'         => 'XML*',
-    'default'            => 'HTML*',
-);
-
+our $ExtRE            = qr{\.(\w+)(\.gz)?$}io;
+our %ParserTypes      = ();
 our $DefaultExtension = 'html';
+our $DefaultMIME      = 'text/html';
 
-# cache to avoid hitting MIME::Type each time
+# internal cache to avoid hitting SWISH::3 each time
+# and to map common extensions that SWISH::3 may not define
 my %ext2mime = (
     doc  => 'application/msword',
     pdf  => 'application/pdf',
@@ -72,60 +88,97 @@ my %ext2mime = (
     zip  => 'application/zip',
     json => 'application/json',
     yml  => 'application/x-yaml',
+    php  => 'text/html',
 
 );
 
-# prime the cache with some typical defaults that MIME::Type won't match.
-$ext2mime{'php'} = 'text/html';
-
-eval { require MIME::Types };
-my $mime_types;
-if ( !$@ ) {
-    $mime_types = MIME::Types->new;
-}
-my $XML = Search::Tools::XML->new;
-
 =head1 METHODS
+
+=head2 get_mime( I<url> [, I<swish3>] )
+
+Returns MIME type for I<url>, using optional I<swish3> instance to look it up.
+If I<swish3> is missing, will use the L<SWISH::3> default mapping.
+
+=cut
+
+sub get_mime {
+    my $self = shift;
+    my $url  = shift;
+    confess "url required" unless defined $url;
+    my $s3 = shift;
+    if ($s3) {
+
+        # look it up
+        return
+               $s3->get_mime($url)
+            || $ext2mime{ $s3->get_file_ext($url) }
+            || $DefaultMIME;
+    }
+    else {
+        # check our cache first
+        my $ext = $SWISH3->get_file_ext($url) || $DefaultExtension;
+        if ( exists $ext2mime{$ext} ) {
+            return $ext2mime{$ext};
+        }
+
+        # no cache? look it up and cache
+        my $mime = $SWISH3->get_mime($url);
+        $ext2mime{$ext} = $mime;
+        return $mime;
+    }
+}
 
 =head2 mime_type( I<url> [, I<ext> ] )
 
-Returns MIME type for I<url>. If I<ext> is used, that is checked against
-MIME::Types. Otherwise the I<url> is parsed for an extension using 
-path_parts() and then fed to MIME::Types.
+Backcompat for SWISH::Prog::Utils. Use get_mime() instead,
+which is what this does internally.
 
 =cut
 
 sub mime_type {
     my $self = shift;
-    my $url  = shift or return;
-    my $ext  = lc( shift || ( $self->path_parts($url) )[2] );
-    $ext =~ s/^\.//;
-    $ext ||= $DefaultExtension;
-
-    #warn "$url => $ext";
-    if ( !exists $ext2mime{$ext} and $mime_types ) {
-
-        # cache the mime type as a string
-        # to avoid the MIME::Type::type() stringification
-        my $mime = $mime_types->mimeTypeOf($url) or return;
-        $ext2mime{$ext} = $mime . "";
-    }
-    return $ext2mime{$ext};
+    my $url = shift or return;
+    return $self->get_mime($url);
 }
 
-=head2 parser_for( I<url> )
+=head2 get_parser_for_mime( I<mime> )
 
-Returns the SWISH parser type for I<url>. This can be
+Returns the SWISH::3 parser type for I<url>. This can be
 configured via the C<%ParserTypes> class variable.
 
 =cut
 
+sub get_parser_for_mime {
+    my $self = shift;
+    my $mime = shift;
+    confess "mime required" unless defined($mime);
+    my $s3 = shift;
+    if ($s3) {
+        return
+               $s3->config->get_parsers->get($mime)
+            || $s3->config->get_parsers->get( SWISH_DEFAULT_PARSER() )
+            || $ParserTypes{$mime};
+    }
+    else {
+        return $ParserTypes{$mime} if exists $ParserTypes{$mime};
+        $ParserTypes{$mime} = $SWISH3->config->get_parsers->get($mime)
+            || $SWISH3->config->get_parsers->get( SWISH_DEFAULT_PARSER() );
+        return $ParserTypes{$mime};
+    }
+}
+
+=head2 parser_for( I<url> )
+
+Backcompat for SWISH::Prog::Utils. Use get_parser_for_mime() instead,
+which is what this does internally.
+
+=cut
+
 sub parser_for {
-    my $self   = shift;
-    my $url    = shift or croak "url required";
-    my $mime   = $self->mime_type($url);
-    my $parser = $ParserTypes{$mime} || $ParserTypes{'default'};
-    return $parser;
+    my $self = shift;
+    my $url  = shift;
+    confess "url required" unless defined($url);
+    return $self->get_parser_for_mime( $self->get_mime($url) );
 }
 
 =head2 path_parts( I<url> [, I<regex> ] )
@@ -145,6 +198,62 @@ sub path_parts {
     my ( $file, $path, $ext ) = fileparse( $url, $re );
     return ( $path, $file, $ext );
 }
+
+=head2 merge_swish3_config( I<key> => I<value> [, I<swish3>] )
+
+The L<SWISH::3> class currently does not allow for modification
+of the internal C structs from Perl space. Instead,
+the SWISH::3::Config->merge method can be used to parse
+XML strings. Since hand-crafting XML is tedious,
+this method eases the pain.
+
+I<key> should be a SWISH::3::Config reserved word. Use
+the SWISH::3::Constants for safety.
+
+I<value> is passed through perl_to_xml(). 
+If I<value> is a hashref, it should be a simple key/value set with strings.
+You may use arrayref values, where items in the array are strings.
+
+The optional I<swish3> object is modified, or the internal
+singleton SWISH::3 object will be modified if I<swish3>
+is missing.
+
+Example:
+
+ use SWISH::3 qw( :constants );
+ $utils->merge_swish3_config( 
+     SWISH_PARSERS() => { 
+         'XML'  => [ 'application/x-bar', 'application/x-foo' ],
+         'HTML' => [ 'application/x-blue', 'application/x-red' ] 
+     } 
+ );
+ $utils->merge_swish3_config(
+     'foo' => 'bar'
+ );
+ $utils->get_parser_for_mime( 'application/x-foo' );   # returns 'XML'
+
+=cut
+
+sub merge_swish3_config {
+    my $self    = shift;
+    my $key     = shift or confess "key required";
+    my $hashref = shift or confess "hashref required";
+    my $s3      = shift || $SWISH3;
+    my $xml     = $XML->perl_to_xml( { $key => $hashref },
+        { root => 'swish', wrap_array => 0 } );
+
+    #warn "xml=" . $XML->tidy($xml) . "\n";
+    $s3->config->merge($xml);
+    return $xml;
+}
+
+=head2 get_swish3
+
+Returns the class singleton.
+
+=cut
+
+sub get_swish3 {$SWISH3}
 
 =head2 perl_to_xml( I<ref>, I<root_element> [, I<strip_plural> ] )
 

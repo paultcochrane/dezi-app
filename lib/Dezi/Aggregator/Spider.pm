@@ -75,10 +75,8 @@ has 'use_cookies' => ( is => 'rw', isa => 'Bool', default => sub {1} );
 
 our $VERSION = '0.001';
 
-# TODO make these configurable
-my %parser_types = %Dezi::Utils::ParserTypes;
-my $default_ext  = $Dezi::Utils::ExtRE;
-my $utils        = 'Dezi::Utils';
+# shortcut
+my $UTILS = 'Dezi::Utils';
 
 =pod
 
@@ -364,10 +362,11 @@ sub uri_ok {
         # in same host lookup, so proceed.
     }
 
-    my $path = $uri->path;
-    my $mime = $utils->mime_type($path);
+    my $path   = $uri->path;
+    my $swish3 = $self->indexer ? $self->indexer->swish3->config : undef;
+    my $mime   = $UTILS->get_mime( $path, $swish3 );
 
-    if ( !exists $parser_types{$mime} ) {
+    if ( !$UTILS->get_parser_for_mime( $mime, $swish3 ) ) {
         $self->debug and $self->write_log(
             uri => $uri,
             msg => "skipping, no parser for $mime",
@@ -874,7 +873,8 @@ sub _make_request {
     if ( $response->success ) {
 
         my $content_type = $meta->{ct};
-        if ( !exists $parser_types{$content_type} ) {
+        my $swish3 = $self->indexer ? $self->indexer->swish3 : undef;
+        if ( !$UTILS->get_parser_for_mime( $content_type, $swish3 ) ) {
             $self->write_log(
                 uri => $uri,
                 msg => "no parser for $content_type",

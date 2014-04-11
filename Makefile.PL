@@ -9,7 +9,6 @@ all_from 'lib/Dezi/App.pm';
 requires 'Search::Tools'               => '1.000';
 requires 'File::Basename'              => 0;
 requires 'Time::HiRes'                 => 0;
-requires 'MIME::Types'                 => 0;
 requires 'Path::Class'                 => '0.32';
 requires 'File::Rules'                 => '0.02';
 requires 'SWISH::Filter'               => '0.15';
