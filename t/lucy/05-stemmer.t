@@ -9,7 +9,7 @@ use Search::Tools::UTF8;
 #binmode Test::More->builder->output,         ":utf8";
 #binmode Test::More->builder->failure_output, ":utf8";
 
-use_ok('SWISH::Prog');
+use_ok('Dezi::App');
 use_ok('Dezi::Lucy::InvIndex');
 use_ok('Dezi::Lucy::Searcher');
 
@@ -73,7 +73,7 @@ is( $result->uri, 't/test.html', 'get uri' );
 
 sub make_program {
     my $use_stemmer = shift;
-    ok( my $program = SWISH::Prog->new(
+    ok( my $program = Dezi::App->new(
             invindex   => $invindex,
             aggregator => 'fs',
             indexer    => 'lucy',

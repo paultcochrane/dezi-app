@@ -2,7 +2,7 @@ use Test::More tests => 31;
 use strict;
 use Data::Dump qw( dump );
 
-use_ok('SWISH::Prog');
+use_ok('Dezi::App');
 use_ok('Dezi::Lucy::InvIndex');
 use_ok('Dezi::Lucy::Searcher');
 
@@ -18,7 +18,7 @@ my $searcher;
 while ( ++$passes < 4 ) {
 
     diag("pass $passes");
-    ok( my $program = SWISH::Prog->new(
+    ok( my $program = Dezi::App->new(
             invindex   => $invindex,
             aggregator => 'fs',
             indexer    => 'lucy',

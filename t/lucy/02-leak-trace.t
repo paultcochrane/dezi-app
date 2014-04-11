@@ -8,7 +8,7 @@ use Test::LeakTrace;
 
 #use Devel::LeakGuard::Object qw( GLOBAL_bless :at_end leakguard );
 
-use_ok('SWISH::Prog');
+use_ok('Dezi::App');
 use_ok('Dezi::Lucy::InvIndex');
 use_ok('Dezi::Lucy::Searcher');
 
@@ -34,7 +34,7 @@ SKIP: {
             clobber => 0,                  # Lucy handles this
             path    => 't/index.swish2',
         );
-        my $program = SWISH::Prog->new(
+        my $program = Dezi::App->new(
             invindex   => "$invindex",      # force stringify to avoid leaks
             aggregator => 'fs',
             indexer    => 'lucy',
