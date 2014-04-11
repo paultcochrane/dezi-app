@@ -204,7 +204,7 @@ around BUILDARGS => sub {
     my $orig  = shift;
     my $class = shift;
 
-    if ( @_ == 1 && !ref $_[0] ) {
+    if ( @_ == 1 ) {
         return $class->$orig( file => $_[0] );
     }
     else {
