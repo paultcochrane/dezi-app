@@ -98,7 +98,7 @@ sub _build_lucy_delegates {
 
     my $built_in_props = SWISH_DOC_PROP_MAP();
 
-    my $metanames = $config->get_metanames;
+    my $metanames = $s3config->get_metanames;
     my $meta_keys = $metanames->keys;
     for my $name (@$meta_keys) {
         my $mn    = $metanames->get($name);
@@ -112,7 +112,7 @@ sub _build_lucy_delegates {
         }
     }
 
-    my $properties    = $config->get_properties;
+    my $properties    = $s3config->get_properties;
     my $property_keys = $properties->keys;
     for my $name (@$property_keys) {
         if ( exists $built_in_props->{$name} ) {
