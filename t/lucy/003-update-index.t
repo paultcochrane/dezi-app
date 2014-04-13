@@ -7,8 +7,8 @@ use_ok('Dezi::Lucy::InvIndex');
 use_ok('Dezi::Lucy::Searcher');
 
 ok( my $invindex = Dezi::Lucy::InvIndex->new(
-        clobber => 0,                 # Lucy handles this
-        path    => 't/index.swish',
+        clobber => 0,                    # Lucy handles this
+        path    => 't/lucy/dezi.index'
     ),
     "new invindex"
 );
@@ -22,7 +22,7 @@ while ( ++$passes < 4 ) {
             invindex   => $invindex,
             aggregator => 'fs',
             indexer    => 'lucy',
-            config     => 't/config.xml',
+            config     => 't/lucy/config.xml',
 
             #verbose    => 1,
             #debug      => 1,
@@ -32,7 +32,7 @@ while ( ++$passes < 4 ) {
 
     # skip the index dir every time
     # the '1' arg indicates to append the value, not replace.
-    $program->config->FileRules( 'dirname is index.swish',               1 );
+    $program->config->FileRules( 'dirname is dezi.index',                1 );
     $program->config->FileRules( 'filename is config.xml',               1 );
     $program->config->FileRules( 'filename is config-nostemmer.xml',     1 );
     $program->config->FileRules( 'filename contains \.t',                1 );
@@ -40,16 +40,13 @@ while ( ++$passes < 4 ) {
     $program->config->FileRules( 'filename contains \.conf',             1 );
     $program->config->FileRules( 'dirname contains mailfs',              1 );
 
-    ok( $program->index('t/'), "run program" );
+    ok( $program->run('t/lucy'), "run program" );
 
     is( $program->count, 2, "indexed test docs" );
 
     if ( !$searcher ) {
-        ok( $searcher = Dezi::Lucy::Searcher->new(
-                invindex => 't/index.swish',
-            ),
-            "new searcher"
-        );
+        ok( $searcher = Dezi::Lucy::Searcher->new( invindex => $invindex, ),
+            "new searcher" );
     }
     else {
         pass("searcher already defined");
@@ -62,7 +59,7 @@ while ( ++$passes < 4 ) {
 
     ok( my $result = $results->next, "next result" );
 
-    is( $result->uri, 't/test.html', 'get uri' );
+    is( $result->uri, 't/lucy/test.html', 'get uri' );
 
     is( $result->title, "test html doc", "get title" );
 }

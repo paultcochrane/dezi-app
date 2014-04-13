@@ -399,7 +399,7 @@ sub get_lucy {
             $is_stale++;
 
             # recache
-            $self->{_uuid}->[$i] = $idx->meta->Index->{UUID};
+            $self->{_uuid}->[$i] = $idx_header->Index->{UUID};
 
             # continue to next loop so _uuid cache gets fully populated
 

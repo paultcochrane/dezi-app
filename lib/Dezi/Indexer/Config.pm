@@ -240,6 +240,7 @@ file or string.
 
 sub looks_like_swish3_config {
     my $self = shift;
+    return 0 unless defined $self->file;
     if ( $self->file =~ m/\.xml/ ) { return 1 }    # file
     if ( !-r $self->file and $self->file =~ m/<swish>/ ) { return 1 } # string
     return 0;

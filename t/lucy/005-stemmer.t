@@ -14,8 +14,8 @@ use_ok('Dezi::Lucy::InvIndex');
 use_ok('Dezi::Lucy::Searcher');
 
 ok( my $invindex = Dezi::Lucy::InvIndex->new(
-        clobber => 0,                 # Lucy handles this
-        path    => 't/index.swish',
+        clobber => 0,                     # Lucy handles this
+        path    => 't/lucy/dezi.index',
     ),
     "new invindex"
 );
@@ -23,12 +23,12 @@ ok( my $invindex = Dezi::Lucy::InvIndex->new(
 # no stemming
 my $program = make_program();
 
-ok( $program->index('t/'), "run program" );
+ok( $program->run('t/lucy'), "run program" );
 
 is( $program->count, 2, "indexed test docs" );
 
 ok( my $searcher = Dezi::Lucy::Searcher->new(
-        invindex             => 't/index.swish',
+        invindex             => $invindex,
         find_relevant_fields => 1,
     ),
     "new searcher"
@@ -43,19 +43,19 @@ is( $results->hits, 0, "0 hits for stem when stemming is off" );
 # with stemming
 $invindex->path->rmtree();
 ok( $invindex = Dezi::Lucy::InvIndex->new(
-        clobber => 0,                 # Lucy handles this
-        path    => 't/index.swish',
+        clobber => 0,                     # Lucy handles this
+        path    => 't/lucy/dezi.index',
     ),
     "new invindex"
 );
 $program = make_program(1);
 
-ok( $program->index('t/'), "run program" );
+ok( $program->run('t/lucy'), "run program" );
 
 is( $program->count, 2, "indexed test docs" );
 
 ok( $searcher = Dezi::Lucy::Searcher->new(
-        invindex             => 't/index.swish',
+        invindex             => $invindex,
         find_relevant_fields => 1,
     ),
     "new searcher"
@@ -69,7 +69,7 @@ is( $results->hits, 1, "1 hit for stem when stemming is on" );
 
 ok( my $result = $results->next, "next result" );
 
-is( $result->uri, 't/test.html', 'get uri' );
+is( $result->uri, 't/lucy/test.html', 'get uri' );
 
 sub make_program {
     my $use_stemmer = shift;
@@ -77,9 +77,12 @@ sub make_program {
             invindex   => $invindex,
             aggregator => 'fs',
             indexer    => 'lucy',
-            config =>
-                ( $use_stemmer ? 't/config.xml' : 't/config-nostemmer.xml' ),
-            highlightable_fields => 1,
+            config     => (
+                $use_stemmer
+                ? 't/lucy/config.xml'
+                : 't/lucy/config-nostemmer.xml'
+            ),
+            indexer_opts => { highlightable_fields => 1 },
 
             #verbose    => 1,
             #debug      => 1,
@@ -89,7 +92,7 @@ sub make_program {
 
     # skip the index dir every time
     # the '1' arg indicates to append the value, not replace.
-    $program->config->FileRules( 'dirname is index.swish',               1 );
+    $program->config->FileRules( 'dirname is dezi.index',                1 );
     $program->config->FileRules( 'filename is config.xml',               1 );
     $program->config->FileRules( 'filename is config-nostemmer.xml',     1 );
     $program->config->FileRules( 'filename contains \.t',                1 );
