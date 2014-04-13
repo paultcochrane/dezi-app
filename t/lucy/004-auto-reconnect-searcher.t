@@ -67,7 +67,7 @@ ok( $results = $searcher2->search(qq/swishtitle="round 2"/),
 is( $results->hits, 1, "1 match" );
 
 END {
-    unless ( $ENV{PERL_DEBUG} ) {
+    unless ( $ENV{DEZI_DEBUG} ) {
         $invindex->path->rmtree;
     }
 }

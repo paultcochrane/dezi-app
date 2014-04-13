@@ -68,7 +68,7 @@ while ( ++$passes < 4 ) {
 }
 
 END {
-    unless ( $ENV{PERL_DEBUG} ) {
+    unless ( $ENV{DEZI_DEBUG} ) {
         $invindex->path->rmtree;
     }
 }

@@ -13,20 +13,20 @@ use_ok('Dezi::Lucy::InvIndex');
 use_ok('Dezi::Lucy::Searcher');
 
 ok( my $invindex = Dezi::Lucy::InvIndex->new(
-        clobber => 0,                 # Lucy handles this
-        path    => 't/index.swish',
+        clobber => 0,                     # Lucy handles this
+        path    => 't/lucy/dezi.index',
     ),
     "new invindex"
 );
 
 my $program = make_program();
 
-ok( $program->index('t/'), "run program" );
+ok( $program->run('t/lucy'), "run program" );
 
 is( $program->count, 2, "indexed test docs" );
 
 ok( my $searcher = Dezi::Lucy::Searcher->new(
-        invindex             => 't/index.swish',
+        invindex             => $invindex,
         find_relevant_fields => 1,
     ),
     "new searcher"
@@ -51,7 +51,7 @@ ok( my $result = $results->next, "next result" );
 
 #diag( dump $result->property_map );
 
-is( $result->uri, 't/test.html', 'get uri' );
+is( $result->uri, 't/lucy/test.html', 'get uri' );
 
 is( $result->title, "test html doc", "get title" );
 
@@ -91,8 +91,8 @@ while ( my $result2 = $results2->next ) {
     #diag( $result2->title );
     #diag( $result2->score );
     #diag($title);
-    is( $result2->uri,   't/test.xml', 'get uri' );
-    is( $result2->title, $utf8_title,  "get title" );
+    is( $result2->uri,   't/lucy/test.xml', 'get uri' );
+    is( $result2->title, $utf8_title,       "get title" );
     diag( 'result2: ' . dump $result2->relevant_fields );
 
 }
@@ -109,7 +109,11 @@ while ( my $result3 = $results3->next ) {
     push @results, $result3->swishdocpath;
     diag( 'result3: ' . dump $result3->relevant_fields );
 }
-is_deeply( \@results, [qw( t/test.html t/test.xml )], "results sorted ok" );
+is_deeply(
+    \@results,
+    [qw( t/lucy/test.html t/lucy/test.xml )],
+    "results sorted ok"
+);
 
 # test wildcard query
 ok( my $results4 = $searcher->search('S?M*'), "search()" );
@@ -170,11 +174,11 @@ while ( my $rr = $results_relevant->next ) {
 
 sub make_program {
     ok( my $program = Dezi::App->new(
-            invindex             => $invindex,
-            aggregator           => 'fs',
-            indexer              => 'lucy',
-            config               => 't/config.xml',
-            highlightable_fields => 1,
+            invindex     => $invindex,
+            aggregator   => 'fs',
+            indexer      => 'lucy',
+            config       => 't/lucy/config.xml',
+            indexer_opts => { highlightable_fields => 1, },
 
             #verbose    => 1,
             #debug      => 1,
@@ -184,7 +188,7 @@ sub make_program {
 
     # skip the index dir every time
     # the '1' arg indicates to append the value, not replace.
-    $program->config->FileRules( 'dirname is index.swish',               1 );
+    $program->config->FileRules( 'dirname is dezi.ndex',                 1 );
     $program->config->FileRules( 'filename is config.xml',               1 );
     $program->config->FileRules( 'filename is config-nostemmer.xml',     1 );
     $program->config->FileRules( 'filename contains \.t',                1 );
@@ -203,7 +207,7 @@ sub show_results_by_uri {
 }
 
 END {
-    unless ( $ENV{PERL_DEBUG} ) {
+    unless ( $ENV{DEZI_DEBUG} ) {
         $invindex->path->rmtree;
     }
 }

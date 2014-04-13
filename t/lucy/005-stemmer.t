@@ -101,7 +101,7 @@ sub make_program {
 }
 
 END {
-    unless ( $ENV{PERL_DEBUG} ) {
+    unless ( $ENV{DEZI_DEBUG} ) {
         undef $searcher;
         undef $results;
         undef $result;
