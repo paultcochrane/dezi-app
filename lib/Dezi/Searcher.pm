@@ -3,6 +3,7 @@ use Moose;
 use MooseX::StrictConstructor;
 with 'Dezi::Role';
 use Dezi::Types;
+use Dezi::Searcher::SearchOpts;
 use Carp;
 use Scalar::Util qw( blessed );
 use Class::Load;
@@ -19,8 +20,14 @@ has 'invindex' => (
     required => 1,
     coerce   => 1,
 );
-has 'qp_config' => ( is => 'rw', isa => 'HashRef', default => sub { {} } );
-has 'qp'           => ( is => 'rw', isa => 'Search::Query::Parser' );
+has 'qp_config' =>
+    ( is => 'rw', isa => 'HashRef', builder => 'init_qp_config', lazy => 1, );
+has 'qp' => (
+    is      => 'rw',
+    isa     => 'Search::Query::Parser',
+    builder => 'init_qp',
+    lazy    => 1,
+);
 has 'property_map' => ( is => 'ro', isa => 'HashRef' );
 
 =head1 NAME
@@ -83,9 +90,6 @@ sub BUILD {
         $invindex->open_ro;
     }
 
-    # init query parser
-    $self->{qp} ||= Search::Query::Parser->new( %{ $self->qp_config } );
-
     # subclasses can cache however they need to. e.g. Test::Searcher
     $self->_cache_property_map();
 }
@@ -99,6 +103,14 @@ sub _cache_property_map {
 }
 
 sub invindex_class {'Dezi::InvIndex'}
+
+sub init_qp_config { {} }
+
+sub init_qp {
+    my $self = shift;
+    my $qp_config = $self->qp_config || {};
+    return Search::Query::Parser->new(%$qp_config);
+}
 
 =head2 search( I<query>, I<opts> )
 
@@ -120,7 +132,7 @@ sub search {
 
 sub _coerce_search_opts {
     my $self = shift;
-    my $opts = shift or confess "opts required";
+    my $opts = shift or return Dezi::Searcher::SearchOpts->new();
     if ( !blessed($opts) ) {
         if ( ref $opts ne 'HASH' ) {
             confess "opts must be a hashref";
