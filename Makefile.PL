@@ -58,7 +58,8 @@ install_script 'bin/deziapp';
 WriteMakefile(
     PL_FILES => {},
     dist     => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
-    clean    => {
+    test  => { TESTS => 't/*.t t/*/*.t' },
+    clean => {
         FILES => join(
             ' ',
             qw(
