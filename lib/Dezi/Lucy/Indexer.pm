@@ -422,6 +422,16 @@ around finish => sub {
 
     return 0 if $self->{_is_finished};
 
+    my $doc_count = $self->_finish_lucy();
+    $super_method->( $self, @_ );
+    $self->{_is_finished} = 1;
+
+    return $doc_count;
+};
+
+sub _finish_lucy {
+    my $self = shift;
+
     # get a lock on our header file till
     # this entire transaction is complete.
     # Note that we trust the Lucy locking feature
@@ -462,17 +472,11 @@ around finish => sub {
     $lock_file->unlock;
 
     $self->debug and carp "wrote $header with uuid $uuid";
-
+    $self->debug and carp "$doc_count docs indexed";
     $self->swish3(undef);    # invalidate this indexer
 
-    $super_method->( $self, @_ );
-
-    $self->{_is_finished} = 1;
-
-    $self->debug and carp "$doc_count docs indexed";
-
     return $doc_count;
-};
+}
 
 =head2 get_lucy
 
