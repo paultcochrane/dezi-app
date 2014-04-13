@@ -7,7 +7,7 @@ use namespace::sweep;
 
 our $VERSION = '0.001';
 
-use 'revelant_fields' => (is => 'rw', isa => 'ArrayRef');
+has 'relevant_fields' => ( is => 'rw', isa => 'ArrayRef' );
 
 =head1 NAME
 
@@ -66,6 +66,27 @@ Returns the swishdescription of the result document.
 =cut
 
 sub summary { $_[0]->{doc}->{swishdescription} }
+
+=head2 get_property( I<PropertyName> )
+
+Returns the value for I<PropertyName>.
+
+=cut
+
+sub get_property {
+    my $self = shift;
+    my $propname = shift or croak "PropertyName required";
+
+    # if $propname is an alias, use the real property name (how it is stored)
+    if ( exists $self->{property_map}->{$propname} ) {
+        $propname = $self->{property_map}->{$propname};
+    }
+
+    if ( !exists $self->{doc}->{$propname} ) {
+        croak "no such PropertyName: $propname";
+    }
+    return $self->{doc}->{$propname};
+}
 
 1;
 
