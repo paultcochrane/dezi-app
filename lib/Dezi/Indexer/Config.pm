@@ -22,9 +22,10 @@ use namespace::sweep;
 
 our $VERSION = '0.001';
 
-# only one explicitly named attribute.
-# everything else is through AUTOLOAD
+# only a few explicitly named attributes.
+# everything else is through AUTOLOAD.
 has 'file' => ( is => 'rw', isa => 'Path::Class::File', coerce => 1, );
+has 'swish3_config' => ( is => 'ro', isa => 'Str' );
 
 my $XML = Search::Tools::XML->new;
 
@@ -215,23 +216,50 @@ around BUILDARGS => sub {
 sub BUILD {
     my $self = shift;
 
+    $self->{swish3} = SWISH::3->new();
+
     if ( $self->file ) {
-        $self->read2( $self->file );
+        if ( !$self->looks_like_swish3_config ) {
+            $self->read2( $self->file );
+        }
+        else {
+            $self->read3( $self->file );
+        }
     }
 
     $self->IgnoreTotalWordCountWhenRanking(0)
         unless defined $self->IgnoreTotalWordCountWhenRanking;
 }
 
-=head2 debug
+=head2 looks_like_swish3_config
 
-Get/set the debug level. Default is 0.
-
-=head2 verbose
-
-Get/set flags affecting the verbosity of the program.
+Simple heuristics to test whether B<file> represents a libswish3-style
+file or string.
 
 =cut
+
+sub looks_like_swish3_config {
+    my $self = shift;
+    if ( $self->file =~ m/\.xml/ ) { return 1 }    # file
+    if ( !-r $self->file and $self->file =~ m/<swish>/ ) { return 1 } # string
+    return 0;
+}
+
+=head2 as_swish3_config
+
+Returns the object as a XML string in libswish3 header format.
+
+=cut
+
+sub as_swish3_config {
+    my $self = shift;
+    if ( $self->looks_like_swish3_config and $self->swish3_config ) {
+        return $self->swish3_config;
+    }
+    else {
+        return $self->ver2_to_ver3();
+    }
+}
 
 =head2 get_opt_names
 
@@ -360,6 +388,13 @@ sub read2 {
     }
 
     return \%conf;
+}
+
+sub read3 {
+    my $self = shift;
+    my $file = shift or confess "version3 type file required";
+
+    $self->{swish3_config} = SWISH::3->slurp("$file");
 }
 
 =head2 write2( I<path/file> [,I<prog_mode>] )
@@ -864,8 +899,8 @@ KEY: for my $k ( sort keys %$config ) {
         for my $ext ( sort keys %$mimes ) {
             my $mime = $mimes->{$ext};
             $xml .= sprintf( "  <%s>%s</%s>\n",
-                $XML->tag_safe($ext), $XML->escape($mime),
-                $XML->tag_safe($ext) );
+                $XML->tag_safe($ext),
+                $XML->escape($mime), $XML->tag_safe($ext) );
         }
         $xml .= " </MIME>\n";
     }
