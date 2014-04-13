@@ -89,22 +89,25 @@ precautions are implemented when this mode is on (1). Default is off
 sub BUILD {
     my $self = shift;
 
-    $self->{qp_config} ||= {
-        dialect          => 'Lucy',
-        croak_on_error   => 1,                            # strict mode on
-        query_class_opts => { debug => $self->debug, },
-    };
-
     if ( $self->{qp} ) {
 
         # preserve passed-in object for duration
         $self->{_initial_qp} = $self->{qp};
     }
 
-    $self->_init_lucy();
+    $self->_build_lucy();
 }
 
-sub _init_lucy {
+sub init_qp_config {
+    my $self = shift;
+    return {
+        dialect          => 'Lucy',
+        croak_on_error   => 1,                           # strict mode on
+        query_class_opts => { debug => $self->debug },
+    };
+}
+
+sub _build_lucy {
     my $self = shift;
 
     # load meta from the first invindex
@@ -116,7 +119,7 @@ sub _init_lucy {
     $self->{swish_xml}
         = Path::Class::File::Stat->new( $invindex->header_file );
     $self->{swish_xml}->use_md5();    # slower but better
-    $self->{_uuid} ||= [ $config->Index->{UUID} || "LUCY_NO_UUID" ];
+    $self->{_uuid} ||= [ $idx_header->Index->{UUID} || "LUCY_NO_UUID" ];
 
     # this does 2 things:
     # 1: initializes the Lucy Searcher
@@ -220,9 +223,7 @@ sub search {
     my $self = shift;
     my ( $query, $opts ) = @_;
     my $parsed_query;
-    if ($opts) {
-        $opts = $self->_coerce_search_opts($opts);
-    }
+    $opts = $self->_coerce_search_opts($opts);
     if ( !defined $query ) {
         confess "query required";
     }
@@ -379,7 +380,8 @@ sub get_lucy {
     my $is_stale = 0;
     my $i        = 0;
     for my $idx ( @{ $self->invindex } ) {
-        my $uuid = $idx->meta->Index->{UUID} || $self->{_uuid}->[$i];
+        my $idx_header = $idx->get_header();
+        my $uuid = $idx_header->Index->{UUID} || $self->{_uuid}->[$i];
 
         if ( !$self->{lucy} ) {
 
@@ -422,7 +424,7 @@ sub get_lucy {
 
     if ($is_stale) {
         $self->_open_lucy;
-        $self->_init_lucy();
+        $self->_build_lucy();
     }
 
     return $self->{lucy};
