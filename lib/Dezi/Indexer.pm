@@ -30,7 +30,7 @@ has 'flush'   => ( is => 'rw', isa => 'Int' );
 has 'started' => ( is => 'ro', isa => 'Int' );
 has 'swish3' => (
     is      => 'rw',
-    isa     => 'SWISH::3',
+    isa     => 'Maybe[SWISH::3]',
     builder => 'init_swish3',
 );
 has 'test_mode' => ( is => 'rw', isa => 'Bool', default => 0 );
@@ -160,7 +160,7 @@ sub _merge_swish3_header_with_config {
     }
 
     # 2. merge config in this Indexer
-    my $ver3_xml = $self->config->ver2_to_ver3();
+    my $ver3_xml = $self->config->as_swish3_config();
     $self->swish3->config->add($ver3_xml);
 
     # 3. conditionally turn off tokenizer, preferring engine to do it.
