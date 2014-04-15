@@ -455,6 +455,7 @@ sub _finish_lucy {
     my $doc_count = $polyreader->doc_count();
 
     # write header
+    # the current config should contain any existing header + runtime config
     my $idx_cfg = $self->swish3->config->get_index;
 
     # poor man's uuid

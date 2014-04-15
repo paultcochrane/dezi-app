@@ -22,9 +22,8 @@ requires 'Data::Dump'                  => 0;
 requires 'Config::General'             => '2.31';
 requires 'Scalar::Util'                => 0;
 requires 'Test::More'                  => 0;
-requires 'XML::Simple'                 => 0;
 requires 'Search::Query'               => '0.300';
-requires 'SWISH::3'                    => 1.000007;
+requires 'SWISH::3'                    => 1.000009;
 requires 'Class::Load'                 => 0;
 
 # recommended Aggregator support

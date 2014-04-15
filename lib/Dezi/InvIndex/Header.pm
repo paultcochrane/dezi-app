@@ -3,7 +3,6 @@ use Moose;
 with 'Dezi::Role';
 use MooseX::Types::Path::Class;
 use Carp;
-use XML::Simple;
 use SWISH::3 qw( :constants );
 
 use namespace::sweep;
@@ -13,6 +12,7 @@ our $VERSION = '0.001';
 has 'invindex' => ( is => 'rw', isa => 'Dezi::InvIndex', required => 1 );
 has 'file'     => ( is => 'ro', isa => 'Path::Class::File' );
 has 'data'     => ( is => 'ro', isa => 'HashRef' );
+has 'swish3_config' => ( is => 'ro', isa => 'SWISH::3::Config' );
 
 # index metadata. read/write libswish3 file xml format.
 #
@@ -30,17 +30,47 @@ sub BUILD {
     if ( !-s $self->{file} ) {
         confess("No such file: $self->{file}");
     }
-    $self->{data} = XMLin("$self->{file}");
+    $self->{swish3_config} = SWISH::3::Config->read("$self->{file}");
+
+    # unroll swish3_config into a local perl hash
+    $self->_build_data();
 
     #warn Data::Dump::dump( $self->{data} );
 
     $self->_build_property_maps();
+
+    #SWISH::3->dump( $self );
+}
+
+sub _build_data {
+    my $self     = shift;
+    my $s3config = $self->swish3_config;
+
+    $self->{data} = {
+        SWISH_PROP()    => $s3config->get_properties,
+        SWISH_META()    => $s3config->get_metanames,
+        SWISH_MIME()    => $s3config->get_mimes,
+        SWISH_PARSERS() => $s3config->get_parsers,
+        SWISH_INDEX()   => $s3config->get_index,
+        SWISH_ALIAS()   => $s3config->get_aliases,
+    };
+
+    # add any leftovers
+    my $misc = $s3config->get_misc();
+    for my $key ( @{ $misc->keys } ) {
+        next if exists $self->{data}->{$key};
+        $self->{data}->{$key} = $misc->get($key);
+    }
+
+    #SWISH::3->dump($self);
+
 }
 
 sub _build_property_maps {
     my $self = shift;
 
-    my $props = $self->{data}->{PropertyNames};
+    my $props      = $self->swish3_config->get_properties;
+    my $prop_names = $props->keys;
 
     # start with the built-in PropertyNames,
     # which cannot be aliases for anything.
@@ -48,13 +78,15 @@ sub _build_property_maps {
         keys %{ SWISH_DOC_PROP_MAP() };
     $propnames{swishrank} = { alias_for => undef };
     $propnames{score}     = { alias_for => undef };
+
     my @pure_props;
     my %prop_map;
-    for my $name ( keys %$props ) {
+    for my $name (@$prop_names) {
+        my $property = $props->get($name);
         $propnames{$name} = { alias_for => undef };
-        if ( exists $props->{$name}->{alias_for} ) {
-            $propnames{$name}->{alias_for} = $props->{$name}->{alias_for};
-            $prop_map{$name} = $props->{$name}->{alias_for};
+        if ( defined $property->alias_for ) {
+            $propnames{$name}->{alias_for} = $property->alias_for;
+            $prop_map{$name} = $property->alias_for;
         }
         else {
             push @pure_props, $name;
@@ -86,7 +118,7 @@ sub AUTOLOAD {
     if ( exists $self->{data}->{$method} ) {
         return $self->{data}->{$method};
     }
-    confess "no such Meta key: $method";
+    confess "no such Header key: $method";
 }
 
 1;

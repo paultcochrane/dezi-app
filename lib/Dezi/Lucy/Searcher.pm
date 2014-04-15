@@ -135,9 +135,11 @@ sub _build_lucy {
             type     => $schema->fetch_type($name),
             analyzer => $schema->fetch_analyzer($name)
         };
-        if ( exists $metanames->{$name}->{alias_for} ) {
+        if ( exists $metanames->{$name}
+            and defined $metanames->{$name}->alias_for )
+        {
             $fieldtypes{$name}->{alias_for}
-                = $metanames->{$name}->{alias_for};
+                = $metanames->{$name}->alias_for;
         }
     }
 
