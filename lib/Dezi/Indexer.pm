@@ -206,6 +206,8 @@ sub start {
         # for backcompat use swish3 name
         $self->invindex->path->file('swish_last_start')->touch();
     }
+
+    return $self->{started};
 }
 
 =head2 process( I<doc> )

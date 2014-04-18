@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 30;
+use Test::More tests => 32;
 
 use Class::Load;
 use Try::Tiny;
@@ -9,8 +9,9 @@ use Carp;
 use Data::Dump qw( dump );
 
 use_ok('Dezi::Test::Indexer');
+use_ok('Dezi::Test::Searcher');
 
-my $num_tests = 29;
+my $num_tests = 30;
 
 # we use Rose::DBx::TestDB just for devel testing.
 # don't expect normal users to have it.
@@ -71,12 +72,10 @@ SKIP: {
     $sth->execute;
 
     # index it
-    ok( my $aggr = SWISH::Prog::Aggregator::DBI->new(
+    ok( my $aggr = Dezi::Aggregator::DBI->new(
             db      => $dbh,
-            indexer => SWISH::Prog::Native::Indexer->new(
-                invindex => 't/dbi.index',
-            ),
-            schema => {
+            indexer => Dezi::Test::Indexer->new( invindex => 't/dbi.index', ),
+            schema  => {
                 foo => {
                     id     => { type => 'int' },
                     myint  => { type => 'int', bias => 10 },
@@ -96,57 +95,48 @@ SKIP: {
 
     ok( $aggr->indexer->finish, "indexer finished" );
 
-    # test with a search
-SKIP: {
+    my $invindex = $aggr->indexer->invindex;
 
-        eval { require SWISH::Prog::Native::Searcher; };
-        if ($@) {
-            skip "Cannot test Searcher without SWISH::API", 26;
-        }
+    ok( my $searcher = Dezi::Test::Searcher->new(
+            invindex      => $invindex,
+            swish3_config => $aggr->indexer->swish3->get_config,
+        ),
+        "new searcher"
+    );
 
-        my $invindex = $aggr->indexer->invindex;
+    my $query = 'hello';
+    ok( my $results
+            = $searcher->search( $query, { order => 'swishdocpath ASC' } ),
+        "do search"
+    );
+    is( $results->hits, 1, "1 hit" );
+    ok( my $result = $results->next, "results->next" );
+    diag( $result->swishdocpath );
+    is( $result->swishtitle, '1', "get swishtitle" );
+    is( $result->get_property('swishtitle'),
+        $result->swishtitle, "get_property(swishtitle)" );
 
-        ok( my $searcher
-                = SWISH::Prog::Native::Searcher->new( invindex => $invindex,
-                ),
-            "new searcher"
-        );
+    # test all the built-in properties and their method shortcuts
+    my @methods = qw(
+        swishdocpath
+        uri
+        swishlastmodified
+        mtime
+        swishtitle
+        title
+        swishdescription
+        summary
+        swishrank
+        score
+    );
 
-        my $query = 'hello';
-        ok( my $results
-                = $searcher->search( $query,
-                { order => 'swishdocpath ASC' } ),
-            "do search"
-        );
-        is( $results->hits, 1, "1 hit" );
-        ok( my $result = $results->next, "results->next" );
-        diag( $result->swishdocpath );
-        is( $result->swishtitle, '1', "get swishtitle" );
-        is( $result->get_property('swishtitle'),
-            $result->swishtitle, "get_property(swishtitle)" );
-
-        # test all the built-in properties and their method shortcuts
-        my @methods = qw(
-            swishdocpath
-            uri
-            swishlastmodified
-            mtime
-            swishtitle
-            title
-            swishdescription
-            summary
-            swishrank
-            score
-        );
-
-        for my $m (@methods) {
-            ok( defined $result->$m,               "get $m" );
-            ok( defined $result->get_property($m), "get_property($m)" );
-        }
-
+    for my $m (@methods) {
+        ok( defined $result->$m,               "get $m" );
+        ok( defined $result->get_property($m), "get_property($m)" );
     }
 
-    # clean up header so other test counts work
-    unlink('t/dbi_index/swish.xml') unless $ENV{PERL_DEBUG};
-
 }
+
+# clean up header so other test counts work
+unlink('t/dbi.index/swish.xml') unless $ENV{DEZI_DEBUG};
+

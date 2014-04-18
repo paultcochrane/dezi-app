@@ -38,7 +38,7 @@ has 'type'    => ( is => 'rw', isa => 'Str' );
 has 'parser'  => ( is => 'rw', isa => 'Str' );
 has 'content' => ( is => 'rw', isa => 'Str' );
 has 'action'  => ( is => 'rw', isa => 'Str' );
-has 'data'    => ( is => 'rw', isa => 'Str' );
+has 'data'    => ( is => 'rw', isa => 'HashRef' );
 has 'size'    => ( is => 'rw', isa => 'Int' );
 has 'charset' => ( is => 'rw', isa => 'Str', default => sub {$charset} );
 has 'version' => ( is => 'rw', isa => 'Str', default => sub {3} );
@@ -121,6 +121,8 @@ All of the following params are also available as accessors/mutators.
 
 =item data
 
+A hashref.
+
 =item version
 
 Swish-e 2.x or Swish3 style headers. Value should be C<2> or C<3>.
@@ -130,7 +132,7 @@ Default is C<2>.
 
 =cut
 
-=head2 init
+=head2 BUILD
 
 Calls filter() on object.
 
