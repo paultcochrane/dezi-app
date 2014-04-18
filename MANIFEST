@@ -11,13 +11,11 @@ lib/Dezi/Aggregator/DBI.pm
 lib/Dezi/Aggregator/FS.pm
 lib/Dezi/Aggregator/Mail.pm
 lib/Dezi/Aggregator/MailFS.pm
-lib/Dezi/Aggregator/Object.pm
 lib/Dezi/Aggregator/Spider.pm
 lib/Dezi/Aggregator/Spider/Response.pm
 lib/Dezi/Aggregator/Spider/UA.pm
 lib/Dezi/App.pm
 lib/Dezi/Cache.pm
-lib/Dezi/Class.pm
 lib/Dezi/Indexer.pm
 lib/Dezi/Indexer/Config.pm
 lib/Dezi/Indexer/Doc.pm
@@ -28,8 +26,10 @@ lib/Dezi/Queue.pm
 lib/Dezi/ReplaceRules.pm
 lib/Dezi/Result.pm
 lib/Dezi/Results.pm
+lib/Dezi/Role.pm
 lib/Dezi/Searcher.pm
 lib/Dezi/Test/Indexer.pm
+lib/Dezi/Test/InvIndex.pm
 lib/Dezi/Types.pm
 lib/Dezi/Utils.pm
 Makefile.PL

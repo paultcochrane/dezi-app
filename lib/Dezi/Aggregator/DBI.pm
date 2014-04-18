@@ -1,15 +1,17 @@
 package Dezi::Aggregator::DBI;
-
-use strict;
-use warnings;
-use base qw( Dezi::Aggregator );
+use Moose;
+extends 'Dezi::Aggregator';
+with 'Dezi::Role';
 use Carp;
 use Data::Dump qw( dump );
 use DBI;
 use Dezi::Utils;
 
-__PACKAGE__->mk_accessors(
-    qw( db alias_columns schema use_quotes quote_char ));
+has 'db'            => ( is => 'rw', isa => 'Defined', required => 1 );
+has 'alias_columns' => ( is => 'rw', isa => 'Bool',    default  => sub {1} );
+has 'schema'        => ( is => 'rw', isa => 'HashRef', required => 1 );
+has 'use_quotes'    => ( is => 'rw', isa => 'Bool',    default  => sub {1} );
+has 'quote_char' => ( is => 'rw', isa => 'Str', default => sub {q/`/} );
 
 our $VERSION = '0.001';
 
@@ -127,71 +129,52 @@ The character to use when C<use_quotes> is true. Default is B<`> (backtick).
 B<NOTE:> The new() method simply inherits from Dezi::Aggregator, 
 so any params valid for that method are allowed here.
 
-=head2 init
+=head2 BUILD
 
-See Dezi::Class. This method does all the setup.
+Internal method called by new().
 
 =cut
 
-sub init {
+sub BUILD {
     my $self = shift;
-    $self->SUPER::init(@_);
-
-    $self->{use_quotes} = 1   unless defined $self->{use_quotes};
-    $self->{quote_char} = '`' unless defined $self->{quote_char};
 
     # verify DBI connection
-    if ( defined( $self->db ) ) {
 
-        if ( ref( $self->db ) eq 'ARRAY' ) {
-            $self->db( DBI->connect( @{ $self->{db} } ) );
-        }
-        elsif ( ref( $self->db ) && $self->db->isa('DBI::db') ) {
+    if ( ref( $self->db ) eq 'ARRAY' ) {
+        $self->db( DBI->connect( @{ $self->{db} } ) );
+    }
+    elsif ( ref( $self->db ) && $self->db->isa('DBI::db') ) {
 
-            # do nothing
-        }
-        else {
-            $self->db( DBI->connect( $self->db ) );
-        }
+        # do nothing
     }
     else {
-        croak "db required";
+        $self->db( DBI->connect( $self->db ) );
     }
 
     # verify schema
-    if ( defined $self->schema ) {
 
-        my $schema = $self->schema;
-        unless ( ref($schema) eq 'HASH' ) {
-            croak "schema must be a hashref";
+    my $schema = $self->schema;
+    for my $table ( keys %$schema ) {
+        my $cols = $schema->{$table};
+        unless ( ref($cols) eq 'HASH' ) {
+            croak "column descriptions must be a hashref";
         }
-        for my $table ( keys %$schema ) {
-            my $cols = $schema->{$table};
-            unless ( ref($cols) eq 'HASH' ) {
-                croak "column descriptions must be a hashref";
-            }
-            for my $colname ( keys %$cols ) {
-                my $desc = $cols->{$colname};
-                if ( $colname eq 'swishtitle' ) {
-                    if ( ref $desc ) {
-                        croak "swishtitle must be a column name string";
-                    }
-                    next;
+        for my $colname ( keys %$cols ) {
+            my $desc = $cols->{$colname};
+            if ( $colname eq 'swishtitle' ) {
+                if ( ref $desc ) {
+                    croak "swishtitle must be a column name string";
                 }
-                unless ( ref($desc) eq 'HASH' ) {
-                    croak "$colname description must be a hashref";
-                }
-                $desc->{type}
-                    ||= 'char'; # TODO auto-make property types based on this.
-                $desc->{bias} ||= 1;
+                next;
             }
+            unless ( ref($desc) eq 'HASH' ) {
+                croak "$colname description must be a hashref";
+            }
+            $desc->{type}
+                ||= 'char';    # TODO auto-make property types based on this.
+            $desc->{bias} ||= 1;
         }
     }
-    else {
-        croak "schema required";
-    }
-
-    $self->{alias_columns} = 1 unless exists $self->{alias_columns};
 
     # unless metanames are defined, use all the column names from schema
     my $m = $self->config->MetaNames;
@@ -360,29 +343,35 @@ __END__
 
 =head1 AUTHOR
 
-Peter Karman, E<lt>perl@peknet.comE<gt>
+Peter Karman, E<lt>karpet@dezi.orgE<gt>
 
 =head1 BUGS
 
-Please report any bugs or feature requests to C<bug-swish-prog at rt.cpan.org>, or through
+Please report any bugs or feature requests to C<bug-dezi-app at rt.cpan.org>, or through
 the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Dezi-App>.  
-I will be notified, and then you'll
-automatically be notified of progress on your bug as I make changes.
+I will be notified, and then you'll automatically be notified of progress on your bug as I make changes.
 
 =head1 SUPPORT
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc Dezi
-
+    perldoc Dezi::App
 
 You can also look for information at:
 
 =over 4
 
+=item * Website
+
+L<http://dezi.org/>
+
+=item * IRC
+
+#dezisearch at freenode
+
 =item * Mailing list
 
-L<http://lists.swish-e.org/listinfo/users>
+L<https://groups.google.com/forum/#!forum/dezi-search>
 
 =item * RT: CPAN's request tracker
 
@@ -398,17 +387,18 @@ L<http://cpanratings.perl.org/d/Dezi-App>
 
 =item * Search CPAN
 
-L<http://search.cpan.org/dist/Dezi-App/>
+L<https://metacpan.org/dist/Dezi-App/>
 
 =back
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2008-2009 by Peter Karman
+Copyright 2014 by Peter Karman
 
 This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself. 
+it under the terms of the GPL v2 or later.
 
 =head1 SEE ALSO
 
-L<http://swish-e.org/>
+L<http://dezi.org/>, L<http://swish-e.org/>, L<http://lucy.apache.org/>
+
