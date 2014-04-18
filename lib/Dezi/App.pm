@@ -12,6 +12,141 @@ use namespace::sweep;
 
 our $VERSION = '0.001';
 
+=head1 NAME
+
+Dezi::App - build Dezi search applications
+
+=head1 SYNOPSIS
+
+ my $app = Dezi::App->new(
+   invindex   => 't/testindex',
+   aggregator => 'fs',
+   indexer    => 'lucy',
+   config     => 't/test.conf',
+   filter     => sub { diag( "doc filter on " . $_[0]->url ) },
+ );
+
+ my $count = $app->run('path/to/files');
+
+ printf("Indexed %d documents\n", $count);
+
+=head1 DESCRIPTION
+
+Dezi::App is convenience class for building search applications.
+It provides shortcuts for pulling together all the Dezi::App components
+into a single App object.
+
+Dezi::App depends upon:
+
+=over
+
+=item
+
+L<Dezi::InvIndex>
+
+=item
+
+L<Dezi::Indexer>
+
+=item
+
+L<Dezi::Aggregator>
+
+=item
+
+L<Dezi::Indexer::Config>
+
+=back
+
+=head1 METHODS
+
+The following attributes are available as params to new() and
+instance methods:
+
+=over
+
+=item aggregator
+
+Expects a Dezi::Aggregator instance or a shortcut string. The shortcuts
+are:
+
+=over
+
+=item fs
+
+Filesystem -- see L<Dezi::Aggregator::FS>.
+
+=item spider
+
+Web crawler -- see L<Dezi::Aggregator::Spider>.
+
+=item mail
+
+Mail::Box reader -- see L<Dezi::Aggregator::Mail>.
+
+=item mailfs
+
+Mail::Box + filesystem -- see L<Dezi::Aggregator::MailFS>.
+
+=back
+
+=item aggregator_opts
+
+Hashref passed to aggregator->new.
+
+=item config
+
+String or Path::Class::File object pointing at config file,
+or a Dezi::Indexer::Config object.
+
+=item indexer
+
+Shortcut string or Dezi::Indexer instance. Shortcuts include:
+
+=over
+
+=item lucy
+
+L<Dezi::Lucy::Indexer>
+
+=item dbi
+
+TODO
+
+=item xapian
+
+TODO
+
+=item test
+
+L<Dezi::Test::Indexer>
+
+=back
+
+=item indexer_opts
+
+Hashref passed directly to indexer->new.
+
+=item invindex
+
+String or Path::Class::Dir pointing at index directory, 
+or a L<Dezi::InvIndex> instance.
+
+=item filter
+
+A CODE reference, or a string or Path::Class::File object
+pointing at a file containing a CODE reference
+that can be loaded with do().
+
+=item test_mode
+
+Boolean turning off the indexer, running only the aggregator.
+Default is false (off).
+
+=back
+
+=cut
+
 has 'aggregator' => ( is => 'rw', );    # we do our own isa check
 has 'aggregator_opts' => ( is => 'rw', isa => 'HashRef' );
 has 'config' =>
@@ -41,6 +176,12 @@ my %ishort = (
     dbi    => 'Dezi::DBI::Indexer',
     test   => 'Dezi::Test::Indexer',
 );
+
+=head2 BUILD
+
+Internal method called by new(). Initializes the App object.
+
+=cut
 
 sub BUILD {
     my $self = shift;
@@ -154,6 +295,15 @@ sub BUILD {
 
     return $self;
 }
+
+=head2 run( I<paths> )
+
+Run the app on I<paths>. I<paths> may be URLs, filesystem paths,
+or whatever the Aggregator expects.
+
+Returns the Indexer count.
+
+=cut
 
 sub run {
     my $self = shift;
