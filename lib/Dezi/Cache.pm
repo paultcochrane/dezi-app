@@ -37,7 +37,7 @@ and use different storage (e.g. Cache::* modules).
 
 See Dezi::Class. Only new or overridden methods are documented here.
 
-=head2 init
+=head2 BUILD
 
 Initialize the cache. Called internally by new(). You should not need to
 call this yourself.

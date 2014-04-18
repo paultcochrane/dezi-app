@@ -37,6 +37,18 @@ around BUILDARGS => sub {
     }
 };
 
+=head2 new_from_header
+
+Instantiates an InvIndex object in the correct subclass
+based on the Index Format in the InvIndex header file.
+
+Example:
+
+ my $invindex = Dezi::InvIndex->new('path/to/lucy.index');
+ # $invindex isa Dezi::Lucy::InvIndex
+
+=cut
+
 sub new_from_header {
     my $self = shift;
 

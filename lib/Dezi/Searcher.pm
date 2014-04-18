@@ -102,9 +102,31 @@ sub _cache_property_map {
         = $self->invindex->[0]->get_header->get_property_map();
 }
 
+=head2 invindex_class
+
+Returns string 'Dezi::InvIndex'. Override this in a subclass to indicate
+the corresponding InvIndex class for your Searcher.
+
+=cut
+
 sub invindex_class {'Dezi::InvIndex'}
 
+=head2 init_qp_config
+
+Returns empty hashref by default. Override this to provide
+custom default config for the qp (L<Search::Query::Parser>).
+
+=cut
+
 sub init_qp_config { {} }
+
+=head2 init_qp
+
+Returns Search::Query::Parser->new( $self->init_qp_config )
+by default. Override in a subclass to customize the L<Search::Query::Parser>
+object.
+
+=cut
 
 sub init_qp {
     my $self = shift;

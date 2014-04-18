@@ -36,9 +36,9 @@ See Dezi::Class.
 
 =cut
 
-=head2 init
+=head2 BUILD
 
-Overrides base method.
+Overrides base method. Called internally by new().
 
 =cut
 
