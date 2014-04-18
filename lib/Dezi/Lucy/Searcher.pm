@@ -224,15 +224,10 @@ my %boolops = (
 sub search {
     my $self = shift;
     my ( $query, $opts ) = @_;
-    my $parsed_query;
-    $opts = $self->_coerce_search_opts($opts);
     if ( !defined $query ) {
         confess "query required";
     }
-    elsif ( !blessed($query) ) {
-        $parsed_query = $self->qp->parse($query)
-            or confess "Invalid query: " . $self->qp->error;
-    }
+    $opts = $self->_coerce_search_opts($opts);
 
     my $start  = $opts->start          || 0;
     my $max    = $opts->max            || $self->max_hits;
@@ -245,6 +240,16 @@ sub search {
     $self->qp->default_boolop( $boolops{$boolop} );
 
     #warn "query=$query";
+
+    my $parsed_query = $query;
+
+    if ( !blessed($query) ) {
+        $parsed_query = $self->qp->parse($query)
+            or confess "Invalid query: " . $self->qp->error;
+    }
+    elsif ( !$query->isa('Search::Tools::Dialect') ) {
+        confess "query must be a string or a Search::Tools::Dialect object";
+    }
 
     my %hits_args = (
         offset     => $start,
