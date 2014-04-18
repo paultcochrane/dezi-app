@@ -213,6 +213,12 @@ around BUILDARGS => sub {
     }
 };
 
+=head2 BUILD
+
+Internal method called by new().
+
+=cut
+
 sub BUILD {
     my $self = shift;
 
@@ -390,6 +396,12 @@ sub read2 {
 
     return \%conf;
 }
+
+=head2 read3( I<file> )
+
+Slurps I<file> into the swish3_config() attribute.
+
+=cut
 
 sub read3 {
     my $self = shift;
