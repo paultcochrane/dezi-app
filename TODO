@@ -1,1 +1,4 @@
 * use Type::Tiny instead of TypeConstraints in Types.pm
+
+* port bin/deziapp to Dezi::App::CLI with MooseX::SimpleConfig
+  and MooseX::Getopt, so bin/deziapp is just a thin wrapper
