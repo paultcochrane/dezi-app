@@ -5,22 +5,24 @@ use Types::Standard -types;
 use Carp;
 use File::Rules;
 use HTTP::Date;
-Indexer::Config
-#class_type IndexerConfig, { class => 'Dezi::Indexer::Config' };
-#coerce IndexerConfig, from Path::Class::File,
-#    via { _coerce_indexer_config($_) },
-#    from Str, via { _coerce_indexer_config($_) };
+Indexer::Config;
+class_type IndexerConfig, { class => 'Dezi::Indexer::Config' };
+class_type PathClassFile, { class => 'Path::Class::File' };
+coerce IndexerConfig, from PathClassFile,
+    via { _coerce_indexer_config($_) },
+    from Str, via { _coerce_indexer_config($_) };
 
 # InvIndex
-#class_type InvIndex, { class => 'Dezi::InvIndex' };
-#coerce InvIndex, from Path::Class::File,
-#    via { _coerce_invindex($_) }, from Str,
-#    via { _coerce_invindex($_) }, from Undef,
-#    via { Dezi::InvIndex->new() };
-#declare InvIndexArr,  as ArrayRef[InvIndex];
-#coerce InvIndexArr, from ArrayRef, via {
-#    [ map { _coerce_invindex($_) } @$_ ];
-#}, from InvIndex, via { [$_] };
+class_type InvIndex, { class => 'Dezi::InvIndex' };
+coerce InvIndex, from PathClassFile,
+    via { _coerce_invindex($_) }, from Str,
+    via { _coerce_invindex($_) }, from Undef,
+    via { Dezi::InvIndex->new() };
+
+declare InvIndexArr, as ArrayRef[InstanceOf['InvIndex']];
+coerce InvIndexArr, from ArrayRef, via {
+    [ map { _coerce_invindex($_) } @$_ ];
+}, from InvIndex, via { [$_] };
 
 # filter
 declare FileOrCodeRef, as CodeRef;
