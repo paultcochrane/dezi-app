@@ -36,7 +36,7 @@ has 'email' => (
     default => sub {'dezi@user.failed.to.set.email.invalid'},
 );
 has 'file_rules' =>
-    ( is => 'rw', isa => 'FileRules', coerce => 1, );
+    ( is => 'rw', isa => FileRules, coerce => 1, );
 has 'follow_redirects' => ( is => 'rw', isa => 'Bool', default => sub {1} );
 has 'keep_alive'       => ( is => 'rw', isa => 'Bool', default => sub {0} );
 
@@ -53,9 +53,9 @@ has 'max_files' => ( is => 'rw', isa => 'Int', default => sub {0} );
 has 'max_size'  => ( is => 'rw', isa => 'Int', default => sub {5_000_000} );
 has 'max_time' => ( is => 'rw', isa => 'Int', );    # TODO
 has 'md5_cache' =>
-    ( is => 'rw', isa => 'Cache', default => sub { Dezi::Cache->new } );
+    ( is => 'rw', isa => Cache, default => sub { Dezi::Cache->new } );
 has 'modified_since' =>
-    ( is => 'rw', isa => 'Epoch', coerce => 1, );
+    ( is => 'rw', isa => Epoch, coerce => 1, );
 has 'queue' =>
     ( is => 'rw', isa => 'Dezi::Queue', default => sub { Dezi::Queue->new } );
 has 'remove_leading_dots' =>

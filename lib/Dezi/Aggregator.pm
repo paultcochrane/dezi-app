@@ -18,6 +18,7 @@ has 'set_parser_from_type' =>
 has 'indexer' => ( is => 'rw', isa => 'Dezi::Indexer', );
 has 'doc_class' =>
     ( is => 'rw', required => 1, default => 'Dezi::Indexer::Doc' );
+
 has 'swish_filter_obj' => (
     is      => 'rw',
     isa     => 'SWISH::Filter',
@@ -25,7 +26,7 @@ has 'swish_filter_obj' => (
 );
 has 'test_mode' => ( is => 'rw', isa => 'Bool', default => sub {0} );
 has 'filter' =>
-    ( is => 'rw', isa => 'FileOrCodeRef', coerce => 1, );
+    ( is => 'rw', isa => FileOrCodeRef, coerce => 1, );
 has 'ok_if_newer_than' => ( is => 'rw', isa => 'Int' );
 has 'progress'         => ( is => 'rw', isa => 'Object' ); # Term::ProgressBar
 has 'count'            => ( is => 'ro', isa => 'Int' );

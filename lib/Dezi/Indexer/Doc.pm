@@ -1,7 +1,7 @@
 package Dezi::Indexer::Doc;
 use Moose;
 with 'Dezi::Role';
-use Dezi::Types;
+use Dezi::Types qw(Uri Epoch);
 use Carp;
 use Data::Dump qw( dump );
 use overload(
@@ -27,10 +27,10 @@ my ( $locale, $lang, $charset );
     $charset ||= 'iso-8859-1';
 }
 
-has 'url' => ( is => 'rw', isa => 'Dezi::Type::Uri', coerce => 1 );
+has 'url' => ( is => 'rw', isa => Uri, coerce => 1 );
 has 'modtime' => (
     is      => 'rw',
-    isa     => 'Dezi::Type::Epoch',
+    isa     => Epoch,
     coerce  => 1,
     default => sub { time() },
 );

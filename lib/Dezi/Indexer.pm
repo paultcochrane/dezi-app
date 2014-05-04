@@ -2,7 +2,7 @@ package Dezi::Indexer;
 use Moose;
 use MooseX::StrictConstructor;
 with 'Dezi::Role';
-use Dezi::Types;
+use Dezi::Types qw(InvIndex IndexerConfig);
 use Scalar::Util qw( blessed );
 use Carp;
 use Data::Dump qw( dump );
@@ -15,12 +15,12 @@ use namespace::sweep;
 
 our $VERSION = '0.001';
 
-has 'invindex' => ( is => 'rw', isa => 'Dezi::Type::InvIndex', coerce => 1, );
+has 'invindex' => ( is => 'rw', isa => InvIndex, coerce => 1, );
 has 'invindex_class' =>
     ( is => 'rw', isa => 'Str', default => sub {'Dezi::InvIndex'} );
 has 'config' => (
     is      => 'rw',
-    isa     => 'Dezi::Type::Indexer::Config',
+    isa     => IndexerConfig,
     coerce  => 1,
     default => sub { Dezi::Indexer::Config->new() },
 );

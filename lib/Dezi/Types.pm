@@ -5,7 +5,9 @@ use Types::Standard -types;
 use Carp;
 use File::Rules;
 use HTTP::Date;
-Indexer::Config;
+
+use Scalar::Util qw(blessed);
+
 class_type IndexerConfig, { class => 'Dezi::Indexer::Config' };
 class_type PathClassFile, { class => 'Path::Class::File' };
 coerce IndexerConfig, from PathClassFile,
@@ -19,7 +21,7 @@ coerce InvIndex, from PathClassFile,
     via { _coerce_invindex($_) }, from Undef,
     via { Dezi::InvIndex->new() };
 
-declare InvIndexArr, as ArrayRef[InstanceOf['InvIndex']];
+declare InvIndexArr, as ArrayRef[];
 coerce InvIndexArr, from ArrayRef, via {
     [ map { _coerce_invindex($_) } @$_ ];
 }, from InvIndex, via { [$_] };

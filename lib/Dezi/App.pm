@@ -6,7 +6,7 @@ use Carp;
 use Data::Dump qw( dump );
 use Scalar::Util qw( blessed );
 use Class::Load ();
-use Dezi::Types;
+use Dezi::Types qw(IndexerConfig InvIndex FileOrCodeRef);
 use Dezi::ReplaceRules;
 use namespace::sweep;
 
@@ -150,15 +150,15 @@ Default is false (off).
 has 'aggregator' => ( is => 'rw', );    # we do our own isa check
 has 'aggregator_opts' => ( is => 'rw', isa => 'HashRef' );
 has 'config' =>
-    ( is => 'rw', isa => 'Dezi::Type::Indexer::Config', coerce => 1, );
+    ( is => 'rw', isa => IndexerConfig, coerce => 1, );
 has 'indexer' => ( is => 'rw', );       # we do our own isa check
 has 'indexer_opts' => ( is => 'rw', isa => 'HashRef' );
 has 'invindex' => (
     is     => 'rw',
-    isa    => 'Dezi::Type::InvIndex',
+    isa    => InvIndex,
     coerce => 1,
 );
-has 'filter' => ( is => 'rw', isa => 'Dezi::Type::FileOrCodeRef' );
+has 'filter' => ( is => 'rw', isa => FileOrCodeRef );
 has 'test_mode' => ( is => 'rw', isa => 'Bool', default => 0 );
 
 # allow for short names. we map to class->new
