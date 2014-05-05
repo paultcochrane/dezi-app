@@ -89,12 +89,31 @@ Dezi::Test::Indexer - test indexer class
 Dezi::Test::Indexer uses Dezi::Test::InvIndex for 
 running tests on the API, particularly Aggregator classes.
 
+=head1 CONSTANTS
+
+All the L<SWISH::3> constants are imported into this namespace,
+including:
+
+=head2 SWISH_DOC_PROP_MAP
+
 =head1 METHODS
 
 =head2 process( I<doc> )
 
 Tokenizes content in I<doc> and adds each term
 to the InvIndex.
+
+=head2 swish3_handler
+
+Called by L<SWISH::3> handler() function.
+
+=head2 use_swish3_tokenizer
+
+Returns true.
+
+=head2 invindex_class
+
+Returns L<Dezi::Test::InvIndex>.
 
 =head1 AUTHOR
 

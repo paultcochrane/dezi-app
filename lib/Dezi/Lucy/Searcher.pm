@@ -2,6 +2,7 @@ package Dezi::Lucy::Searcher;
 use Moose;
 extends 'Dezi::Searcher';
 use Carp;
+use Types::Standard qw( Bool );
 use SWISH::3 qw( :constants );
 use Dezi::Lucy::Results;
 
@@ -25,9 +26,8 @@ use namespace::sweep;
 
 our $VERSION = '0.001';
 
-has 'find_relevant_fields' =>
-    ( is => 'rw', isa => 'Bool', default => sub {0} );
-has 'nfs_mode' => ( is => 'rw', isa => 'Bool', default => sub {0} );
+has 'find_relevant_fields' => ( is => 'rw', isa => Bool, default => sub {0} );
+has 'nfs_mode'             => ( is => 'rw', isa => Bool, default => sub {0} );
 
 =head1 NAME
 
@@ -59,6 +59,13 @@ so that you can experiment with alternate
 storage engines without needing to change much code.
 When your search application requirements become more complex, the author
 recommends the switch to using Lucy::Search::Searcher directly.
+
+=head1 CONSTANTS
+
+All the L<SWISH::3> constants are imported into this namespace,
+including:
+
+=head2 SWISH_DOC_PROP_MAP
 
 =head1 METHODS
 
@@ -97,6 +104,13 @@ sub BUILD {
 
     $self->_build_lucy();
 }
+
+=head2 init_qp_config
+
+Overrides base method to return a Search::Query::Parser config for the Lucy
+Dialect.
+
+=cut
 
 sub init_qp_config {
     my $self = shift;

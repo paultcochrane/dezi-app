@@ -1,6 +1,8 @@
 package Dezi::InvIndex::Header;
 use Moose;
 with 'Dezi::Role';
+use Types::Standard qw( InstanceOf HashRef );
+use Dezi::Types qw( DeziInvIndex );
 use MooseX::Types::Path::Class;
 use Carp;
 use SWISH::3 qw( :constants );
@@ -9,10 +11,10 @@ use namespace::sweep;
 
 our $VERSION = '0.001';
 
-has 'invindex' => ( is => 'rw', isa => 'Dezi::InvIndex', required => 1 );
-has 'file'     => ( is => 'ro', isa => 'Path::Class::File' );
-has 'data'     => ( is => 'ro', isa => 'HashRef' );
-has 'swish3_config' => ( is => 'ro', isa => 'SWISH::3::Config' );
+has 'invindex' => ( is => 'rw', isa => DeziInvIndex, required => 1 );
+has 'file' => ( is => 'ro', isa => 'Path::Class::File', coerce => 1, );
+has 'data' => ( is => 'ro', isa => HashRef );
+has 'swish3_config' => ( is => 'ro', isa => InstanceOf ['SWISH::3::Config'] );
 
 # index metadata. read/write libswish3 file xml format.
 #
@@ -146,6 +148,13 @@ Dezi::InvIndex::Meta - read/write InvIndex metadata
 A Dezi::InvIndex::Meta object represents the metadata for an
 InvIndex. It supports the Swish3 C<swish.xml> header file format only
 at this time.
+
+=head1 CONSTANTS
+
+All the L<SWISH::3> constants are imported into this namespace,
+including:
+
+=head2 SWISH_DOC_PROP_MAP
 
 =head1 METHODS
 

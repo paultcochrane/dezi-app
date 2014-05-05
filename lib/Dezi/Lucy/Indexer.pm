@@ -41,6 +41,13 @@ Dezi::Lucy::Indexer - Dezi::App Apache Lucy indexer
 Dezi::Lucy::Indexer is an Apache Lucy based indexer
 class based on L<SWISH::3>.
 
+=head1 CONSTANTS
+
+All the L<SWISH::3> constants are imported into this namespace,
+including:
+
+=head2 SWISH_DOC_PROP_MAP
+
 =head1 METHODS
 
 Only new and overridden methods are documented here. See
@@ -325,6 +332,13 @@ sub _add_new_field {
 }
 
 my $doc_prop_map = SWISH_DOC_PROP_MAP();
+
+=head2 swish3_handler( I<swish3_data> )
+
+Called by the SWISH::3::handler() function for every document being
+indexed.
+
+=cut
 
 sub swish3_handler {
     my ( $self, $data ) = @_;

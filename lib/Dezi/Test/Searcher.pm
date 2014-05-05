@@ -1,6 +1,7 @@
 package Dezi::Test::Searcher;
 use Moose;
 extends 'Dezi::Searcher';
+use Types::Standard qw( InstanceOf );
 use Carp;
 use Data::Dump qw( dump );
 use Scalar::Util qw( blessed );
@@ -10,7 +11,7 @@ use Dezi::Test::ResultsPayload;
 
 # need this to build property_map
 has 'swish3_config' =>
-    ( is => 'rw', isa => 'SWISH::3::Config', required => 1 );
+    ( is => 'rw', isa => InstanceOf ['SWISH::3::Config'], required => 1, );
 
 sub _cache_property_map {
     my $self = shift;
@@ -77,3 +78,83 @@ sub search {
 }
 
 1;
+
+=head1 NAME
+
+Dezi::Test::Searcher - test searcher class
+
+=head1 METHODS
+
+=head2 swish3_config
+
+Returns instance of L<SWISH::3::Config>.
+
+=head2 invindex_class
+
+Returns C<Dezi::Test::InvIndex>.
+
+=head2 search( I<query>, I<opts> )
+
+Returns L<Dezi::Test::Results>.
+
+=head1 AUTHOR
+
+Peter Karman, E<lt>karpet@dezi.orgE<gt>
+
+=head1 BUGS
+
+Please report any bugs or feature requests to C<bug-dezi-app at rt.cpan.org>, or through
+the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Dezi-App>.  
+I will be notified, and then you'll automatically be notified of progress on your bug as I make changes.
+
+=head1 SUPPORT
+
+You can find documentation for this module with the perldoc command.
+
+    perldoc Dezi::App
+
+You can also look for information at:
+
+=over 4
+
+=item * Website
+
+L<http://dezi.org/>
+
+=item * IRC
+
+#dezisearch at freenode
+
+=item * Mailing list
+
+L<https://groups.google.com/forum/#!forum/dezi-search>
+
+=item * RT: CPAN's request tracker
+
+L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Dezi-App>
+
+=item * AnnoCPAN: Annotated CPAN documentation
+
+L<http://annocpan.org/dist/Dezi-App>
+
+=item * CPAN Ratings
+
+L<http://cpanratings.perl.org/d/Dezi-App>
+
+=item * Search CPAN
+
+L<https://metacpan.org/dist/Dezi-App/>
+
+=back
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright 2014 by Peter Karman
+
+This library is free software; you can redistribute it and/or modify
+it under the terms of the GPL v2 or later.
+
+=head1 SEE ALSO
+
+L<http://dezi.org/>, L<http://swish-e.org/>, L<http://lucy.apache.org/>
+
