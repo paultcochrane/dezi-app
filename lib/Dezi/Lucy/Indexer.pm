@@ -262,7 +262,7 @@ sub _build_lucy_delegates {
     my $manager = Lucy::Index::IndexManager->new( host => $hostname );
     $self->{lucy} ||= Lucy::Index::Indexer->new(
         schema  => $schema,
-        index   => $self->invindex->path,
+        index   => $self->invindex->path . "",
         create  => 1,
         manager => $manager,
     );
