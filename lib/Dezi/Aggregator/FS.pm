@@ -1,13 +1,13 @@
 package Dezi::Aggregator::FS;
-use strict;
-use warnings;
-use base qw( Dezi::Aggregator );
+use Moose;
+extends 'Dezi::Aggregator';
 
 use Carp;
 use File::Find;
 use File::Rules;
 use Data::Dump qw( dump );
 use SWISH::3;
+use Try::Tiny;
 
 our $VERSION = '0.001';
 
@@ -45,15 +45,14 @@ script in the Swish-e 2.4 distribution.
 
 See Dezi::Aggregator.
 
-=head2 init
+=head2 BUILD
 
-Implements the base init() method called by new().
+Internal constructor method.
 
 =cut
 
-sub init {
+sub BUILD {
     my $self = shift;
-    $self->SUPER::init(@_);
 
     # create .ext regex to match in file_ok()
     if ( $self->config->IndexOnly ) {
@@ -162,22 +161,21 @@ sub get_doc {
 
     # NOTE we always read in binary (raw) mode in case
     # the file is compressed, binary, etc.
-    eval {
+    my $read_ok = try {
 
         # the 2nd param runs in raw mode (no NULL substitution)
         $buf = SWISH::3->slurp( $url, 1 );
         $url =~ s/\.gz$//;    # post-slurp, in case it failed.
+        return 1;
     };
 
-    if ($@) {
+    if ( !$read_ok ) {
         carp "unable to read $url - skipping";
         return;
     }
 
     $stat ||= [ stat($url) ];
 
-    # TODO SWISH::3 has this function too.
-    # might be faster since no OO overhead.
     my $type = Dezi::Utils->mime_type( $url, $ext );
 
     if (    $self->ok_if_newer_than

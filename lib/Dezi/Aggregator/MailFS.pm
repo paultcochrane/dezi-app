@@ -1,7 +1,6 @@
 package Dezi::Aggregator::MailFS;
-use strict;
-use warnings;
-use base qw( Dezi::Aggregator::FS );
+use Moose;
+extends 'Dezi::Aggregator::FS';
 use Path::Class ();
 use Dezi::Aggregator::Mail;    # delegate doc creation
 use Carp;
@@ -46,15 +45,14 @@ here.
 
 =cut
 
-=head2 init
+=head2 BUILD
 
-Constructor.
+Internal constructor method.
 
 =cut
 
-sub init {
+sub BUILD {
     my $self = shift;
-    $self->SUPER::init(@_);
 
     # cache a Mail aggregator to use its get_doc method
     $self->{_mailer} = Dezi::Aggregator::Mail->new(
@@ -115,15 +113,16 @@ Returns a Dezi::Indexer::Doc object.
 
 =cut
 
-sub get_doc {
-    my $self = shift;
+around 'get_doc' => sub {
+    my $super_method = shift;
+    my $self         = shift;
 
     # there's some wasted overhead here in creating a
     # Dezi::Indexer::Doc 2x. But we're optimizing here for
     # developer time...
 
     # mostly a slurp convenience
-    my $doc = $self->SUPER::get_doc(@_);
+    my $doc = $self->$super_method(@_);
 
     #carp "first pass for raw doc: " . dump($doc);
 
@@ -135,14 +134,14 @@ sub get_doc {
 
     # and finally convert to the Dezi::Indexer::Doc we intend to return
     my $mail = $self->{_mailer}->get_doc( $folder, $msg );
-    
+
     # reinstate original url from filesystem
-    $mail->url($doc->url);
+    $mail->url( $doc->url );
 
     #carp "second pass for mail doc: " . dump($mail);
 
     return $mail;
-}
+};
 
 1;
 

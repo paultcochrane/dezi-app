@@ -124,7 +124,7 @@ sub get_mime {
         # no cache? look it up and cache
         my $mime = $SWISH3->get_mime($url);
         $ext2mime{$ext} = $mime;
-        return $mime;
+        return $mime || $DefaultMIME;
     }
 }
 

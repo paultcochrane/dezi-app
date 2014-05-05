@@ -15,10 +15,10 @@ use Types::Standard -types;
 use Carp;
 use File::Rules;
 use HTTP::Date;
-use Scalar::Util qw(blessed);
+use Scalar::Util qw( blessed );
+use Data::Dump qw( dump );
 
-class_type DeziIndexerConfig,
-    { class => 'Dezi::Indexer::Config' };
+class_type DeziIndexerConfig, { class => 'Dezi::Indexer::Config' };
 class_type DeziPathClassFile, { class => 'Path::Class::File' };
 coerce DeziIndexerConfig, from DeziPathClassFile,
     via { _coerce_indexer_config($_) },

@@ -8,29 +8,56 @@
 
 use strict;
 use warnings;
-use Test::More tests => 10;
+use Test::More tests => 12;
+use Try::Tiny;
+use Class::Load;
 use Path::Class::Dir;
 use Data::Dump qw( dump );
 
 use_ok('Dezi::Test::Indexer');
+use_ok('Dezi::Test::InvIndex');
+use_ok('Dezi::Test::Searcher');
+
+my $num_tests = 9;
 
 SKIP: {
 
-    eval "use Dezi::Aggregator::MailFS";
-    if ($@) {
-        diag "install Mail::Box to test MailFS aggregator";
-        skip "mail test requires Mail::Box", 9;
+    my @required = qw(
+        Mail::Box
+        Dezi::Aggregator::MailFS
+    );
+    for my $cls (@required) {
+        diag("Checking on $cls");
+        my $missing;
+        my $loaded = try {
+            Class::Load::load_class($cls);
+        }
+        catch {
+            warn $_;
+            if ( $_ =~ m/Can't locate (\S+)/ ) {
+                $missing = $1;
+                $missing =~ s/\//::/g;
+                $missing =~ s/\.pm//;
+            }
+            return 0;
+        };
+        if ( !$loaded ) {
+            if ($missing) {
+                diag( '-' x 40 );
+                diag("Do you need to install $missing ?");
+                diag( '-' x 40 );
+            }
+            skip "$cls required for spider test", $num_tests;
+            last;
+        }
     }
 
     # is executable present?
     my $indexer = Dezi::Test::Indexer->new(
-        verbose    => $ENV{DEZI_DEBUG},
-        debug      => $ENV{DEZI_DEBUG},
-        'invindex' => 't/mail.index',
+        verbose  => $ENV{DEZI_DEBUG},
+        debug    => $ENV{DEZI_DEBUG},
+        invindex => Dezi::Test::InvIndex->new( path => 'no/such/path' ),
     );
-    if ( !$indexer->swish_check ) {
-        skip "swish-e not installed", 9;
-    }
 
     ok( my $mail = Dezi::Aggregator::MailFS->new(
             indexer => $indexer,
@@ -47,32 +74,25 @@ SKIP: {
     ok( $mail->indexer->finish, "finish" );
 
     # test with a search
-SKIP: {
+    ok( my $searcher = Dezi::Test::Searcher->new(
+            invindex      => $indexer->invindex,
+            swish3_config => $indexer->swish3->get_config,
+        ),
+        "new searcher"
+    );
 
-        eval { require Dezi::Test::Searcher; };
-        if ($@) {
-            skip "Cannot test Searcher without SWISH::API::More", 5;
-        }
-        ok( my $searcher = Dezi::Test::Searcher->new(
-                invindex => 't/mail.index',
-            ),
-            "new searcher"
-        );
-
-        my $query = 'test';
-        ok( my $results
-                = $searcher->search( $query,
-                { order => 'swishdocpath ASC' } ),
-            "do search"
-        );
-        is( $results->hits, 1, "1 hits" );
-        ok( my $result = $results->next, "results->next" );
-        diag( $result->swishdocpath );
-        like(
-            $result->swishdescription,
-            qr/Peter Karman/,
-            "get swishdescription"
-        );
-    }
+    my $query = 'test';
+    ok( my $results
+            = $searcher->search( $query, { order => 'swishdocpath ASC' } ),
+        "do search"
+    );
+    is( $results->hits, 1, "1 hits" );
+    ok( my $result = $results->next, "results->next" );
+    diag( $result->swishdocpath );
+    like(
+        $result->swishdescription,
+        qr/Peter Karman/,
+        "get swishdescription"
+    );
 
 }

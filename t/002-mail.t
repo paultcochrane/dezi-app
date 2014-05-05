@@ -2,23 +2,47 @@ use strict;
 use warnings;
 use Test::More tests => 5;
 use Path::Class::Dir;
+use Class::Load;
+use Try::Tiny;
 
 use_ok('Dezi::Test::Indexer');
 
+my $num_tests = 4;
+
 SKIP: {
 
-    eval "use Dezi::Aggregator::Mail";
-    if ($@) {
-        diag "install Mail::Box to test Mail aggregator";
-        skip "mail test requires Mail::Box", 4;
+    my @required = qw(
+        Mail::Box
+        Dezi::Aggregator::Mail
+    );
+    for my $cls (@required) {
+        diag("Checking on $cls");
+        my $missing;
+        my $loaded = try {
+            Class::Load::load_class($cls);
+        }
+        catch {
+            warn $_;
+            if ( $_ =~ m/Can't locate (\S+)/ ) {
+                $missing = $1;
+                $missing =~ s/\//::/g;
+                $missing =~ s/\.pm//;
+            }
+            return 0;
+        };
+        if ( !$loaded ) {
+            if ($missing) {
+                diag( '-' x 40 );
+                diag("Do you need to install $missing ?");
+                diag( '-' x 40 );
+            }
+            skip "$cls required for spider test", $num_tests;
+            last;
+        }
     }
 
     # is executable present?
-    my $indexer
-        = Dezi::Test::Indexer->new( 'invindex' => 't/mail.index' );
-    if ( !$indexer->swish_check ) {
-        skip "swish-e not installed", 4;
-    }
+    my $indexer = Dezi::Test::Indexer->new( 'invindex' => 't/mail.index' );
 
     # maildir requires these dirs but makemaker won't package them
     my @dirs;
