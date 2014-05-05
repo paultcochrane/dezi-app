@@ -2,7 +2,7 @@ package Dezi::Searcher;
 use Moose;
 use MooseX::StrictConstructor;
 with 'Dezi::Role';
-use Dezi::Types;
+use Dezi::Types qw(InvIndexArr);
 use Dezi::Searcher::SearchOpts;
 use Carp;
 use Scalar::Util qw( blessed );
@@ -16,7 +16,7 @@ our $VERSION = '0.001';
 has 'max_hits' => ( is => 'rw', isa => 'Int', default => 1000 );
 has 'invindex' => (
     is       => 'rw',
-    isa      => 'Dezi::Type::InvIndexArr',
+    isa      => InvIndexArr,
     required => 1,
     coerce   => 1,
 );

@@ -1,54 +1,57 @@
 package Dezi::Types;
-use Moose;
-use Moose::Util::TypeConstraints;
-use MooseX::Types::Path::Class;
+use Type::Library -base, -declare => qw(FileRules);
+use Type::Utils -all;
+use Types::Standard -types;
 use Carp;
 use File::Rules;
 use HTTP::Date;
 
-# Indexer::Config
-subtype 'Dezi::Type::Indexer::Config' => as class_type
-    'Dezi::Indexer::Config';
-coerce 'Dezi::Type::Indexer::Config' => from 'Path::Class::File' =>
-    via { _coerce_indexer_config($_) } =>
-    from 'Str' => via { _coerce_indexer_config($_) };
+use Scalar::Util qw(blessed);
+
+class_type IndexerConfig, { class => 'Dezi::Indexer::Config' };
+class_type PathClassFile, { class => 'Path::Class::File' };
+coerce IndexerConfig, from PathClassFile,
+    via { _coerce_indexer_config($_) },
+    from Str, via { _coerce_indexer_config($_) };
 
 # InvIndex
-subtype 'Dezi::Type::InvIndex' => as class_type 'Dezi::InvIndex';
-coerce 'Dezi::Type::InvIndex'  => from 'Path::Class::File' =>
-    via { _coerce_invindex($_) } => from 'Str' =>
-    via { _coerce_invindex($_) } => from 'Undef' =>
+class_type InvIndex, { class => 'Dezi::InvIndex' };
+coerce InvIndex, from PathClassFile,
+    via { _coerce_invindex($_) }, from Str,
+    via { _coerce_invindex($_) }, from Undef,
     via { Dezi::InvIndex->new() };
-subtype 'Dezi::Type::InvIndexArr' => as 'ArrayRef[Dezi::Type::InvIndex]';
-coerce 'Dezi::Type::InvIndexArr' => from 'ArrayRef' => via {
+
+declare InvIndexArr, as ArrayRef[];
+coerce InvIndexArr, from ArrayRef, via {
     [ map { _coerce_invindex($_) } @$_ ];
-} => from 'Dezi::Type::InvIndex' => via { [$_] };
+}, from InvIndex, via { [$_] };
 
 # filter
-subtype 'Dezi::Type::FileOrCodeRef' => as 'CodeRef';
-coerce 'Dezi::Type::FileOrCodeRef' => from 'Str' => via {
+declare FileOrCodeRef, as CodeRef;
+coerce FileOrCodeRef, from Str, via {
     if ( -s $_ and -r $_ ) { return do $_ }
 };
 
 # File::Rules
-subtype 'Dezi::Type::File::Rules' => as class_type 'File::Rules';
-coerce 'Dezi::Type::File::Rules'  => from 'ArrayRef' =>
+class_type FileRules, { class => "File::Rules" };
+coerce FileRules, from ArrayRef,
     via { File::Rules->new($_) };
 
 # URI (coerce to Str)
-subtype 'Dezi::Type::Uri' => as 'Str';
-coerce 'Dezi::Type::Uri' => from 'Object' => via {"$_"};
+declare Uri, as Str;
+coerce Uri, from Object, via {"$_"};
 
 # Epoch
-subtype 'Dezi::Type::Epoch' => as 'Maybe[Int]';
-coerce 'Dezi::Type::Epoch' => from 'Defined' => via {
+declare Epoch, as Maybe[Int];
+coerce Epoch, from Defined, via {
     m/\D/ ? str2time($_) : $_;
 };
 
 # LogLevel
-subtype 'Dezi::Type::LogLevel' => as 'Int';
-coerce 'Dezi::Type::LogLevel' => from 'Undef' => via {0};
-
+declare LogLevel, as Int;
+coerce LogLevel, from Undef, via { 0 };
+ 
+#
 use namespace::sweep;
 
 sub _coerce_indexer_config {

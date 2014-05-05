@@ -1,24 +1,24 @@
 package Dezi::Role;
 use Moose::Role;
-use Dezi::Types;
+use Dezi::Types qw(LogLevel);
 
 our $VERSION = '0.001';
 
 has 'debug' => (
     is      => 'rw',
-    isa     => 'Dezi::Type::LogLevel',
+    isa     => LogLevel,
     default => sub { $ENV{DEZI_DEBUG} || 0 },
     coerce  => 1,
 );
 has 'verbose' => (
     is      => 'rw',
-    isa     => 'Dezi::Type::LogLevel',
+    isa     => LogLevel,
     default => sub { $ENV{DEZI_VERBOSE} || 0 },
     coerce  => 1,
 );
 has 'warnings' => (
     is      => 'rw',
-    isa     => 'Dezi::Type::LogLevel',
+    isa     => LogLevel,
     default => sub {
         return 1 unless exists $ENV{DEZI_WARNINGS};
         $ENV{DEZI_WARNINGS} || 0;
