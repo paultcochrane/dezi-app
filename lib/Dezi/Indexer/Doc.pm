@@ -20,10 +20,10 @@ my ( $locale, $lang, $charset );
 {
 
     # inside a block to reduce impact on any regex
-    use POSIX qw(locale_h);
+    use POSIX;
     use locale;
 
-    $locale = setlocale(LC_CTYPE);
+    $locale = setlocale(POSIX::LC_CTYPE);
     ( $lang, $charset ) = split( m/\./, $locale );
     $charset ||= 'iso-8859-1';
 }
@@ -119,6 +119,8 @@ All of the following params are also available as accessors/mutators.
 =item debug
 
 =item charset
+
+Note that the charset is derived from the B<LC_CTYPE> environment variable.
 
 =item data
 
