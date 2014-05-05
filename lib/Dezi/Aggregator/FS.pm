@@ -176,7 +176,7 @@ sub get_doc {
 
     $stat ||= [ stat($url) ];
 
-    my $type = Dezi::Utils->mime_type( $url, $ext );
+    my $type = Dezi::Utils->get_mime( $url, $self->indexer->swish3 );
 
     if (    $self->ok_if_newer_than
         and $self->ok_if_newer_than >= $stat->[9] )

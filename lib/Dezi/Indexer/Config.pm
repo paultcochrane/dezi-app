@@ -583,6 +583,8 @@ sub ver2_to_ver3 {
     my $file         = shift;
     my $no_timestamp = shift || 0;
 
+    my $s3 = SWISH::3->new();
+
     # list of config directives that take arguments to the opt value
     # i.e. the directive has 3 or more parts
     my %takes_arg = map { $_ => 1 } qw(
@@ -799,7 +801,7 @@ KEY: for my $k ( sort keys %$config ) {
 
                 for my $ext ( split( m/\ +/, $file_ext ) ) {
                     $ext =~ s/^\.//;
-                    my $mime = Dezi::Utils->mime_type( "null.$ext", $ext )
+                    my $mime = $s3->get_mime("null.$ext")
                         || $parser_map{$parser_type};
                     if (    exists $conf3{Parsers}->{$parser_type}
                         and exists $conf3{Parsers}->{$parser_type}->{$mime} )
