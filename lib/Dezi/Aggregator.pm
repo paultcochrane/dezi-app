@@ -2,7 +2,8 @@ package Dezi::Aggregator;
 use Moose;
 with 'Dezi::Role';
 use Carp;
-use Dezi::Types qw(FileOrCodeRef);
+use Types::Standard qw( Bool Str InstanceOf Int Object );
+use Dezi::Types qw( DeziFileOrCodeRef DeziEpoch );
 use Dezi::Utils;
 use SWISH::Filter;
 use Dezi::Indexer::Doc;
@@ -13,23 +14,24 @@ use namespace::sweep;
 
 our $VERSION = '0.001';
 
-has 'set_parser_from_type' =>
-    ( is => 'rw', isa => 'Bool', default => sub {1} );
-has 'indexer' => ( is => 'rw', isa => 'Dezi::Indexer', );
-has 'doc_class' =>
-    ( is => 'rw', required => 1, default => 'Dezi::Indexer::Doc' );
-
+has 'set_parser_from_type' => ( is => 'rw', isa => Bool, default => sub {1} );
+has 'indexer' => ( is => 'rw', isa => InstanceOf ['Dezi::Indexer'], );
+has 'doc_class' => (
+    is       => 'rw',
+    isa      => Str,
+    required => 1,
+    default  => sub {'Dezi::Indexer::Doc'},
+);
 has 'swish_filter_obj' => (
     is      => 'rw',
-    isa     => 'SWISH::Filter',
+    isa     => InstanceOf ['SWISH::Filter'],
     default => sub { SWISH::Filter->new }
 );
-has 'test_mode' => ( is => 'rw', isa => 'Bool', default => sub {0} );
-has 'filter' =>
-    ( is => 'rw', isa => FileOrCodeRef, coerce => 1, );
-has 'ok_if_newer_than' => ( is => 'rw', isa => 'Int' );
-has 'progress'         => ( is => 'rw', isa => 'Object' ); # Term::ProgressBar
-has 'count'            => ( is => 'ro', isa => 'Int' );
+has 'test_mode' => ( is => 'rw', isa => Bool, default => sub {0} );
+has 'filter' => ( is => 'rw', isa => DeziFileOrCodeRef, coerce => 1, );
+has 'ok_if_newer_than' => ( is => 'rw', isa => DeziEpoch );
+has 'progress'         => ( is => 'rw', isa => Object );   # Term::ProgressBar
+has 'count'            => ( is => 'ro', isa => Int );
 
 =pod
 
@@ -345,7 +347,7 @@ sub _apply_file_rules {
         $self->{_file_rules} = File::Rules->new( $self->config->FileRules );
     }
     if ( $file_rules or exists $self->{_file_rules} ) {
-        $self->debug and warn "$file [applying FileRules]\n";
+        $self->debug and warn "$file [applying DeziFileRules]\n";
         my $rules = $file_rules || $self->{_file_rules};
         my $match = $rules->match($file);
         return $match;

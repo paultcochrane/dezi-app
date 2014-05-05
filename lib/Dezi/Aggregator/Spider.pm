@@ -5,7 +5,8 @@ use Carp;
 use Scalar::Util qw( blessed );
 use URI;
 use HTTP::Cookies;
-use Dezi::Types qw(FileRules Cache Epoch);
+use Types::Standard qw( InstanceOf Maybe Int CodeRef Str Bool ArrayRef );
+use Dezi::Types qw( DeziFileRules DeziEpoch );
 use Dezi::Utils;
 use Dezi::Queue;
 use Dezi::Cache;
@@ -23,53 +24,56 @@ use Class::Load;
 
 has 'agent' => (
     is      => 'rw',
-    isa     => 'Str',
+    isa     => Str,
     default => sub {'dezi-spider http://dezi.org/'},
 );
-has 'authn_callback'     => ( is => 'rw', isa => 'CodeRef' );
-has 'credential_timeout' => ( is => 'rw', isa => 'Int', default => sub {30} );
-has 'credentials'        => ( is => 'rw', isa => 'Str' );
-has 'delay'              => ( is => 'rw', isa => 'Int', default => sub {5} );
+has 'authn_callback'     => ( is => 'rw', isa => CodeRef );
+has 'credential_timeout' => ( is => 'rw', isa => Int, default => sub {30} );
+has 'credentials'        => ( is => 'rw', isa => Str );
+has 'delay'              => ( is => 'rw', isa => Int, default => sub {5} );
 has 'email' => (
     is      => 'rw',
-    isa     => 'Str',
+    isa     => Str,
     default => sub {'dezi@user.failed.to.set.email.invalid'},
 );
-has 'file_rules' =>
-    ( is => 'rw', isa => FileRules, coerce => 1, );
-has 'follow_redirects' => ( is => 'rw', isa => 'Bool', default => sub {1} );
-has 'keep_alive'       => ( is => 'rw', isa => 'Bool', default => sub {0} );
+has 'file_rules' => ( is => 'rw', isa => DeziFileRules, coerce => 1, );
+has 'follow_redirects' => ( is => 'rw', isa => Bool, default => sub {1} );
+has 'keep_alive' => ( is => 'rw', isa => Bool, default => sub {0} );
 
 # whitelist which HTML tags we consider "links"
 # should be subset of what HTML::LinkExtor considers links
 has 'link_tags' => (
     is      => 'rw',
-    isa     => 'ArrayRef',
+    isa     => ArrayRef,
     default => sub { [ 'a', 'frame', 'iframe' ] }
 );
 
-has 'max_depth' => ( is => 'rw', isa => 'Maybe[Int]' );
-has 'max_files' => ( is => 'rw', isa => 'Int', default => sub {0} );
-has 'max_size'  => ( is => 'rw', isa => 'Int', default => sub {5_000_000} );
-has 'max_time' => ( is => 'rw', isa => 'Int', );    # TODO
-has 'md5_cache' =>
-    ( is => 'rw', isa => Cache, default => sub { Dezi::Cache->new } );
-has 'modified_since' =>
-    ( is => 'rw', isa => Epoch, coerce => 1, );
-has 'queue' =>
-    ( is => 'rw', isa => 'Dezi::Queue', default => sub { Dezi::Queue->new } );
-has 'remove_leading_dots' =>
-    ( is => 'rw', isa => 'Bool', default => sub {1} );
-has 'same_hosts' => ( is => 'rw', isa => 'ArrayRef', default => sub { [] } );
-has 'timeout'    => ( is => 'rw', isa => 'Int',      default => sub {30} );
-has 'ua' => ( is => 'rw', isa => 'LWP::UserAgent' );
+has 'max_depth' => ( is => 'rw', isa => Maybe [Int] );
+has 'max_files' => ( is => 'rw', isa => Int, default => sub {0} );
+has 'max_size'  => ( is => 'rw', isa => Int, default => sub {5_000_000} );
+has 'max_time' => ( is => 'rw', isa => Int, );    # TODO
+has 'md5_cache' => (
+    is      => 'rw',
+    isa     => InstanceOf ['Dezi::Cache'],
+    default => sub { Dezi::Cache->new }
+);
+has 'modified_since' => ( is => 'rw', isa => DeziEpoch, coerce => 1, );
+has 'queue' => (
+    is      => 'rw',
+    isa     => InstanceOf ['Dezi::Queue'],
+    default => sub { Dezi::Queue->new }
+);
+has 'remove_leading_dots' => ( is => 'rw', isa => Bool, default => sub {1} );
+has 'same_hosts' => ( is => 'rw', isa => ArrayRef, default => sub { [] } );
+has 'timeout'    => ( is => 'rw', isa => Int,      default => sub {30} );
+has 'ua' => ( is => 'rw', isa => InstanceOf ['LWP::UserAgent'] );
 has 'uri_cache' => (
     is      => 'rw',
-    isa     => 'Dezi::Cache',
+    isa     => InstanceOf ['Dezi::Cache'],
     default => sub { Dezi::Cache->new },
 );
-has 'use_md5'     => ( is => 'rw', isa => 'Bool', default => sub {0} );
-has 'use_cookies' => ( is => 'rw', isa => 'Bool', default => sub {1} );
+has 'use_md5'     => ( is => 'rw', isa => Bool, default => sub {0} );
+has 'use_cookies' => ( is => 'rw', isa => Bool, default => sub {1} );
 
 #use LWP::Debug qw(+);
 

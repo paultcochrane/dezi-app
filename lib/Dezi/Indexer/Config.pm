@@ -1,6 +1,7 @@
 package Dezi::Indexer::Config;
 use Moose;
 with 'Dezi::Role';
+use Types::Standard qw( Str );
 use MooseX::Types::Path::Class;
 use Carp;
 use Config::General;
@@ -25,7 +26,7 @@ our $VERSION = '0.001';
 # only a few explicitly named attributes.
 # everything else is through AUTOLOAD.
 has 'file' => ( is => 'rw', isa => 'Path::Class::File', coerce => 1, );
-has 'swish3_config' => ( is => 'ro', isa => 'Str' );
+has 'swish3_config' => ( is => 'ro', isa => Str );
 
 my $XML = Search::Tools::XML->new;
 
@@ -622,7 +623,6 @@ sub ver2_to_ver3 {
         FileFilter
         FileFilterMatch
         FileMatch
-        FileRules
         FileRules
         IgnoreFirstChar
         IgnoreLastChar

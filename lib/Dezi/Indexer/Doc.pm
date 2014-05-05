@@ -1,7 +1,8 @@
 package Dezi::Indexer::Doc;
 use Moose;
 with 'Dezi::Role';
-use Dezi::Types qw(Uri Epoch);
+use Types::Standard qw( Str HashRef Int InstanceOf );
+use Dezi::Types qw( DeziUriStr DeziEpoch );
 use Carp;
 use Data::Dump qw( dump );
 use overload(
@@ -27,24 +28,24 @@ my ( $locale, $lang, $charset );
     $charset ||= 'iso-8859-1';
 }
 
-has 'url' => ( is => 'rw', isa => Uri, coerce => 1 );
+has 'url' => ( is => 'rw', isa => DeziUriStr, coerce => 1 );
 has 'modtime' => (
     is      => 'rw',
-    isa     => Epoch,
+    isa     => DeziEpoch,
     coerce  => 1,
     default => sub { time() },
 );
-has 'type'    => ( is => 'rw', isa => 'Str' );
-has 'parser'  => ( is => 'rw', isa => 'Str' );
-has 'content' => ( is => 'rw', isa => 'Str' );
-has 'action'  => ( is => 'rw', isa => 'Str' );
-has 'data'    => ( is => 'rw', isa => 'HashRef' );
-has 'size'    => ( is => 'rw', isa => 'Int' );
-has 'charset' => ( is => 'rw', isa => 'Str', default => sub {$charset} );
-has 'version' => ( is => 'rw', isa => 'Str', default => sub {3} );
+has 'type'    => ( is => 'rw', isa => Str );
+has 'parser'  => ( is => 'rw', isa => Str );
+has 'content' => ( is => 'rw', isa => Str );
+has 'action'  => ( is => 'rw', isa => Str );
+has 'data'    => ( is => 'rw', isa => HashRef );
+has 'size'    => ( is => 'rw', isa => Int );
+has 'charset' => ( is => 'rw', isa => Str, default => sub {$charset} );
+has 'version' => ( is => 'rw', isa => Str, default => sub {3} );
 has 'headers' => (
     is       => 'rw',
-    isa      => 'Dezi::Indexer::Headers',
+    isa      => InstanceOf ['Dezi::Indexer::Headers'],
     default  => sub { Dezi::Indexer::Headers->new() },
     required => 1,
 );

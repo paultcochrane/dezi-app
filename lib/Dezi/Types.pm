@@ -1,56 +1,65 @@
 package Dezi::Types;
-use Type::Library -base, -declare => qw(FileRules);
+use Type::Library -base, -declare => qw(
+    DeziFileRules
+    DeziIndexerConfig
+    DeziPathClassFile
+    DeziInvIndex
+    DeziInvIndexArr
+    DeziFileOrCodeRef
+    DeziUriStr
+    DeziEpoch
+    DeziLogLevel
+);
 use Type::Utils -all;
 use Types::Standard -types;
 use Carp;
 use File::Rules;
 use HTTP::Date;
-
 use Scalar::Util qw(blessed);
 
-class_type IndexerConfig, { class => 'Dezi::Indexer::Config' };
-class_type PathClassFile, { class => 'Path::Class::File' };
-coerce IndexerConfig, from PathClassFile,
+class_type DeziIndexerConfig,
+    { class => 'Dezi::Indexer::Config' };
+class_type DeziPathClassFile, { class => 'Path::Class::File' };
+coerce DeziIndexerConfig, from DeziPathClassFile,
     via { _coerce_indexer_config($_) },
     from Str, via { _coerce_indexer_config($_) };
 
 # InvIndex
-class_type InvIndex, { class => 'Dezi::InvIndex' };
-coerce InvIndex, from PathClassFile,
+class_type DeziInvIndex, { class => 'Dezi::InvIndex' };
+coerce DeziInvIndex, from DeziPathClassFile,
     via { _coerce_invindex($_) }, from Str,
     via { _coerce_invindex($_) }, from Undef,
     via { Dezi::InvIndex->new() };
 
-declare InvIndexArr, as ArrayRef[];
-coerce InvIndexArr, from ArrayRef, via {
+declare DeziInvIndexArr, as ArrayRef [];
+coerce DeziInvIndexArr, from ArrayRef, via {
     [ map { _coerce_invindex($_) } @$_ ];
-}, from InvIndex, via { [$_] };
+}, from DeziInvIndex, via { [$_] };
 
 # filter
-declare FileOrCodeRef, as CodeRef;
-coerce FileOrCodeRef, from Str, via {
+declare DeziFileOrCodeRef, as CodeRef;
+coerce DeziFileOrCodeRef, from Str, via {
     if ( -s $_ and -r $_ ) { return do $_ }
 };
 
 # File::Rules
-class_type FileRules, { class => "File::Rules" };
-coerce FileRules, from ArrayRef,
-    via { File::Rules->new($_) };
+class_type DeziFileRules, { class => "File::Rules" };
+coerce DeziFileRules, from ArrayRef, via { File::Rules->new($_) };
 
 # URI (coerce to Str)
-declare Uri, as Str;
-coerce Uri, from Object, via {"$_"};
+declare DeziUriStr, as Str;
+coerce DeziUriStr, from Object, via {"$_"};
 
 # Epoch
-declare Epoch, as Maybe[Int];
-coerce Epoch, from Defined, via {
+declare DeziEpoch, as Maybe [Int];
+coerce DeziEpoch, from Defined, via {
     m/\D/ ? str2time($_) : $_;
 };
 
 # LogLevel
-declare LogLevel, as Int;
-coerce LogLevel, from Undef, via { 0 };
- 
+declare DeziLogLevel, as Int;
+coerce DeziLogLevel, from Undef, via {0};
+
 #
 use namespace::sweep;
 
@@ -107,17 +116,17 @@ __END__
 
 =head1 NAME
 
-Dezi::Types - Moose type constraints for Dezi::App components
+Dezi::Types - Type::Tiny constraints for Dezi::App components
 
 =head1 SYNOPSIS
 
  package MySearchThing;
  use Moose;
- use Dezi::Types;
+ use Dezi::Types qw( DeziInvIndexArr );
 
  has 'invindex' => (
     is       => 'rw',
-    isa      => 'Dezi::Type::InvIndexArr',
+    isa      => DeziInvIndexArr,
     required => 1,
     coerce   => 1,
  );
@@ -130,35 +139,35 @@ The following types are defined:
 
 =item
 
-Dezi::Type::Indexer::Config
+DeziIndexerConfig
 
 =item
 
-Dezi::Type::InvIndex
+DeziInvIndex
 
 =item
 
-Dezi::Type::InvIndexArr
+DeziInvIndexArr
 
 =item
 
-Dezi::Type::FileOrCodeRef
+DeziFileOrCodeRef
 
 =item
 
-Dezi::Type::File::Rules
+DeziFileRules
 
 =item
 
-Dezi::Type::Uri
+DeziUriStr
 
 =item
 
-Dezi::Type::Epoch
+DeziEpoch
 
 =item
 
-Dezi::Type::LogLevel
+DeziLogLevel
 
 =back
 

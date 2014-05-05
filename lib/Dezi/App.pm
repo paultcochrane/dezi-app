@@ -6,7 +6,8 @@ use Carp;
 use Data::Dump qw( dump );
 use Scalar::Util qw( blessed );
 use Class::Load ();
-use Dezi::Types qw(IndexerConfig InvIndex FileOrCodeRef);
+use Types::Standard qw( Bool HashRef );
+use Dezi::Types qw( DeziIndexerConfig DeziInvIndex DeziFileOrCodeRef );
 use Dezi::ReplaceRules;
 use namespace::sweep;
 
@@ -148,18 +149,17 @@ Default is false (off).
 =cut
 
 has 'aggregator' => ( is => 'rw', );    # we do our own isa check
-has 'aggregator_opts' => ( is => 'rw', isa => 'HashRef' );
-has 'config' =>
-    ( is => 'rw', isa => IndexerConfig, coerce => 1, );
-has 'indexer' => ( is => 'rw', );       # we do our own isa check
-has 'indexer_opts' => ( is => 'rw', isa => 'HashRef' );
+has 'aggregator_opts' => ( is => 'rw', isa => HashRef );
+has 'config' => ( is => 'rw', isa => DeziIndexerConfig, coerce => 1, );
+has 'indexer' => ( is => 'rw', );                    # we do our own isa check
+has 'indexer_opts' => ( is => 'rw', isa => HashRef );
 has 'invindex' => (
     is     => 'rw',
-    isa    => InvIndex,
+    isa    => DeziInvIndex,
     coerce => 1,
 );
-has 'filter' => ( is => 'rw', isa => FileOrCodeRef );
-has 'test_mode' => ( is => 'rw', isa => 'Bool', default => 0 );
+has 'filter' => ( is => 'rw', isa => DeziFileOrCodeRef );
+has 'test_mode' => ( is => 'rw', isa => Bool, default => 0 );
 
 # allow for short names. we map to class->new
 my %ashort = (

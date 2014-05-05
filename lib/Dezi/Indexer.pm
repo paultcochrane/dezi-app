@@ -2,7 +2,8 @@ package Dezi::Indexer;
 use Moose;
 use MooseX::StrictConstructor;
 with 'Dezi::Role';
-use Dezi::Types qw(InvIndex IndexerConfig);
+use Types::Standard qw( Str Int Bool Maybe InstanceOf );
+use Dezi::Types qw( DeziInvIndex DeziIndexerConfig );
 use Scalar::Util qw( blessed );
 use Carp;
 use Data::Dump qw( dump );
@@ -15,27 +16,26 @@ use namespace::sweep;
 
 our $VERSION = '0.001';
 
-has 'invindex' => ( is => 'rw', isa => InvIndex, coerce => 1, );
+has 'invindex' => ( is => 'rw', isa => DeziInvIndex, coerce => 1, );
 has 'invindex_class' =>
-    ( is => 'rw', isa => 'Str', default => sub {'Dezi::InvIndex'} );
+    ( is => 'rw', isa => Str, default => sub {'Dezi::InvIndex'} );
 has 'config' => (
     is      => 'rw',
-    isa     => IndexerConfig,
+    isa     => DeziIndexerConfig,
     coerce  => 1,
     default => sub { Dezi::Indexer::Config->new() },
 );
-has 'count'   => ( is => 'rw', isa => 'Int' );
-has 'clobber' => ( is => 'rw', isa => 'Bool', default => 0 );
-has 'flush'   => ( is => 'rw', isa => 'Int' );
-has 'started' => ( is => 'ro', isa => 'Int' );
+has 'count'   => ( is => 'rw', isa => Int );
+has 'clobber' => ( is => 'rw', isa => Bool, default => 0 );
+has 'flush'   => ( is => 'rw', isa => Int );
+has 'started' => ( is => 'ro', isa => Int );
 has 'swish3' => (
     is      => 'rw',
-    isa     => 'Maybe[SWISH::3]',
+    isa     => Maybe [ InstanceOf ['SWISH::3'] ],
     builder => 'init_swish3',
 );
-has 'test_mode' => ( is => 'rw', isa => 'Bool', default => 0 );
-has 'use_swish3_tokenizer' =>
-    ( is => 'rw', isa => 'Bool', default => sub {0} );
+has 'test_mode'            => ( is => 'rw', isa => Bool, default => sub {0} );
+has 'use_swish3_tokenizer' => ( is => 'rw', isa => Bool, default => sub {0} );
 
 =pod
 
@@ -79,7 +79,7 @@ accessor method:
 
 =item clobber
 
-Overrite any existing InvIndex.
+Over-write any existing InvIndex.
 
 =item config
 

@@ -2,7 +2,8 @@ package Dezi::Searcher;
 use Moose;
 use MooseX::StrictConstructor;
 with 'Dezi::Role';
-use Dezi::Types qw(InvIndexArr);
+use Types::Standard qw( InstanceOf HashRef Int );
+use Dezi::Types qw( DeziInvIndexArr );
 use Dezi::Searcher::SearchOpts;
 use Carp;
 use Scalar::Util qw( blessed );
@@ -13,22 +14,22 @@ use namespace::sweep;
 
 our $VERSION = '0.001';
 
-has 'max_hits' => ( is => 'rw', isa => 'Int', default => 1000 );
+has 'max_hits' => ( is => 'rw', isa => Int, default => 1000 );
 has 'invindex' => (
     is       => 'rw',
-    isa      => InvIndexArr,
+    isa      => DeziInvIndexArr,
     required => 1,
     coerce   => 1,
 );
 has 'qp_config' =>
-    ( is => 'rw', isa => 'HashRef', builder => 'init_qp_config', lazy => 1, );
+    ( is => 'rw', isa => HashRef, builder => 'init_qp_config', lazy => 1, );
 has 'qp' => (
     is      => 'rw',
-    isa     => 'Search::Query::Parser',
+    isa     => InstanceOf ['Search::Query::Parser'],
     builder => 'init_qp',
     lazy    => 1,
 );
-has 'property_map' => ( is => 'ro', isa => 'HashRef' );
+has 'property_map' => ( is => 'ro', isa => HashRef );
 
 =head1 NAME
 
