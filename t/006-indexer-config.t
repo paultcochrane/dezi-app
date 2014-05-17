@@ -1,8 +1,8 @@
 use strict;
 use warnings;
 use Test::More tests => 11;
-use File::Slurp;
 use Path::Class::Dir;
+use Search::Tools;
 
 # dev only
 my $generate_xml = $ENV{GEN_XML} || 0;
@@ -39,7 +39,7 @@ else {
             write_file( "$ver3_file", $xml );
         }
         else {
-            my $ver3 = read_file("$ver3_file");
+            my $ver3 = Search::Tools->slurp("$ver3_file");
             is( $xml, $ver3, "$file to xml" );
         }
 
