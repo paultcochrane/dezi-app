@@ -576,6 +576,96 @@ Converts I<file> to XML format and returns as XML string.
 
 If I<file> is omitted, uses the current values in the calling object.
 
+The following fields are converted but are ignored by SWISH::3::Config.
+
+ AbsoluteLinks
+ BumpPositionCounterCharacters
+ Buzzwords
+ BeginCharacters
+ ConvertHTMLEntities
+ Delay
+ DontBumpPositionOnEndTags
+ DontBumpPositionOnStartTags
+ EnableAltSearchSyntax
+ EndCharacters
+ EquivalentServer
+ ExtractPath
+ FileFilter
+ FileFilterMatch
+ FileMatch
+ FileRules
+ HTMLLinksMetaName
+ IgnoreFirstChar
+ IgnoreLastChar
+ IgnoreLimit
+ IgnoreMetaTags
+ IgnoreNumberChars
+ IgnoreTotalWordCountWhenRanking
+ IgnoreWords
+ ImageLinksMetaName
+ IndexAltTagMetaName
+ IndexComments
+ IndexOnly
+ IndexPointer
+ MaxDepth
+ MaxWordLimit
+ MinWordLimit
+ NoContents
+ obeyRobotsNoIndex
+ PreSortedIndex
+ PropCompressionLevel
+ RecursionDepth
+ ReplaceRules
+ ResultExtFormatName
+ SpiderDirectory
+ SwishProgParameters
+ SwishSearchDefaultRule
+ SwishSearchOperators
+ TmpDir
+ TranslateCharacters
+ TruncateDocSize
+ UseSoundex
+ UseStemming
+ UseWords
+ WordCharacters
+ Words
+
+The following fields are converted to the their SWISH::3::Config
+equivalents.
+
+ CascadeMetaContext
+ DefaultContents
+ FollowSymLinks
+ FollowXInclude
+ FuzzyIndexingMode
+ IncludeConfigFile
+ IndexAdmin
+ IndexContents
+ IndexDescription
+ IndexDir
+ IndexFile
+ IndexName
+ IndexReport
+ MetaNameAlias
+ MetaNames
+ MetaNamesRank
+ ParserWarnLevel
+ PropertyNameAlias
+ PropertyNames
+ PropertyNamesCompareCase
+ PropertyNamesDate
+ PropertyNamesIgnoreCase
+ PropertyNamesMaxLength
+ PropertyNamesNoStripChars
+ PropertyNamesNumeric
+ PropertyNamesSortKeyLength
+ StoreDescription
+ TagAlias
+ UndefinedMetaTags
+ UndefinedMetaNames
+ UndefinedXMLAttributes
+ XMLClassAttributes
+        
 =cut
 
 sub ver2_to_ver3 {
@@ -618,21 +708,57 @@ sub ver2_to_ver3 {
     );
 
     my %unsupported = map { $_ => 1 } qw(
+        AbsoluteLinks
+        BumpPositionCounterCharacters
+        Buzzwords
         BeginCharacters
+        ConvertHTMLEntities
         Delay
+        DontBumpPositionOnEndTags
+        DontBumpPositionOnStartTags
+        EnableAltSearchSyntax
         EndCharacters
         EquivalentServer
+        ExtractPath
         FileFilter
         FileFilterMatch
         FileMatch
         FileRules
+        HTMLLinksMetaName
         IgnoreFirstChar
         IgnoreLastChar
+        IgnoreLimit
+        IgnoreMetaTags
+        IgnoreNumberChars
+        IgnoreTotalWordCountWhenRanking
+        IgnoreWords
+        ImageLinksMetaName
+        IndexAltTagMetaName
+        IndexComments
+        IndexOnly
+        IndexPointer
         MaxDepth
+        MaxWordLimit
+        MinWordLimit
+        NoContents
+        obeyRobotsNoIndex
+        PreSortedIndex
+        PropCompressionLevel
+        RecursionDepth
+        ReplaceRules
+        ResultExtFormatName
         SpiderDirectory
         SwishProgParameters
+        SwishSearchDefaultRule
+        SwishSearchOperators
         TmpDir
+        TranslateCharacters
+        TruncateDocSize
+        UseSoundex
+        UseStemming
+        UseWords
         WordCharacters
+        Words
     );
     my $disclaimer = "<!-- WARNING: CONFIG ignored by Swish3 -->\n ";
 
@@ -976,12 +1102,10 @@ sub get_stemmer_lang {
 
 __END__
 
-=head1 TODO
+=head1 CAVEATS
 
 IgnoreTotalWordCountWhenRanking defaults to 0 
-which is B<not> the default in Swish-e.
-This is to make the RankScheme feature work by default. 
-Really, the default should be 0 in Swish-e itself.
+which is B<not> the default in Swish-e 2.x.
 
 =head1 AUTHOR
 
