@@ -2,16 +2,57 @@ package Dezi::CLI;
 use Moose;
 with 'MooseX::Getopt';
 
-use Types::Standard qw( Bool );
+use Types::Standard qw(:all);
 use Data::Dump qw( dump );
 use Carp;
+use Search::Tools::UTF8;
+
+MooseX::Getopt::OptionTypeMap->add_option_type_to_map(
+    ArrayRef => '=s@',
+    Bool     => '=i',
+);
 
 use Dezi::App;
+use Dezi::InvIndex;
 
 our $VERSION = '0.001';
 my $CLI_NAME = 'deziapp';
 
-has 'debug'   => ( is => 'rw', isa => Bool, );
+has 'debug' => (
+    is          => 'rw',
+    isa         => Bool,
+    traits      => ['Getopt'],
+    cmd_aliases => [qw(D)],
+);
+has 'null_term' => (
+    is          => 'rw',
+    isa         => Bool,
+    traits      => ['Getopt'],
+    cmd_aliases => [qw/ n /]
+);
+has 'inputs' => ( is => 'rw', isa => ArrayRef, );
+has 'indexing' => (
+    is          => 'rw',
+    isa         => Bool,
+    traits      => ['Getopt'],
+    cmd_aliases => [qw( i )]
+);
+has 'query' => (
+    is          => 'rw',
+    isa         => Str,
+    traits      => ['Getopt'],
+    cmd_aliases => [qw/ q w /],
+);
+has 'invindex' => (
+    is          => 'rw',
+    isa         => Str,
+    traits      => ['Getopt'],
+    cmd_aliases => [qw/ f /],
+    lazy        => 1,
+    builder     => '_init_invindex',
+);
+
+sub _init_invindex { return 'dezi.index' }
 
 =head2 run
 
@@ -35,6 +76,17 @@ sub run {
 
     my @cmds = @{ $self->extra_argv };
 
+    # compat with swish3 which used @argv to store
+    # input files/dirs for -i (index) command
+    # and -q to indicate 'search' mode
+    if ( $self->indexing and !$self->inputs ) {
+        $self->inputs( [@cmds] );
+        @cmds = ('index');
+    }
+    if ( $self->query ) {
+        @cmds = ('search');
+    }
+
     if ( !@cmds or $self->help_flag ) {
         $self->usage->die( { post_text => $self->commands } );
     }
@@ -49,8 +101,165 @@ sub run {
 
 }
 
+sub search {
+    my $self  = shift;
+    my $query = $self->query;
+    if ( !defined $query ) {
+        confess "query required to search";
+    }
+    my $invindex   = Dezi::InvIndex->new( path => $self->invindex );
+    my $searcher   = $self->_get_searcher($invindex);
+    my $start_time = Time::HiRes::time();
+    my $results    = try {
+        $searcher->search(
+            to_utf8($query),
+            {   start => $self->begin,
+                max   => $self->max,
+                limit => _parse_limits( $self->limits ),
+                order => $self->sort_order,
+            }
+        );
+    }
+    catch {
+        my $errmsg = "$_";
+        $errmsg =~ s/ at \/[\w\/\.]+ line \d+\.?.*$//s;
+        die "Error: $errmsg\n";
+    };
+    $self->_display_results(
+        results    => $results,
+        start_time => $start_time,
+        invindex   => $invindex,
+    );
+}
+
+sub _get_searcher {
+    my $self      = shift;
+    my $invindex  = shift or confess "invindex required";
+    my $invheader = $self->{__invheader} ||= $invindex->get_header();
+    my $format    = $invheader->Index->{Format};
+    my $sclass    = "Dezi::${format}::Searcher";
+    Class::Load::load_class($sclass);
+    my %qp_config = (
+        dialect          => $format,
+        query_class_opts => { debug => $self->debug }
+    );
+    if ( $self->null_term ) {
+        $qp_config{null_term} = 'NULL';
+    }
+    my $searcher = $sclass->new(
+        invindex  => $invindex,
+        qp_config => \%qp_config,
+        debug     => $self->debug,
+    );
+    return $searcher;
+}
+
+sub _display_results {
+    my ( $self, %arg ) = @_;
+    my $start_time = $arg{start_time} || 0;
+    my $results  = $arg{results}  or confess "results required";
+    my $invindex = $arg{invindex} or confess "invindex object required";
+
+    my $invheader   = $self->{__invheader} ||= $invindex->get_header();
+    my $format      = $invheader->Index->{Format};
+    my $propnames   = $invheader->PropertyNames;
+    my $search_time = Time::HiRes::time() - $start_time;
+
+    if ( $self->headers ) {
+        printf( "# $CLI_NAME version %s\n", $VERSION );
+        printf( "# Format: %s\n",           $self->format );
+        printf( "# Query: %s\n",            to_utf8( $self->query ) );
+        printf( "# Hits: %d\n",             $results->hits );
+        printf( "# Search time: %.4f\n",    $search_time );
+    }
+
+    if ( $self->headers > 1 ) {
+        printf( "# Parsed Query: %s\n", $results->query );
+    }
+
+    my ( $output_format, $output_format_str );
+
+    if ( $self->extended_output ) {
+        my @props;
+        my $default_properties = SWISH::3::SWISH_DOC_PROP_MAP();
+        while ( $self->extended_output =~ m/<(.+?)>/g ) {
+            my $p = $1;
+            if (    !exists $propnames->{$p}
+                and !exists $default_properties->{$p}
+                and $p ne 'swishtitle'
+                and $p ne 'swishdescription'
+                and $p ne 'swishrank' )
+            {
+                die "Invalid PropertyName: $p\n";
+            }
+            else {
+                push @props, $p;
+            }
+        }
+        $output_format_str = $self->extended_output;
+        for my $prop (@props) {
+            $output_format_str =~ s/<$prop>/\%s/g;    # TODO ints and dates
+        }
+
+        # make escaped chars work
+        $output_format_str =~ s/\\n/\n/g;
+        $output_format_str =~ s/\\t/\t/g;
+        $output_format_str =~ s/\\r/\r/g;
+
+        $output_format = \@props;
+
+        #warn "str: $output_format_str\n";
+        #warn dump $output_format;
+    }
+
+    my $counter = 0;
+    while ( my $result = $results->next ) {
+        if ($output_format) {
+            my @res;
+            for my $prop (@$output_format) {
+                my $val;
+                if ( $prop eq 'swishrank' ) {
+                    $val = $result->score;
+                }
+                else {
+                    $val = $result->get_property($prop);
+                }
+                $val = '' unless defined $val;
+                $val =~ s/\003/\\x{03}/g;
+                push( @res, to_utf8($val) );
+            }
+            printf( $output_format_str, @res );
+        }
+        else {
+            printf( qq{%4d %s "%s"\n},
+                $result->score, $result->uri, $result->title );
+        }
+        if ( $self->max ) {
+            last if ++$counter >= $self->max;
+        }
+    }
+    print ".\n";
+}
+
+sub index {
+    my $self   = shift;
+    my $inputs = $self->inputs
+        or confess "Must define inputs in order to index";
+    my $app           = $self->_get_app;
+    my $indexed_count = $app->run(@$inputs);
+    warn "indexed_count=$indexed_count";
+}
+
+sub delete {
+
+}
+
+sub merge {
+
+}
+
 sub commands {
-    my $self = shift;
+    my $self  = shift;
     my $usage = <<EOF;
  synopsis:
     $CLI_NAME [-E N] [-i dir file ... ] [-S aggregator] [-c file] [-f invindex] [-l] [-v (num)] [-I name=val]
@@ -114,6 +323,41 @@ sub commands {
 
 EOF
     return $usage;
+}
+
+# Functions
+sub _secs2hms {
+    my $secs  = shift || 0;
+    my $hours = int( $secs / 3600 );
+    my $rm    = $secs % 3600;
+    my $min   = int( $rm / 60 );
+    my $sec   = $rm % 60;
+    return sprintf( "%02d:%02d:%02d", $hours, $min, $sec );
+}
+
+sub _parse_limits {
+    my $limits = shift or return;
+    if ( !@$limits ) {
+        return $limits;
+    }
+    my @parsed;
+    for my $lim (@$limits) {
+        push @parsed, [ split( /\s+/, $lim ) ];
+    }
+    return \@parsed;
+
+}
+
+sub _progress_bar {
+    require Term::ProgressBar;
+    my $total = shift;
+    my $tpb   = Term::ProgressBar->new(
+        {   ETA   => 'linear',
+            name  => 'swish3',
+            count => $total,
+        }
+    );
+    return $tpb;
 }
 
 1;
