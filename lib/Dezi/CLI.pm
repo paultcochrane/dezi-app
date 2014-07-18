@@ -9,7 +9,7 @@ use Carp;
 use Dezi::App;
 
 our $VERSION = '0.001';
-my $CLI_NAME = 'dezcli';
+my $CLI_NAME = 'deziapp';
 
 has 'debug'   => ( is => 'rw', isa => Bool, );
 

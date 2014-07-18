@@ -23,6 +23,8 @@ our $VERSION = '0.001';
 has 'highlightable_fields' =>
     ( is => 'rw', isa => 'Bool', default => sub {0} );
 
+my $BUILT_IN_PROPS = SWISH_DOC_PROP_MAP();
+
 =head1 NAME
 
 Dezi::Lucy::Indexer - Dezi::App Apache Lucy indexer
@@ -46,7 +48,17 @@ class based on L<SWISH::3>.
 All the L<SWISH::3> constants are imported into this namespace,
 including:
 
-=head2 SWISH_DOC_PROP_MAP
+=over
+
+=item SWISH_DOC_PROP_MAP
+
+=item SWISH_INDEX_STEMMER_LANG
+
+=item SWISH_INDEX_NAME
+
+=item SWISH_INDEX_FORMAT
+
+=back
 
 =head1 METHODS
 
@@ -88,170 +100,107 @@ sub _build_lucy_delegates {
     my $lang     = $s3config->get_index->get( SWISH_INDEX_STEMMER_LANG() )
         || 'none';
     $self->{_lang} = $lang;    # cache for finish()
-    my $schema = Lucy::Plan::Schema->new();
-    my $analyzer;
+    my $schema      = Lucy::Plan::Schema->new();
+    my $analyzers   = {};
+    my $case_folder = Lucy::Analysis::CaseFolder->new;
+    my $tokenizer   = Lucy::Analysis::RegexTokenizer->new;
+
+    # stemming means we fold case and tokenize too.
     if ( $lang and $lang =~ m/^\w\w$/ ) {
-        $analyzer = Lucy::Analysis::PolyAnalyzer->new( language => $lang, );
+        my $stemmer
+            = Lucy::Analysis::SnowballStemmer->new( language => $lang );
+        $analyzers->{fulltext_lc}
+            = Lucy::Analysis::PolyAnalyzer->new(
+            analyzers => [ $case_folder, $tokenizer, $stemmer ] );
+        $analyzers->{store_lc} = $case_folder;
+        $analyzers->{fulltext} = Lucy::Analysis::PolyAnalyzer->new(
+            analyzers => [ $tokenizer, $stemmer ] );
     }
     else {
-        my $case_folder = Lucy::Analysis::CaseFolder->new;
-        my $tokenizer   = Lucy::Analysis::RegexTokenizer->new;
-        $analyzer = Lucy::Analysis::PolyAnalyzer->new(
+        $analyzers->{fulltext_lc} = Lucy::Analysis::PolyAnalyzer->new(
             analyzers => [ $case_folder, $tokenizer, ], );
+        $analyzers->{store_lc} = $case_folder;
+        $analyzers->{fulltext} = $tokenizer;
     }
+
+    # cache our objects for later
+    $self->{__lucy}->{analyzers} = $analyzers;
+    $self->{__lucy}->{schema}    = $schema;
 
     # build the Lucy fields, which are a merger of MetaNames+PropertyNames
     my %fields;
 
-    my $built_in_props = SWISH_DOC_PROP_MAP();
-
-    my $metanames = $s3config->get_metanames;
-    my $meta_keys = $metanames->keys;
-    for my $name (@$meta_keys) {
-        my $mn    = $metanames->get($name);
-        my $alias = $mn->alias_for;
-        $fields{$name}->{is_meta}       = 1;
-        $fields{$name}->{is_meta_alias} = $alias;
-        $fields{$name}->{bias}          = $mn->bias;
-        if ( exists $built_in_props->{$name} ) {
-            $fields{$name}->{is_prop}  = 1;
-            $fields{$name}->{sortable} = 1;
-        }
-    }
-
+    my $metanames     = $s3config->get_metanames;
+    my $meta_keys     = $metanames->keys;
     my $properties    = $s3config->get_properties;
     my $property_keys = $properties->keys;
+
+    # merge first by name so we pair correctly in _create_field_def()
+    my %tmpfields;
+    for my $name (@$meta_keys) {
+        my $mn = $metanames->get($name);
+        $tmpfields{$name}->{meta} = $mn;
+    }
     for my $name (@$property_keys) {
-        if ( exists $built_in_props->{$name} ) {
-            croak
+        if ( exists $BUILT_IN_PROPS->{$name} ) {
+            confess
                 "$name is a built-in PropertyName and should not be defined in config";
         }
-        my $property = $properties->get($name);
-        my $alias    = $property->alias_for;
-        $fields{$name}->{is_prop}       = 1;
-        $fields{$name}->{is_prop_alias} = $alias;
-        if ( $property->sort ) {
-            $fields{$name}->{sortable} = 1;
-        }
+        my $pr = $properties->get($name);
+        $tmpfields{$name}->{prop} = $pr;
+    }
+
+    # build out field definitions
+    for my $n ( keys %tmpfields ) {
+        my %fdef = $self->_create_field_def( $tmpfields{$n}->{meta},
+            $tmpfields{$n}->{prop} );
+        $fields{ $fdef{name} } = $fdef{def};
     }
 
     $self->{_fields} = \%fields;
 
-    my $property_only = Lucy::Plan::StringType->new( sortable => 1, );
-    my $store_no_sort = Lucy::Plan::StringType->new(
-        sortable => 0,
-        stored   => 1,
-    );
-
     for my $name ( keys %fields ) {
-        my $field = $fields{$name};
-        my $key   = $name;
+        my $def = $fields{$name};
+        my $key = $name;
 
         # if a field is purely an alias, skip it.
-        if (    defined $field->{is_meta_alias}
-            and defined $field->{is_prop_alias} )
+        if (    defined $def->{is_meta_alias}
+            and defined $def->{is_prop_alias} )
         {
-            $field->{store_as}->{ $field->{is_meta_alias} } = 1;
-            $field->{store_as}->{ $field->{is_prop_alias} } = 1;
+            $def->{store_as}->{ $def->{is_meta_alias} } = 1;
+            $def->{store_as}->{ $def->{is_prop_alias} } = 1;
             next;
         }
 
-        if ( $field->{is_meta} and !$field->{is_prop} ) {
-            if ( defined $field->{is_meta_alias} ) {
-                $key = $field->{is_meta_alias};
-                $field->{store_as}->{$key} = 1;
-                next;
-            }
+        my $type = $self->_get_lucy_field_type($def) or next;
 
-            #warn "spec meta $name";
-            $schema->spec_field(
-                name => $name,
-                type => Lucy::Plan::FullTextType->new(
-                    analyzer      => $analyzer,
-                    stored        => 0,
-                    boost         => $field->{bias} || 1.0,
-                    highlightable => $self->highlightable_fields,
-                ),
-            );
-        }
+        $schema->spec_field( name => $name, type => $type );
 
-        # this is the trickiest case, because the field
-        # is both prop+meta and could be an alias for one
-        # and a real for the other.
-        # NOTE we have already eliminated (above) the case where
-        # the field is an alias for both.
-        elsif ( $field->{is_meta} and $field->{is_prop} ) {
-            if ( defined $field->{is_meta_alias} ) {
-                $key = $field->{is_meta_alias};
-                $field->{store_as}->{$key} = 1;
-            }
-            elsif ( defined $field->{is_prop_alias} ) {
-                $key = $field->{is_prop_alias};
-                $field->{store_as}->{$key} = 1;
-            }
-
-            #warn "spec meta+prop $name";
-            $schema->spec_field(
-                name => $name,
-                type => Lucy::Plan::FullTextType->new(
-                    analyzer      => $analyzer,
-                    highlightable => $self->highlightable_fields,
-                    sortable      => $field->{sortable},
-                    boost         => $field->{bias} || 1.0,
-                ),
-            );
-        }
-        elsif (!$field->{is_meta}
-            and $field->{is_prop}
-            and !$field->{sortable} )
-        {
-            if ( defined $field->{is_prop_alias} ) {
-                $key = $field->{is_prop_alias};
-                $field->{store_as}->{$key} = 1;
-                next;
-            }
-
-            #warn "spec prop !sort $name";
-            $schema->spec_field(
-                name => $name,
-                type => $store_no_sort
-            );
-        }
-        elsif (!$field->{is_meta}
-            and $field->{is_prop}
-            and $field->{sortable} )
-        {
-            if ( defined $field->{is_prop_alias} ) {
-                $key = $field->{is_prop_alias};
-                $field->{store_as}->{$key} = 1;
-                next;
-            }
-
-            #warn "spec prop sort $name";
-            $schema->spec_field(
-                name => $name,
-                type => $property_only
-            );
-        }
-        $field->{store_as}->{$name} = 1;
+        $def->{store_as}->{$name} = 1;
     }
 
-    for my $name ( keys %$built_in_props ) {
+    # build in the built-ins
+    $self->debug and warn dump \%fields;
+
+    for my $name ( keys %$BUILT_IN_PROPS ) {
         if ( exists $fields{$name} ) {
-            my $field = $fields{$name};
+            my $def = $fields{$name};
 
             #carp "found $name in built-in props: " . dump($field);
 
             # in theory this should never happen.
-            if ( !$field->{is_prop} ) {
-                croak
+            if ( !$def->{is_prop} ) {
+                confess
                     "$name is a built-in PropertyName but not defined as a PropertyName in config";
             }
         }
 
         # default property
         else {
-            $schema->spec_field( name => $name, type => $property_only );
+            $schema->spec_field(
+                name => $name,
+                type => Lucy::Plan::StringType->new( sortable => 1, )
+            );
         }
     }
 
@@ -267,71 +216,151 @@ sub _build_lucy_delegates {
         manager => $manager,
     );
 
-    # cache our objects in case we later
-    # need to create any fields on-the-fly
-    $self->{__lucy}->{analyzer} = $analyzer;
-    $self->{__lucy}->{schema}   = $schema;
+}
 
+sub _get_lucy_field_type {
+    my ( $self, $def ) = @_;
+    my ( $type, $key );
+    my $analyzers = $self->{__lucy}->{analyzers};
+
+    # MetaName==yes, PropertyName==no
+    if ( $def->{is_meta} and !$def->{is_prop} ) {
+        if ( defined $def->{is_meta_alias} ) {
+            $key = $def->{is_meta_alias};
+            $def->{store_as}->{$key} = 1;
+            return;
+        }
+
+        #warn "spec meta $name";
+        $type = Lucy::Plan::FullTextType->new(
+            analyzer      => $analyzers->{fulltext_lc},
+            stored        => 0,
+            boost         => $def->{bias} || 1.0,
+            highlightable => $self->highlightable_fields,
+        );
+    }
+
+    # MetaName==yes, PropertyName==yes
+    # this is the trickiest case, because the field
+    # is both prop+meta and could be an alias for one
+    # and a real for the other.
+    # **NOTE** we must have already eliminated the case where
+    # the field is an alias for both.
+    elsif ( $def->{is_meta} and $def->{is_prop} ) {
+        if ( defined $def->{is_meta_alias} ) {
+            $key = $def->{is_meta_alias};
+            $def->{store_as}->{$key} = 1;
+        }
+        elsif ( defined $def->{is_prop_alias} ) {
+            $key = $def->{is_prop_alias};
+            $def->{store_as}->{$key} = 1;
+        }
+
+        my $analyzer = $analyzers->{fulltext_lc};
+        if ( !$def->{ignore_case} ) {
+            $analyzer = $analyzers->{fulltext};
+        }
+
+        #warn "spec meta+prop $name";
+        $type = Lucy::Plan::FullTextType->new(
+            analyzer      => $analyzer,
+            highlightable => $self->highlightable_fields,
+            sortable      => $def->{sortable},
+            boost         => $def->{bias} || 1.0,
+        );
+    }
+
+    # MetaName==no, PropertyName==yes
+    elsif (!$def->{is_meta}
+        and $def->{is_prop} )
+    {
+
+        if ( defined $def->{is_prop_alias} ) {
+            $key = $def->{is_prop_alias};
+            $def->{store_as}->{$key} = 1;
+            return;
+        }
+
+        #warn "spec prop !sort $name";
+        if ( $def->{ignore_case} ) {
+
+            # StringType has no analyzer
+            # so we must switch to FullTextType and
+            # use a case-folding-only analyzer.
+            $type = Lucy::Plan::FullTextType->new(
+                analyzer      => $analyzers->{store_lc},
+                highlightable => $self->highlightable_fields,
+                sortable      => $def->{sortable},
+                boost         => $def->{bias} || 1.0,
+            );
+        }
+        else {
+            $type
+                = Lucy::Plan::StringType->new( sortable => $def->{sortable} );
+        }
+    }
+
+    $self->debug
+        and warn
+        sprintf( "field def %s => field type %s", dump($def), $type );
+
+    return $type;
+
+}
+
+sub _create_field_def {
+    my ( $self, $metaname, $propname ) = @_;
+    if ( !$metaname and !$propname ) {
+        confess "Must have one of metaname or propname objects";
+    }
+    my $name = $metaname ? $metaname->name : $propname->name;
+    my %field_def = ();
+    if ($metaname) {
+        if ( $metaname->name ne $name ) {
+            confess "Mismatched metaname for '$name': " . $metaname->name;
+        }
+        my $alias = $metaname->alias_for;
+        $field_def{is_meta}           = 1;
+        $field_def{is_meta_alias}     = $alias;
+        $field_def{bias}              = $metaname->bias;
+        $field_def{store_as}->{$name} = 1;
+
+        # allow for aliases to built-ins
+        if ( exists $BUILT_IN_PROPS->{$name} ) {
+            $field_def{is_prop}  = 1;
+            $field_def{sortable} = 1;
+        }
+    }
+    if ($propname) {
+        if ( $propname->name ne $name ) {
+            confess "Mismatched propname for '$name'" . $propname->name;
+        }
+        my $prop_alias = $propname->alias_for;
+        $field_def{is_prop}       = 1;
+        $field_def{is_prop_alias} = $prop_alias;
+        if ( $propname->sort ) {
+            $field_def{sortable} = 1;
+        }
+        for my $attr (qw( ignore_case verbatim max )) {
+            $field_def{$attr} = $propname->$attr;
+        }
+    }
+    return ( name => $name, def => \%field_def );
 }
 
 sub _add_new_field {
     my ( $self, $metaname, $propname ) = @_;
-    my $fields = $self->{_fields};
-    my $alias  = $metaname->alias_for;
-    my $name   = $metaname->name;
-    if ( !exists $fields->{$name} ) {
-        $fields->{$name} = {};
-    }
-    my $field = $fields->{$name};
-    $field->{is_meta}           = 1;
-    $field->{is_meta_alias}     = $alias;
-    $field->{bias}              = $metaname->bias;
-    $field->{store_as}->{$name} = 1;
-
-    if ($propname) {
-        my $prop_alias = $propname->alias_for;
-        $field->{is_prop}       = 1;
-        $field->{is_prop_alias} = $prop_alias;
-        if ( $propname->sort ) {
-            $field->{sortable} = 1;
-        }
-    }
-
-    # a newly defined MetaName matching an already-defined PropertyName
-    # or a new MetaName+PropertyName
-    if ( $field->{is_prop} ) {
-        $self->{__lucy}->{schema}->spec_field(
-            name => $name,
-            type => Lucy::Plan::FullTextType->new(
-                analyzer      => $self->{__lucy}->{analyzer},
-                highlightable => $self->highlightable_fields,
-                sortable      => $field->{sortable},
-                boost         => $field->{bias} || 1.0,
-            ),
-        );
-    }
-
-    # just a new MetaName
-    else {
-
-        $self->{__lucy}->{schema}->spec_field(
-            name => $name,
-            type => Lucy::Plan::FullTextType->new(
-                analyzer      => $self->{__lucy}->{analyzer},
-                stored        => 0,
-                boost         => $field->{bias} || 1.0,
-                highlightable => $self->highlightable_fields,
-            ),
-        );
-
-    }
-
-    #warn "Added new field $name: " . dump( $field );
-
-    return $field;
+    my $fields    = $self->{_fields};
+    my %field_def = $self->_create_field_def( $metaname, $propname );
+    my $name      = $field_def{name};
+    my $def       = $field_def{def};
+    $fields->{$name} ||= $def;
+    $self->{__lucy}->{schema}->spec_field(
+        name => $name,
+        type => $self->_get_lucy_field_type($def),
+    );
+    return $def;
 }
-
-my $doc_prop_map = SWISH_DOC_PROP_MAP();
 
 =head2 swish3_handler( I<swish3_data> )
 
@@ -350,8 +379,8 @@ sub swish3_handler {
     my %doc;
 
     # Swish built-in fields first
-    for my $propname ( keys %$doc_prop_map ) {
-        my $attr = $doc_prop_map->{$propname};
+    for my $propname ( keys %$BUILT_IN_PROPS ) {
+        my $attr = $BUILT_IN_PROPS->{$propname};
         $doc{$propname} = [ $data->doc->$attr ];
     }
 
@@ -392,7 +421,7 @@ sub swish3_handler {
             # properties have verbatim flag, which affects
             # the stored whitespace.
 
-            if ( $field->{is_prop} and !exists $doc_prop_map->{$fname} ) {
+            if ( $field->{is_prop} and !exists $BUILT_IN_PROPS->{$fname} ) {
                 push( @{ $doc{$key} }, @{ $props->{$fname} } );
             }
             elsif ( $field->{is_meta} ) {
@@ -522,6 +551,83 @@ sub abort {
 1;
 
 __END__
+
+=head2 MetaNames and PropertyNames
+
+Some implementation notes about MetaNames and PropertyNames.
+See also L<http://dezi.org/2014/07/18/metanames-and-propertynames/>.
+
+=over
+
+=item
+
+A field defined as either a MetaName, PropertyName or both, can be searched.
+
+=item
+
+Fields are matched against tag names in your XML/HTML documents. See also the TagAlias, UndefinedMetaTags, UndefinedXMLAttributes, and XMLClassAttributes directives.
+
+=item
+
+You can alias field names with MetaNamesAlias and PropertyNamesAlias.
+
+=item
+
+MetaNames are tokenized and case-insensitive and (optionally, with FuzzyIndexingMode) stemmed.
+
+=item
+
+PropertyNames are stored, case-sensitive strings.
+
+=item
+
+If a field is defined as both a MetaName and PropertyName, then it will be tokenized.
+
+=item
+
+If a field is defined only as a MetaName, it will be parsed but not stored. That means you can search on the field but when you try and retrieve the field's value from the results, it will cause a fatal error.
+
+=item
+
+If a field is defined only as a PropertyName, it will be parsed and stored, but it will not be tokenized. That means the field's contents are stored without being split up into words.
+
+=item
+
+You can control the parsing and storage of PropertyName-only fields with the following additional directives:
+
+=over
+
+=item PropertyNamesCompareCase
+
+case sensitive search
+
+=item PropertyNamesIgnoreCase
+
+case insensitive search (default)
+
+=item PropertyNamesNoStripChars
+
+preserve whitespace
+
+=back
+
+=item
+
+There are two default MetaNames defined: swishdefault and swishtitle.
+
+=item
+
+There are two default PropertyNames defined: swishtitle and swishdescription.
+
+=item
+
+The libswish3 XML and HTML parsers will automatically treat a <title> tag as swishtitle. Likewise they will treat <body> tag as swishdescription.
+
+=item
+
+Things get complicated quickly when defining fields. Experiment with small test cases to arrive a the configuration that works best with your application.
+
+=back
 
 =head1 AUTHOR
 

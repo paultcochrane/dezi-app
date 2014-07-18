@@ -34,6 +34,7 @@ while ( ++$passes < 4 ) {
     # the '1' arg indicates to append the value, not replace.
     $program->config->FileRules( 'dirname is dezi.index',                1 );
     $program->config->FileRules( 'filename is config.xml',               1 );
+    $program->config->FileRules( 'filename is fields.xml',               1 );
     $program->config->FileRules( 'filename is config-nostemmer.xml',     1 );
     $program->config->FileRules( 'filename contains \.t',                1 );
     $program->config->FileRules( 'dirname contains (testindex|\.index)', 1 );
