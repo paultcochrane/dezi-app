@@ -37,18 +37,6 @@ around BUILDARGS => sub {
     }
 };
 
-=head2 new_from_header
-
-Instantiates an InvIndex object in the correct subclass
-based on the Index Format in the InvIndex header file.
-
-Example:
-
- my $invindex = Dezi::InvIndex->new('path/to/lucy.index');
- # $invindex isa Dezi::Lucy::InvIndex
-
-=cut
-
 sub new_from_header {
     my $self = shift;
 
@@ -127,9 +115,19 @@ A Dezi::InvIndex is a base class for defining different inverted index formats.
 
 =head1 METHODS
 
-=head2 init
+=head2 new
 
-Implements the base Dezi::Class method.
+Constructor.
+
+=head2 new_from_header
+
+Instantiates an InvIndex object in the correct subclass
+based on the Index Format in the InvIndex header file.
+
+Example:
+
+ my $invindex = Dezi::InvIndex->new('path/to/lucy.index');
+ # $invindex isa Dezi::Lucy::InvIndex
 
 =head2 path
 

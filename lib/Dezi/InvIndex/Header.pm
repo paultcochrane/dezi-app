@@ -131,21 +131,21 @@ __END__
 
 =head1 NAME
 
-Dezi::InvIndex::Meta - read/write InvIndex metadata
+Dezi::InvIndex::Header - read/write InvIndex metadata
 
 =head1 SYNOPSIS
 
  use Data::Dump qw( dump );
  use Dezi::InvIndex;
  my $index = Dezi::InvIndex->new(path => 'path/to/index');
- my $meta = $index->meta;  # isa Dezi::InvIndex::Meta object
+ my $meta = $index->meta;  # isa Dezi::InvIndex::Header object
  for my $key (keys %{ $meta->data }) {
     dump $meta->$key;
  }
  
 =head1 DESCRIPTION
 
-A Dezi::InvIndex::Meta object represents the metadata for an
+A Dezi::InvIndex::Header object represents the metadata for an
 InvIndex. It supports the Swish3 C<swish.xml> header file format only
 at this time.
 
@@ -182,7 +182,7 @@ The full path to the header_file() file. This is a read-only accessor.
 
 =head2 invindex
 
-The Dezi::InvIndex object which the Dezi::InvIndex::Meta
+The Dezi::InvIndex object which the Dezi::InvIndex::Header
 object represents.
 
 =head2 get_properties
@@ -213,7 +213,7 @@ I will be notified, and then you'll automatically be notified of progress on you
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc Dezi::InvIndex::Meta
+    perldoc Dezi::InvIndex::Header
 
 You can also look for information at:
 
