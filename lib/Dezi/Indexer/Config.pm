@@ -605,8 +605,10 @@ The following fields are converted but are ignored by SWISH::3::Config.
  ImageLinksMetaName
  IndexAltTagMetaName
  IndexComments
+ IndexDir
  IndexOnly
  IndexPointer
+ IndexReport
  MaxDepth
  MaxWordLimit
  MinWordLimit
@@ -747,6 +749,8 @@ sub ver2_to_ver3 {
         RecursionDepth
         ReplaceRules
         ResultExtFormatName
+        SourceDir
+        SourceOnly
         SpiderDirectory
         SwishProgParameters
         SwishSearchDefaultRule
@@ -757,6 +761,7 @@ sub ver2_to_ver3 {
         UseSoundex
         UseStemming
         UseWords
+        Verbosity
         WordCharacters
         Words
     );

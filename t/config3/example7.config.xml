@@ -3,6 +3,7 @@
 <swish>
  <!-- WARNING: BeginCharacters ignored by Swish3 -->
  <BeginCharacters>abcdefghijklmnopqrstuvwxyz0123456789</BeginCharacters>
+ <!-- WARNING: BumpPositionCounterCharacters ignored by Swish3 -->
  <BumpPositionCounterCharacters>|.</BumpPositionCounterCharacters>
  <!-- WARNING: Delay ignored by Swish3 -->
  <Delay>1</Delay>
@@ -14,15 +15,19 @@
  <IgnoreFirstChar>.-</IgnoreFirstChar>
  <!-- WARNING: IgnoreLastChar ignored by Swish3 -->
  <IgnoreLastChar>.-</IgnoreLastChar>
+ <!-- WARNING: IgnoreWords ignored by Swish3 -->
  <IgnoreWords>file: stopwords/my_stopwords.txt</IgnoreWords>
  <!-- WARNING: MaxDepth ignored by Swish3 -->
  <MaxDepth>10</MaxDepth>
+ <!-- WARNING: SourceDir ignored by Swish3 -->
  <SourceDir>http://swish-e.org</SourceDir>
  <!-- WARNING: SpiderDirectory ignored by Swish3 -->
  <SpiderDirectory>../src</SpiderDirectory>
  <!-- WARNING: TmpDir ignored by Swish3 -->
  <TmpDir>.</TmpDir>
+ <!-- WARNING: TranslateCharacters ignored by Swish3 -->
  <TranslateCharacters>:ascii7:</TranslateCharacters>
+ <!-- WARNING: Verbosity ignored by Swish3 -->
  <Verbosity>2</Verbosity>
  <!-- WARNING: WordCharacters ignored by Swish3 -->
  <WordCharacters>abcdefghijklmnopqrstuvwxyz0123456789.-</WordCharacters>
