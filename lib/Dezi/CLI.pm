@@ -8,6 +8,7 @@ use Carp;
 use Search::Tools::UTF8;
 use DateTime::Format::DateParse;
 use Time::HiRes;
+use Try::Tiny;
 use Dezi::App;
 use Dezi::InvIndex;
 
@@ -51,7 +52,20 @@ has 'invindex' => (
     cmd_aliases => ['f'],
     default     => sub {$Dezi::InvIndex::DEFAULT_NAME},
 );
-
+has 'headers' => (
+    is          => 'rw',
+    isa         => Int,
+    traits      => ['Getopt'],
+    cmd_aliases => ['H'],
+    lazy        => 1,
+    default     => sub {1}
+);
+has 'extended_output' => (
+    is          => 'rw',
+    isa         => Str,
+    traits      => ['Getopt'],
+    cmd_aliases => ['x'],
+);
 has 'format' => (
     is          => 'rw',
     isa         => Str,
@@ -96,6 +110,32 @@ has 'expected' => (
     isa         => Maybe [Int],
     traits      => ['Getopt'],
     cmd_aliases => ['E'],
+);
+has 'begin' => (
+    is          => 'rw',
+    isa         => Int,
+    traits      => ['Getopt'],
+    cmd_aliases => ['b'],
+    default     => sub {0}
+);
+has 'max' => (
+    is          => 'rw',
+    isa         => Int,
+    traits      => ['Getopt'],
+    cmd_aliases => ['m'],
+);
+has 'limits' => (
+    is          => 'rw',
+    isa         => Str,
+    traits      => ['Getopt'],
+    cmd_aliases => ['L'],
+);
+has 'sort_order' => (
+    is          => 'rw',
+    isa         => Str,
+    traits      => ['Getopt'],
+    cmd_aliases => ['s'],
+    default     => sub {''},
 );
 
 =head2 run
@@ -158,7 +198,7 @@ sub search {
         $searcher->search(
             to_utf8($query),
             {   start => $self->begin,
-                max   => $self->max,
+                max   => $self->max || undef,
                 limit => _parse_limits( $self->limits ),
                 order => $self->sort_order,
             }
@@ -226,7 +266,8 @@ sub _display_results {
     if ( $self->extended_output ) {
         my @props;
         my $default_properties = SWISH::3::SWISH_DOC_PROP_MAP();
-        while ( $self->extended_output =~ m/<(.+?)>/g ) {
+        my $template           = $self->extended_output;
+        while ( $template =~ m/<(.+?)>/g ) {
             my $p = $1;
             if (    !exists $propnames->{$p}
                 and !exists $default_properties->{$p}
@@ -240,7 +281,7 @@ sub _display_results {
                 push @props, $p;
             }
         }
-        $output_format_str = $self->extended_output;
+        $output_format_str = $template;
         for my $prop (@props) {
             $output_format_str =~ s/<$prop>/\%s/g;    # TODO ints and dates
         }
@@ -433,7 +474,7 @@ sub _secs2hms {
 }
 
 sub _parse_limits {
-    my $limits = shift or return;
+    my $limits = shift or return [];
     if ( !@$limits ) {
         return $limits;
     }

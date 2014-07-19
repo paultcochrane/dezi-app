@@ -2,15 +2,31 @@ package Dezi::Searcher::SearchOpts;
 use Moose;
 with 'Dezi::Role';
 use Carp;
+use Types::Standard qw( Int ArrayRef Str Maybe );
 use namespace::sweep;
 
 our $VERSION = '0.001';
 
-has 'start' => ( is => 'rw', isa => 'Int', default => sub {0} );
-has 'max'   => ( is => 'rw', isa => 'Int', default => sub {1000} );
-has 'order' => ( is => 'rw' );                      # search() must handle isa
-has 'limit' => ( is => 'rw', isa => 'ArrayRef' );
-has 'default_boolop' => ( is => 'rw', isa => 'Str', default => sub {'AND'} );
+has 'start' => (
+    is      => 'rw',
+    isa     => Int,
+    lazy    => 1,
+    default => sub {0}
+);
+has 'max' => (
+    is      => 'rw',
+    isa     => Maybe [Int],
+    lazy    => 1,
+    default => sub {1000},
+);
+has 'order' => ( is => 'rw' );                    # search() must handle isa
+has 'limit' => ( is => 'rw', isa => ArrayRef );
+has 'default_boolop' => (
+    is      => 'rw',
+    isa     => Str,
+    lazy    => 1,
+    default => sub {'AND'}
+);
 
 1;
 
