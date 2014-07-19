@@ -12,7 +12,7 @@ use Try::Tiny;
 use Dezi::App;
 use Dezi::InvIndex;
 
-our $VERSION = '0.001';
+our $VERSION = '0.002';
 my $CLI_NAME = 'deziapp';
 
 has 'debug' => (
@@ -25,6 +25,26 @@ has 'debug' => (
 );
 sub _init_debug { $ENV{DEZI_DEBUG} || 0 }
 
+has 'verbose' => (
+    is          => 'rw',
+    isa         => Int,
+    traits      => ['Getopt'],
+    cmd_aliases => ['v'],
+);
+has 'warnings' => (
+    is          => 'rw',
+    isa         => Int,
+    traits      => ['Getopt'],
+    cmd_aliases => ['W'],
+    lazy        => 1,
+    default     => sub {2},
+);
+has 'version' => (
+    is          => 'rw',
+    isa         => Bool,
+    traits      => ['Getopt'],
+    cmd_aliases => ['V'],
+);
 has 'null_term' => (
     is          => 'rw',
     isa         => Bool,
@@ -157,6 +177,11 @@ sub run {
     my $self = shift;
 
     $self->debug and dump $self;
+
+    if ( $self->version ) {
+        printf( "%s %s\n", $CLI_NAME, $VERSION );
+        exit(0);
+    }
 
     my @cmds = @{ $self->extra_argv };
 
@@ -327,12 +352,21 @@ sub _display_results {
 }
 
 sub _get_app {
-    my $self     = shift;
+    my $self = shift;
+
+    # libswish3 parser warnings depend on this env var
+    # and not the warnings param to App->new.
+    if ( !exists $ENV{SWISH_WARNINGS} ) {
+        $ENV{SWISH_WARNINGS}        = $self->warnings;
+        $ENV{SWISH_PARSER_WARNINGS} = $self->warnings;
+    }
     my %app_args = (
         invindex   => $self->invindex,
         indexer    => $self->format,
         aggregator => $self->aggregator,
         debug      => $self->debug,
+        verbose    => $self->verbose,
+        warnings   => $self->warnings,     # TODO supported?
     );
     $app_args{filter} = $self->filter if $self->filter;
     $app_args{config} = $self->config if $self->config;
@@ -383,9 +417,18 @@ sub index {
     my $self   = shift;
     my $inputs = $self->inputs
         or confess "Must define inputs in order to index";
-    my $app           = $self->_get_app;
-    my $indexed_count = $app->run(@$inputs);
-    warn "indexed_count=$indexed_count";
+    my $app      = $self->_get_app;
+    my $start    = time();
+    my $num_docs = $app->run(@$inputs);
+    my $end      = time();
+    my $elapsed  = $end - $start;
+    printf(
+        "%d document%s in %s\n",
+        ( $num_docs || 0 ),
+        ( $num_docs == 1 ? '' : 's' ),
+        _secs2hms($elapsed)
+    );
+    return $num_docs;
 }
 
 sub delete {

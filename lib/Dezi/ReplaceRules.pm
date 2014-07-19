@@ -7,7 +7,7 @@ use Data::Dump qw( dump );
 use Text::ParseWords;
 use namespace::sweep;
 
-our $VERSION = '0.001';
+our $VERSION = '0.002';
 
 has 'rules' => ( is => 'rw', isa => 'ArrayRef' );
 

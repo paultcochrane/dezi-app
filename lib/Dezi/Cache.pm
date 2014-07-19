@@ -4,7 +4,7 @@ with 'Dezi::Role';
 use Carp;
 use namespace::sweep;
 
-our $VERSION = '0.001';
+our $VERSION = '0.002';
 
 has 'cache' => ( is => 'rw' );
 
