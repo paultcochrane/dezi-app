@@ -109,9 +109,10 @@ sub get_mime {
     if ($s3) {
 
         # look it up
+        my $ext = $s3->get_file_ext($url) || $DefaultExtension;
         return
                $s3->get_mime($url)
-            || $ext2mime{ $s3->get_file_ext($url) }
+            || $ext2mime{$ext}
             || $DefaultMIME;
     }
     else {
