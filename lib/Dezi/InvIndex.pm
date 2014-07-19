@@ -15,14 +15,16 @@ use overload(
 
 use namespace::sweep;
 
-our $VERSION = '0.001';
+our $VERSION      = '0.001';
+our $DEFAULT_NAME = 'dezi.index';
 
 has 'path' => (
     is      => 'rw',
     isa     => 'Path::Class::Dir',
     coerce  => 1,
-    default => 'dezi.index',
+    default => sub { Path::Class::Dir->new($DEFAULT_NAME) }
 );
+
 has 'clobber' => ( is => 'rw', isa => 'Bool', default => 0 );
 
 around BUILDARGS => sub {
