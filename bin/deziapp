@@ -21,8 +21,8 @@ deziapp - command-line interface for Dezi
 
 =head1 SYNOPSIS
 
- % deziapp -i path/to/files
- % deziapp -q foo
+ % deziapp index path/to/files
+ % deziapp search -q foo
 
 =head1 DESCRIPTION
 

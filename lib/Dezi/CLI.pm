@@ -188,9 +188,15 @@ sub run {
     # compat with swish3 which used @argv to store
     # input files/dirs for -i (index) command
     # and -q to indicate 'search' mode
-    if ( $self->index_mode and !$self->inputs ) {
-        $self->inputs( [@cmds] );
-        @cmds = ('index');
+    if ( !$self->inputs ) {
+        if ( $self->index_mode ) {
+            $self->inputs( [@cmds] );
+            @cmds = ('index');
+        }
+        elsif ( grep { $_ eq 'index' } @cmds ) {
+            $self->inputs( [ grep { $_ ne 'index' } @cmds ] );
+            @cmds = ('index');
+        }
     }
     if ( $self->query ) {
         @cmds = ('search');
