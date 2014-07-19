@@ -22,7 +22,8 @@ class_type DeziIndexerConfig, { class => 'Dezi::Indexer::Config' };
 class_type DeziPathClassFile, { class => 'Path::Class::File' };
 coerce DeziIndexerConfig, from DeziPathClassFile,
     via { _coerce_indexer_config($_) },
-    from Str, via { _coerce_indexer_config($_) };
+    from Str, via { _coerce_indexer_config($_) }, from Undef,
+    via { _coerce_indexer_config($_) };
 
 # InvIndex
 class_type DeziInvIndex, { class => 'Dezi::InvIndex' };
