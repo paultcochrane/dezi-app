@@ -6,12 +6,8 @@ use Types::Standard qw(:all);
 use Data::Dump qw( dump );
 use Carp;
 use Search::Tools::UTF8;
-
-MooseX::Getopt::OptionTypeMap->add_option_type_to_map(
-    ArrayRef => '=s@',
-    Bool     => '=i',
-);
-
+use DateTime::Format::DateParse;
+use Time::HiRes;
 use Dezi::App;
 use Dezi::InvIndex;
 
@@ -22,37 +18,85 @@ has 'debug' => (
     is          => 'rw',
     isa         => Bool,
     traits      => ['Getopt'],
-    cmd_aliases => [qw(D)],
+    cmd_aliases => ['D'],
+    lazy        => 1,
+    builder     => '_init_debug',
 );
+sub _init_debug { $ENV{DEZI_DEBUG} || 0 }
+
 has 'null_term' => (
     is          => 'rw',
     isa         => Bool,
     traits      => ['Getopt'],
-    cmd_aliases => [qw/ n /]
+    cmd_aliases => ['n'],
 );
+
 has 'inputs' => ( is => 'rw', isa => ArrayRef, );
-has 'indexing' => (
+has 'index_mode' => (
     is          => 'rw',
     isa         => Bool,
     traits      => ['Getopt'],
-    cmd_aliases => [qw( i )]
+    cmd_aliases => ['i'],
 );
 has 'query' => (
     is          => 'rw',
     isa         => Str,
     traits      => ['Getopt'],
-    cmd_aliases => [qw/ q w /],
+    cmd_aliases => [ 'q', 'w', ],
 );
 has 'invindex' => (
     is          => 'rw',
     isa         => Str,
     traits      => ['Getopt'],
-    cmd_aliases => [qw/ f /],
-    lazy        => 1,
-    builder     => '_init_invindex',
+    cmd_aliases => ['f'],
+    default     => sub {$Dezi::InvIndex::DEFAULT_NAME},
 );
 
-sub _init_invindex { return 'dezi.index' }
+has 'format' => (
+    is          => 'rw',
+    isa         => Str,
+    traits      => ['Getopt'],
+    cmd_aliases => ['F'],
+    default     => sub {'lucy'},
+);
+
+has 'aggregator' => (
+    is          => 'rw',
+    isa         => Str,
+    traits      => ['Getopt'],
+    cmd_aliases => ['S'],
+    default     => sub {'fs'},
+);
+has 'config' => (
+    is          => 'rw',
+    isa         => Str,
+    traits      => ['Getopt'],
+    cmd_aliases => ['c'],
+);
+has 'filter' => (
+    is          => 'rw',
+    isa         => Str,
+    traits      => ['Getopt'],
+    cmd_aliases => ['doc_filter'],
+);
+has 'newer_than' => (
+    is          => 'rw',
+    isa         => Maybe [Str],
+    traits      => ['Getopt'],
+    cmd_aliases => ['N'],
+);
+has 'links' => (
+    is          => 'rw',
+    isa         => Bool,
+    traits      => ['Getopt'],
+    cmd_aliases => [ 'l', 'follow_symlinks' ],
+);
+has 'expected' => (
+    is          => 'rw',
+    isa         => Maybe [Int],
+    traits      => ['Getopt'],
+    cmd_aliases => ['E'],
+);
 
 =head2 run
 
@@ -79,7 +123,7 @@ sub run {
     # compat with swish3 which used @argv to store
     # input files/dirs for -i (index) command
     # and -q to indicate 'search' mode
-    if ( $self->indexing and !$self->inputs ) {
+    if ( $self->index_mode and !$self->inputs ) {
         $self->inputs( [@cmds] );
         @cmds = ('index');
     }
@@ -241,6 +285,59 @@ sub _display_results {
     print ".\n";
 }
 
+sub _get_app {
+    my $self     = shift;
+    my %app_args = (
+        invindex   => $self->invindex,
+        indexer    => $self->format,
+        aggregator => $self->aggregator,
+        debug      => $self->debug,
+    );
+    $app_args{filter} = $self->filter if $self->filter;
+    $app_args{config} = $self->config if $self->config;
+
+    my $app = Dezi::App->new(%app_args);
+
+    # set some optional flags
+    if ( defined $self->newer_than ) {
+
+        if ( !length $self->newer_than ) {
+            $self->newer_than(
+                $app->indexer->invindex->path->file('swish_last_start') );
+        }
+
+        # if it's a file, stat it,
+        # otherwise convert to timestamp
+        my $ts;
+        my $dt = DateTime::Format::DateParse->parse_datetime(
+            $self->newer_than );
+        if ( !defined $dt ) {
+            my $stat = [ stat( $self->newer_than ) ];
+            if ( !defined $stat->[9] ) {
+                confess
+                    "-N option must be a valid date string or a readable file: $!";
+            }
+            $ts = $stat->[9];
+        }
+        else {
+            $ts = $dt->epoch;
+        }
+        $app->aggregator->set_ok_if_newer_than($ts);
+        $self->verbose
+            and printf "Skipping documents older than %s\n",
+            scalar localtime($ts);
+
+    }
+    if ( $self->links and $self->aggregator eq 'fs' ) {
+        $app->aggregator->config->FollowSymLinks(1);
+    }
+    if ( $self->expected ) {
+        $app->aggregator->progress( _progress_bar( $self->expected ) );
+    }
+
+    return $app;
+}
+
 sub index {
     my $self   = shift;
     my $inputs = $self->inputs
@@ -283,7 +380,7 @@ sub commands {
     -D : Debug mode
    --doc_filter : doc_filter
     -E : next param is total expected files (generates progress bar)
-    -f : invindex dir to create or search from [dezi.index]
+    -f : invindex dir to create or search from [$Dezi::InvIndex::DEFAULT_NAME]
     -F : next param is invindex format (lucy, xapian, or dbi) [lucy]
     -h : print this usage statement
     -i : create an index from the specified files
@@ -303,7 +400,7 @@ sub commands {
 
  search options:
     -b : begin results at this number
-    -f : invindex dir to create or search from [dezi.index]
+    -f : invindex dir to create or search from [$Dezi::InvIndex::DEFAULT_NAME]
     -F : next param is invindex format (ks, lucy, xapian, native, or dbi) [native]
     -h : print this usage statement
     -H : "Result Header Output": verbosity (0 to 9)  [1].
