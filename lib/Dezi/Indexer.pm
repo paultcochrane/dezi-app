@@ -23,6 +23,7 @@ has 'config' => (
     is      => 'rw',
     isa     => DeziIndexerConfig,
     coerce  => 1,
+    lazy    => 1,
     default => sub { Dezi::Indexer::Config->new() },
 );
 has 'count'   => ( is => 'rw', isa => Int );
