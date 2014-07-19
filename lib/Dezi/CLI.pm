@@ -146,7 +146,7 @@ Main method. Calls commands passed via @ARGV.
 
 sub _getopt_full_usage {
     my ( $self, $usage ) = @_;
-    $usage->die( { post_text => $self->commands } );
+    $usage->die( { post_text => $self->_commands } );
 }
 
 sub _usage_format {
@@ -172,7 +172,7 @@ sub run {
     }
 
     if ( !@cmds or $self->help_flag ) {
-        $self->usage->die( { post_text => $self->commands } );
+        $self->usage->die( { post_text => $self->_commands } );
     }
 
     for my $cmd (@cmds) {
@@ -396,7 +396,7 @@ sub merge {
 
 }
 
-sub commands {
+sub _commands {
     my $self  = shift;
     my $usage = <<EOF;
  synopsis:
@@ -499,3 +499,99 @@ sub _progress_bar {
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+Dezi::CLI - command-line interface to Dezi::App
+
+=head1 SYNOPSIS
+
+ use Dezi::CLI;
+ my $app = Dezi::CLI->new_with_options();
+ $app->run();
+
+=head1 DESCRIPTION
+
+The Dezi::CLI class is a port of the B<swish3> tool to a proper class,
+using L<MooseX::Getopt>.
+
+=head1 METHODS
+
+=head2 index
+
+Run the CLI in indexing mode.
+
+=head2 search
+
+Run the CLI in searching mode.
+
+=head2 merge
+
+B<NOT YET IMPLEMENTED> merge 2 or more indexes together.
+
+=head2 delete
+
+B<NOT YET IMPLEMENTED> delete or more URIs from an index.
+
+=head1 AUTHOR
+
+Peter Karman, E<lt>karpet@dezi.orgE<gt>
+
+=head1 BUGS
+
+Please report any bugs or feature requests to C<bug-dezi-app at rt.cpan.org>, or through
+the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Dezi-App>.  
+I will be notified, and then you'll automatically be notified of progress on your bug as I make changes.
+
+=head1 SUPPORT
+
+You can find documentation for this module with the perldoc command.
+
+    perldoc Dezi::CLI
+
+You can also look for information at:
+
+=over 4
+
+=item * Website
+
+L<http://dezi.org/>
+
+=item * IRC
+
+#dezisearch at freenode
+
+=item * Mailing list
+
+L<https://groups.google.com/forum/#!forum/dezi-search>
+
+=item * RT: CPAN's request tracker
+
+L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Dezi-App>
+
+=item * AnnoCPAN: Annotated CPAN documentation
+
+L<http://annocpan.org/dist/Dezi-App>
+
+=item * CPAN Ratings
+
+L<http://cpanratings.perl.org/d/Dezi-App>
+
+=item * Search CPAN
+
+L<https://metacpan.org/dist/Dezi-App/>
+
+=back
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright 2014 by Peter Karman
+
+This library is free software; you can redistribute it and/or modify
+it under the terms of the GPL v2 or later.
+
+=head1 SEE ALSO
+
+L<http://dezi.org/>, L<http://swish-e.org/>, L<http://lucy.apache.org/>
