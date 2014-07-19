@@ -17,6 +17,7 @@ use Data::Dump qw( dump );
 use Search::Tools::UTF8;
 use Path::Class::File::Lockable;
 use Sys::Hostname qw( hostname );
+use Digest::MD5 ();
 
 our $VERSION = '0.001';
 
@@ -87,8 +88,10 @@ for the C<highlightable> option.
 sub BUILD {
     my $self = shift;
 
+    # coerce our invindex into our format subclass
     unless ( $self->invindex->isa('Dezi::Lucy::InvIndex') ) {
-        confess ref($self) . " requires Dezi::Lucy::InvIndex-derived object";
+        $self->invindex(
+            Dezi::Lucy::InvIndex->new( path => $self->invindex->path ) );
     }
 
     $self->_build_lucy_delegates();
@@ -502,7 +505,8 @@ sub _finish_lucy {
     my $idx_cfg = $self->swish3->config->get_index;
 
     # poor man's uuid
-    my $uuid = join( "", @chars[ map { rand @chars } ( 1 .. 24 ) ] );
+    my $uuid = Digest::MD5::md5_hex(
+        time() . join( "", @chars[ map { rand @chars } ( 1 .. 24 ) ] ) );
 
     $idx_cfg->set( SWISH_INDEX_NAME(),         "$invindex" );
     $idx_cfg->set( SWISH_INDEX_FORMAT(),       'Lucy' );
