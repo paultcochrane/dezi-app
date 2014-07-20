@@ -14,7 +14,7 @@ use Dezi::Indexer::Headers;
 
 use namespace::sweep;
 
-our $VERSION = '0.002';
+our $VERSION = '0.003';
 
 my ( $locale, $lang, $charset );
 {

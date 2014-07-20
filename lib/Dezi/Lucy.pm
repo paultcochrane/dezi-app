@@ -2,7 +2,7 @@ package Dezi::Lucy;
 use Moose;
 extends 'Dezi::App';
 
-our $VERSION = '0.002';
+our $VERSION = '0.003';
 
 =head1 NAME
 

@@ -12,7 +12,7 @@ use Data::Dump qw( dump );
 
 use namespace::sweep;
 
-our $VERSION = '0.002';
+our $VERSION = '0.003';
 
 has 'set_parser_from_type' => ( is => 'rw', isa => Bool, default => sub {1} );
 has 'indexer' => ( is => 'rw', isa => InstanceOf ['Dezi::Indexer'], );
