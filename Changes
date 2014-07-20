@@ -1,8 +1,8 @@
 Revision history for Dezi-App
 
-0.001   18 July 2014
-  - Initial release, ported from SWISH::Prog
-
-0.002   xxx
+0.002  19 July 2014
   - add missing CLI options for backcompat with swish3
+
+0.001  18 July 2014
+  - Initial release, ported from SWISH::Prog
 

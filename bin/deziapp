@@ -7,6 +7,8 @@ use Dezi::CLI;
 
 our $VERSION = $Dezi::CLI::VERSION;
 
+$Dezi::CLI::CLI_NAME = $0;
+$Dezi::CLI::CLI_NAME =~ s,^.*[\\/],,g;
 my $app = Dezi::CLI->new_with_options();
 $app->run();
 exit(0);
