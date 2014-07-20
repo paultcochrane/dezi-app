@@ -367,7 +367,7 @@ sub uri_ok {
     }
 
     my $path   = $uri->path;
-    my $swish3 = $self->indexer ? $self->indexer->swish3->config : undef;
+    my $swish3 = $self->indexer ? $self->indexer->swish3 : undef;
     my $mime   = $UTILS->get_mime( $path, $swish3 );
 
     if ( !$UTILS->get_parser_for_mime( $mime, $swish3 ) ) {
