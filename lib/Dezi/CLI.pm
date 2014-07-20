@@ -28,7 +28,7 @@ sub _init_debug { $ENV{DEZI_DEBUG} || 0 }
 
 has 'verbose' => (
     is          => 'rw',
-    isa         => Int,
+    isa         => Maybe [Int],
     traits      => ['Getopt'],
     cmd_aliases => ['v'],
 );
@@ -547,6 +547,8 @@ sub _progress_bar {
     );
     return $tpb;
 }
+
+__PACKAGE__->meta->make_immutable;
 
 1;
 

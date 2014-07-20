@@ -88,6 +88,8 @@ sub get_property {
     return $self->{doc}->{$propname};
 }
 
+__PACKAGE__->meta->make_immutable;
+
 1;
 
 __END__

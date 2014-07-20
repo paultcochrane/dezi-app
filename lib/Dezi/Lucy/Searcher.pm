@@ -512,6 +512,8 @@ sub _open_lucy {
     $self->debug and carp "opened new PolySearcher: " . $self->{lucy};
 }
 
+__PACKAGE__->meta->make_immutable;
+
 1;
 
 __END__

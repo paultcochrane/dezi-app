@@ -67,7 +67,10 @@ sub head {
     return join( "\n", @h ) . "\n\n";    # extra \n required
 }
 
+__PACKAGE__->meta->make_immutable;
+
 1;
+
 __END__
 
 

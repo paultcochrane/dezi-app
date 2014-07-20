@@ -176,6 +176,8 @@ A read-only attribute propagated to the Results from search().
 
 =cut
 
+__PACKAGE__->meta->make_immutable;
+
 1;
 
 __END__

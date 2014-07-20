@@ -104,6 +104,8 @@ sub header_file {
     return $self->path->file( Dezi::InvIndex::Header->header_file );
 }
 
+__PACKAGE__->meta->make_immutable;
+
 1;
 
 __END__

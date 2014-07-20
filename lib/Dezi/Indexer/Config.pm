@@ -1103,6 +1103,8 @@ sub get_stemmer_lang {
     return 'none';
 }
 
+__PACKAGE__->meta->make_immutable;
+
 1;
 
 __END__
