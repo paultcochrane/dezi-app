@@ -16,8 +16,8 @@ our $VERSION = '0.003';
 
 has 'set_parser_from_type' => ( is => 'rw', isa => Bool, default => sub {1} );
 has 'indexer' => (
-    is      => 'rw',
-    isa     => InstanceOf ['Dezi::Indexer'],
+    is  => 'rw',
+    isa => InstanceOf ['Dezi::Indexer'],
 );
 has 'doc_class' => (
     is       => 'rw',
@@ -214,7 +214,8 @@ sub swish_filter {
             my $type = $doc->type || 'default';
             $doc->parser(
                 Dezi::Utils->get_parser_for_mime(
-                    $type, $self->indexer->swish3,
+                    $type,
+                    ( $self->indexer ? $self->indexer->swish3 : undef ),
                 )
             );
         }
