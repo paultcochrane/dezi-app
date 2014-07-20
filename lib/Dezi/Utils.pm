@@ -146,9 +146,9 @@ sub mime_type {
     return $self->get_mime($url);
 }
 
-=head2 get_parser_for_mime( I<mime> )
+=head2 get_parser_for_mime( I<mime> [, I<swish3_object>] )
 
-Returns the SWISH::3 parser type for I<url>. This can be
+Returns the SWISH::3 parser type for I<mime>. This can be
 configured via the C<%ParserTypes> class variable.
 
 =cut
