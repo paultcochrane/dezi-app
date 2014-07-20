@@ -3,6 +3,7 @@ use Moose;
 use MooseX::StrictConstructor;
 with 'Dezi::Role';
 use Carp;
+use Types::Standard qw( Bool Str InstanceOf );
 use Dezi::InvIndex::Header;
 use MooseX::Types::Path::Class;
 use Class::Load ();
@@ -15,8 +16,15 @@ use overload(
 
 use namespace::sweep;
 
-our $VERSION      = '0.001';
+our $VERSION = '0.003';
+
 our $DEFAULT_NAME = 'dezi.index';
+
+has 'version' => (
+    is      => 'rw',
+    isa     => Str,
+    default => sub {$VERSION},
+);
 
 has 'path' => (
     is      => 'rw',
@@ -25,7 +33,7 @@ has 'path' => (
     default => sub { Path::Class::Dir->new($DEFAULT_NAME) }
 );
 
-has 'clobber' => ( is => 'rw', isa => 'Bool', default => 0 );
+has 'clobber' => ( is => 'rw', isa => Bool, default => 0 );
 
 around BUILDARGS => sub {
     my $orig  = shift;

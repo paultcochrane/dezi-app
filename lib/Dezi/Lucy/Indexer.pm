@@ -511,6 +511,7 @@ sub _finish_lucy {
     $idx_cfg->set( SWISH_INDEX_NAME(),         "$invindex" );
     $idx_cfg->set( SWISH_INDEX_FORMAT(),       'Lucy' );
     $idx_cfg->set( SWISH_INDEX_STEMMER_LANG(), $self->{_lang} );
+    $idx_cfg->set( 'DeziVersion',              $invindex->version );
     $idx_cfg->set( "DocCount",                 $doc_count );
     $idx_cfg->set( "UUID",                     $uuid );
 
