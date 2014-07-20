@@ -16,9 +16,16 @@ use namespace::sweep;
 
 our $VERSION = '0.003';
 
-has 'invindex' => ( is => 'rw', isa => DeziInvIndex, coerce => 1, );
-has 'invindex_class' =>
-    ( is => 'rw', isa => Str, default => sub {'Dezi::InvIndex'} );
+has 'invindex' => (
+    is     => 'rw',
+    isa    => DeziInvIndex,
+    coerce => 1,
+);
+has 'invindex_class' => (
+    is      => 'rw',
+    isa     => Str,
+    default => sub {'Dezi::InvIndex'},
+);
 has 'config' => (
     is      => 'rw',
     isa     => DeziIndexerConfig,
@@ -124,10 +131,18 @@ sub BUILD {
     }
 
     # make sure our invindex class matches invindex_class
-    if ( !$self->invindex->isa( $self->invindex_class ) ) {
+    if (   !$self->invindex
+        or !blessed $self->invindex
+        or !$self->invindex->isa( $self->invindex_class ) )
+    {
         Class::Load::load_class( $self->invindex_class );
-        $self->invindex(
-            $self->invindex_class->new( path => $self->invindex->path ) );
+        if ( !$self->invindex ) {
+            $self->invindex( $self->invindex_class->new );
+        }
+        else {
+            $self->invindex(
+                $self->invindex_class->new( path => $self->invindex . "" ) );
+        }
     }
 
     # merge any manual config with swish3 header
