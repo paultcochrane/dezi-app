@@ -108,6 +108,10 @@ sub get_mime {
     my $s3 = shift;
     if ($s3) {
 
+        if ( !$s3->isa('SWISH::3') ) {
+            confess "s3 object must be instance of SWISH::3, not " . ref($s3);
+        }
+
         # look it up
         my $ext = $s3->get_file_ext($url) || $DefaultExtension;
         return
