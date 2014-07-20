@@ -83,7 +83,8 @@ sub BUILD {
 
         # make sure invindex is blessed into invindex_class
         # and re-bless if necessary
-        if ( !$invindex->isa( $self->invindex_class ) ) {
+        if ( !blessed $invindex or !$invindex->isa( $self->invindex_class ) )
+        {
             Class::Load::load_class( $self->invindex_class );
             $invindex = $self->invindex_class->new( path => "$invindex" );
         }
