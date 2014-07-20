@@ -12,7 +12,8 @@ use Try::Tiny;
 use Dezi::App;
 use Dezi::InvIndex;
 
-our $VERSION  = '0.002';
+our $VERSION = '0.003';
+
 our $CLI_NAME = 'deziapp';
 
 has 'debug' => (
