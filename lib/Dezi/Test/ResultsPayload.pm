@@ -8,6 +8,8 @@ has 'docs'   => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'urls'   => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'scores' => ( is => 'ro', isa => 'HashRef',  required => 1 );
 
+__PACKAGE__->meta->make_immutable;
+
 1;
 
 =head1 AUTHOR

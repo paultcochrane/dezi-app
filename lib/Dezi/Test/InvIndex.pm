@@ -96,6 +96,8 @@ sub get_doc {
     return $self->doc_cache->get($uri);
 }
 
+__PACKAGE__->meta->make_immutable;
+
 1;
 
 =head1 AUTHOR

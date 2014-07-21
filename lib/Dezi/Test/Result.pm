@@ -4,6 +4,8 @@ extends 'Dezi::Result';
 use Carp;
 use namespace::sweep;
 
+__PACKAGE__->meta->make_immutable;
+
 1;
 
 =head1 NAME
