@@ -16,6 +16,33 @@ our $VERSION = '0.003';
 
 our $CLI_NAME = 'deziapp';
 
+has 'aggregator' => (
+    is          => 'rw',
+    isa         => Str,
+    traits      => ['Getopt'],
+    cmd_aliases => ['S'],
+    default     => sub {'fs'},
+);
+has 'aggregator_opts' => (
+    is          => 'rw',
+    isa         => HashRef,
+    traits      => ['Getopt'],
+    cmd_aliases => ['A'],
+);
+has 'begin' => (
+    is          => 'rw',
+    isa         => Int,
+    traits      => ['Getopt'],
+    cmd_aliases => ['b'],
+    default     => sub {0}
+);
+has 'config' => (
+    is          => 'rw',
+    isa         => Str,
+    traits      => ['Getopt'],
+    cmd_aliases => ['c'],
+);
+
 has 'debug' => (
     is          => 'rw',
     isa         => Bool,
@@ -25,53 +52,30 @@ has 'debug' => (
     builder     => '_init_debug',
 );
 sub _init_debug { $ENV{DEZI_DEBUG} || 0 }
-
-has 'verbose' => (
+has 'expected' => (
     is          => 'rw',
     isa         => Maybe [Int],
     traits      => ['Getopt'],
-    cmd_aliases => ['v'],
+    cmd_aliases => ['E'],
 );
-has 'warnings' => (
-    is          => 'rw',
-    isa         => Int,
-    traits      => ['Getopt'],
-    cmd_aliases => ['W'],
-    lazy        => 1,
-    default     => sub {2},
-);
-has 'version' => (
-    is          => 'rw',
-    isa         => Bool,
-    traits      => ['Getopt'],
-    cmd_aliases => ['V'],
-);
-has 'null_term' => (
-    is          => 'rw',
-    isa         => Bool,
-    traits      => ['Getopt'],
-    cmd_aliases => ['n'],
-);
-
-has 'inputs' => ( is => 'rw', isa => ArrayRef, );
-has 'index_mode' => (
-    is          => 'rw',
-    isa         => Bool,
-    traits      => ['Getopt'],
-    cmd_aliases => ['i'],
-);
-has 'query' => (
+has 'extended_output' => (
     is          => 'rw',
     isa         => Str,
     traits      => ['Getopt'],
-    cmd_aliases => [ 'q', 'w', ],
+    cmd_aliases => ['x'],
 );
-has 'invindex' => (
+has 'filter' => (
     is          => 'rw',
     isa         => Str,
     traits      => ['Getopt'],
-    cmd_aliases => ['f'],
-    default     => sub {$Dezi::InvIndex::DEFAULT_NAME},
+    cmd_aliases => ['doc_filter'],
+);
+has 'format' => (
+    is          => 'rw',
+    isa         => Str,
+    traits      => ['Getopt'],
+    cmd_aliases => ['F'],
+    default     => sub {'lucy'},
 );
 has 'headers' => (
     is          => 'rw',
@@ -81,69 +85,28 @@ has 'headers' => (
     lazy        => 1,
     default     => sub {1}
 );
-has 'extended_output' => (
-    is          => 'rw',
-    isa         => Str,
-    traits      => ['Getopt'],
-    cmd_aliases => ['x'],
-);
-has 'format' => (
-    is          => 'rw',
-    isa         => Str,
-    traits      => ['Getopt'],
-    cmd_aliases => ['F'],
-    default     => sub {'lucy'},
-);
-
-has 'aggregator' => (
-    is          => 'rw',
-    isa         => Str,
-    traits      => ['Getopt'],
-    cmd_aliases => ['S'],
-    default     => sub {'fs'},
-);
-has 'config' => (
-    is          => 'rw',
-    isa         => Str,
-    traits      => ['Getopt'],
-    cmd_aliases => ['c'],
-);
-has 'filter' => (
-    is          => 'rw',
-    isa         => Str,
-    traits      => ['Getopt'],
-    cmd_aliases => ['doc_filter'],
-);
-has 'newer_than' => (
-    is          => 'rw',
-    isa         => Maybe [Str],
-    traits      => ['Getopt'],
-    cmd_aliases => ['N'],
-);
-has 'links' => (
+has 'index_mode' => (
     is          => 'rw',
     isa         => Bool,
     traits      => ['Getopt'],
-    cmd_aliases => [ 'l', 'follow_symlinks' ],
+    cmd_aliases => ['i'],
 );
-has 'expected' => (
+has 'indexer_opts' => (
     is          => 'rw',
-    isa         => Maybe [Int],
+    isa         => HashRef,
     traits      => ['Getopt'],
-    cmd_aliases => ['E'],
+    cmd_aliases => ['I'],
 );
-has 'begin' => (
-    is          => 'rw',
-    isa         => Int,
-    traits      => ['Getopt'],
-    cmd_aliases => ['b'],
-    default     => sub {0}
+has 'inputs' => (
+    is  => 'rw',
+    isa => ArrayRef,
 );
-has 'max' => (
+has 'invindex' => (
     is          => 'rw',
-    isa         => Int,
+    isa         => Str,
     traits      => ['Getopt'],
-    cmd_aliases => ['m'],
+    cmd_aliases => ['f'],
+    default     => sub {$Dezi::InvIndex::DEFAULT_NAME},
 );
 has 'limits' => (
     is          => 'rw',
@@ -151,12 +114,62 @@ has 'limits' => (
     traits      => ['Getopt'],
     cmd_aliases => ['L'],
 );
+has 'links' => (
+    is          => 'rw',
+    isa         => Bool,
+    traits      => ['Getopt'],
+    cmd_aliases => [ 'l', 'follow_symlinks' ],
+);
+has 'max' => (
+    is          => 'rw',
+    isa         => Int,
+    traits      => ['Getopt'],
+    cmd_aliases => ['m'],
+);
+has 'newer_than' => (
+    is          => 'rw',
+    isa         => Maybe [Str],
+    traits      => ['Getopt'],
+    cmd_aliases => ['N'],
+);
+has 'null_term' => (
+    is          => 'rw',
+    isa         => Bool,
+    traits      => ['Getopt'],
+    cmd_aliases => ['n'],
+);
+has 'query' => (
+    is          => 'rw',
+    isa         => Str,
+    traits      => ['Getopt'],
+    cmd_aliases => [ 'q', 'w', ],
+);
 has 'sort_order' => (
     is          => 'rw',
     isa         => Str,
     traits      => ['Getopt'],
     cmd_aliases => ['s'],
     default     => sub {''},
+);
+has 'verbose' => (
+    is          => 'rw',
+    isa         => Maybe [Int],
+    traits      => ['Getopt'],
+    cmd_aliases => ['v'],
+);
+has 'version' => (
+    is          => 'rw',
+    isa         => Bool,
+    traits      => ['Getopt'],
+    cmd_aliases => ['V'],
+);
+has 'warnings' => (
+    is          => 'rw',
+    isa         => Int,
+    traits      => ['Getopt'],
+    cmd_aliases => ['W'],
+    lazy        => 1,
+    default     => sub {2},
 );
 
 =head2 run
@@ -368,12 +381,14 @@ sub _get_app {
         $ENV{SWISH_PARSER_WARNINGS} = $self->warnings;
     }
     my %app_args = (
-        invindex   => $self->invindex,
-        indexer    => $self->format,
-        aggregator => $self->aggregator,
-        debug      => $self->debug,
-        verbose    => $self->verbose,
-        warnings   => $self->warnings,     # TODO supported?
+        invindex        => $self->invindex,
+        indexer         => $self->format,
+        indexer_opts    => $self->indexer_opts,
+        aggregator      => $self->aggregator,
+        aggregator_opts => $self->aggregator_opts,
+        debug           => $self->debug,
+        verbose         => $self->verbose,
+        warnings        => $self->warnings,          # TODO supported?
     );
     $app_args{filter} = $self->filter if $self->filter;
     $app_args{config} = $self->config if $self->config;
