@@ -143,6 +143,8 @@ around 'get_doc' => sub {
     return $mail;
 };
 
+__PACKAGE__->meta->make_immutable;
+
 1;
 
 __END__

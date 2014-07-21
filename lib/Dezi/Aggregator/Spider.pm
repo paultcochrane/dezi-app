@@ -1105,6 +1105,8 @@ sub write_log_line {
     Dezi::Utils::write_log_line(@_);
 }
 
+__PACKAGE__->meta->make_immutable;
+
 1;
 
 __END__
