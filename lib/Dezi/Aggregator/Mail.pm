@@ -268,6 +268,8 @@ sub _mail2xml {
     return $xml;
 }
 
+__PACKAGE__->meta->make_immutable;
+
 1;
 
 __END__
