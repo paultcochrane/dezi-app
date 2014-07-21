@@ -28,6 +28,7 @@ has 'aggregator_opts' => (
     isa         => HashRef,
     traits      => ['Getopt'],
     cmd_aliases => ['A'],
+    default     => sub { {} },
 );
 has 'begin' => (
     is          => 'rw',
@@ -96,6 +97,7 @@ has 'indexer_opts' => (
     isa         => HashRef,
     traits      => ['Getopt'],
     cmd_aliases => ['I'],
+    default     => sub { {} },
 );
 has 'inputs' => (
     is  => 'rw',
