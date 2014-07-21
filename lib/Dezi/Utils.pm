@@ -306,6 +306,8 @@ sub write_log_line {
     warn $char x $width, "\n";
 }
 
+__PACKAGE__->meta->make_immutable;
+
 1;
 
 __END__
