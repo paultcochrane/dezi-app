@@ -4,6 +4,12 @@ extends 'Dezi::App';
 
 our $VERSION = '0.003';
 
+__PACKAGE__->meta->make_immutable;
+
+1;
+
+__END__
+
 =head1 NAME
 
 Dezi::Lucy - Dezi Apache Lucy backend

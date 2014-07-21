@@ -117,6 +117,8 @@ sub size {
     return scalar( @{ $_[0]->{q} } );
 }
 
+__PACKAGE__->meta->make_immutable;
+
 1;
 
 __END__

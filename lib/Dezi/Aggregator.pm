@@ -366,6 +366,8 @@ sub _apply_file_match {
     return 0;    # no-op for now
 }
 
+__PACKAGE__->meta->make_immutable;
+
 1;
 
 __END__
