@@ -380,11 +380,12 @@ sub swish3_handler {
 
     # will hold all the parsed text, keyed by field name
     my %doc;
+    my $docinfo = $data->doc;
 
     # Swish built-in fields first
     for my $propname ( keys %$BUILT_IN_PROPS ) {
         my $attr = $BUILT_IN_PROPS->{$propname};
-        $doc{$propname} = [ $data->doc->$attr ];
+        $doc{$propname} = [ $docinfo->$attr ];
     }
 
     # fields parsed from document
