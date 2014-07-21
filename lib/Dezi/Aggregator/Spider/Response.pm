@@ -250,8 +250,6 @@ sub AUTOLOAD {
     goto &$method;
 }
 
-sub DESTROY { }    # avoid AUTOLOADing it
-
 __PACKAGE__->meta->make_immutable;
 
 1;
