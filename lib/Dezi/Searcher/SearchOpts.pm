@@ -28,6 +28,8 @@ has 'default_boolop' => (
     default => sub {'AND'}
 );
 
+__PACKAGE__->meta->make_immutable;
+
 1;
 
 __END__
