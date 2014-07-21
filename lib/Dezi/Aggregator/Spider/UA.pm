@@ -201,6 +201,8 @@ sub get_response_class {
     return shift->{_swish_response_class} || $Response_Class;
 }
 
+__PACKAGE__->meta->make_immutable;
+
 1;
 
 __END__
