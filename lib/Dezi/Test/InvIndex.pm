@@ -83,6 +83,12 @@ sub search {
     return \%hits;
 }
 
+sub close {
+    my $self = shift;
+
+    warn "Closing $self";
+}
+
 sub put_doc {
     my $self = shift;
     my $doc = shift or confess "doc required";
