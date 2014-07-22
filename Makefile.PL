@@ -19,6 +19,7 @@ requires 'Moose'                       => 0;
 requires 'MooseX::Types::Path::Class'  => 0;
 requires 'MooseX::Types::DateTime'     => 0;
 requires 'MooseX::StrictConstructor'   => 0;
+requires 'MooseX::XSAccessor'          => 0;
 requires 'File::Temp'                  => 0;
 requires 'Data::Dump'                  => 0;
 requires 'Config::General'             => '2.31';
