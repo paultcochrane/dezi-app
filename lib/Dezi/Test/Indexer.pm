@@ -65,8 +65,6 @@ sub swish3_handler {
 
 }
 
-sub DESTROY { "zap $_[0]" }
-
 __PACKAGE__->meta->make_immutable;
 
 1;
