@@ -17,6 +17,8 @@ use namespace::sweep;
 
 our $VERSION = '0.004';
 
+my $default_headers = Dezi::Indexer::Headers->new();
+
 my ( $locale, $lang, $charset );
 {
 
@@ -34,6 +36,7 @@ has 'modtime' => (
     isa     => DeziEpoch,
     coerce  => 1,
     default => sub { time() },
+    lazy    => 1,
 );
 has 'type'    => ( is => 'rw', isa => Str );
 has 'parser'  => ( is => 'rw', isa => Str );
@@ -46,7 +49,7 @@ has 'version' => ( is => 'rw', isa => Str, default => sub {3} );
 has 'headers' => (
     is       => 'rw',
     isa      => InstanceOf ['Dezi::Indexer::Headers'],
-    default  => sub { Dezi::Indexer::Headers->new() },
+    default  => sub {$default_headers},
     required => 1,
 );
 
@@ -130,7 +133,7 @@ A hashref.
 =item version
 
 Swish-e 2.x or Swish3 style headers. Value should be C<2> or C<3>.
-Default is C<2>.
+Default is C<3>.
 
 =back
 
