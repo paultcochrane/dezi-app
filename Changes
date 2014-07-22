@@ -1,6 +1,6 @@
 Revision history for Dezi-App
 
-0.004  xxx
+0.004  22 July 2014
   - improve support for Multi-Value fields
   - fix failing leak test
 
