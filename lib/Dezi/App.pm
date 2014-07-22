@@ -158,7 +158,11 @@ has 'invindex' => (
     isa    => DeziInvIndex,
     coerce => 1,
 );
-has 'filter' => ( is => 'rw', isa => DeziFileOrCodeRef );
+has 'filter' => (
+    is     => 'rw',
+    isa    => DeziFileOrCodeRef,
+    coerce => 1,
+);
 has 'test_mode' => ( is => 'rw', isa => Bool, default => 0 );
 
 # allow for short names. we map to class->new
