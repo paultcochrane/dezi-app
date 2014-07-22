@@ -1,5 +1,6 @@
 package Dezi::Indexer::Doc;
 use Moose;
+use MooseX::XSAccessor;
 with 'Dezi::Role';
 use Types::Standard qw( Str HashRef Int InstanceOf );
 use Dezi::Types qw( DeziUriStr DeziEpoch );
@@ -21,7 +22,6 @@ my ( $locale, $lang, $charset );
 
     # inside a block to reduce impact on any regex
     use POSIX;
-    use locale;
 
     $locale = setlocale(POSIX::LC_CTYPE);
     ( $lang, $charset ) = split( m/\./, $locale );
@@ -62,7 +62,8 @@ Dezi::Indexer::Doc - Document object class for passing to Dezi::Indexer
   # and override filter() method
   
   package MyDoc;
-  use base qw( Dezi::Indexer::Doc );
+  use Moose;
+  extends 'Dezi::Indexer::Doc';
   
   sub filter {
     my $doc = shift;
@@ -153,7 +154,7 @@ being process()ed by the Indexer.
 
 The default is to do nothing.
 
-This method can also be set using the filter() callback in Dezi->new().
+This method can also be set using the filter() callback in Dezi::App->new().
 
 =cut
 
@@ -175,9 +176,11 @@ Example:
 sub as_string {
     my $self = shift;
 
+    my $body = $self->content;
+
     # we ignore size() and let Headers compute it based on actual content()
     return $self->headers->head(
-        $self->content,
+        $body,
         {   url     => $self->url,
             modtime => $self->modtime,
             type    => $self->type,
@@ -185,7 +188,7 @@ sub as_string {
             parser  => $self->parser,
             version => $self->version,
         }
-    ) . $self->content;
+    ) . $body;
 
 }
 
