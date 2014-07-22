@@ -50,7 +50,7 @@ coerce DeziFileRules, from ArrayRef, via { File::Rules->new($_) };
 
 # URI (coerce to Str)
 declare DeziUriStr, as Str;
-coerce DeziUriStr, from Object, via {"$_"};
+coerce DeziUriStr, from Object, q{"$_"};
 
 # Epoch
 declare DeziEpoch, as Maybe [Int];
