@@ -28,6 +28,7 @@ requires 'Test::More'                  => 0;
 requires 'Search::Query'               => '0.300';
 requires 'SWISH::3'                    => 1.000009;
 requires 'Class::Load'                 => 0;
+requires 'HTTP::Date'                  => 0;
 
 # recommended Aggregator support
 
