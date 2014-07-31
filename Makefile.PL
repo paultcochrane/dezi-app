@@ -11,6 +11,7 @@ requires 'File::Basename'               => 0;
 requires 'Time::HiRes'                  => 0;
 requires 'Path::Class'                  => '0.32';
 requires 'Path::Class::File::Lockable'  => 0;
+requires 'Path::Class::File::Stat'      => '0.05';
 requires 'File::Rules'                  => '0.02';
 requires 'SWISH::Filter'                => '0.15';
 requires 'DateTime::Format::DateParse'  => 0;
