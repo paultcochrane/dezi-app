@@ -37,6 +37,9 @@ requires 'Sort::SQL'                    => 0;
 requires 'Text::ParseWords'             => 0;
 requires 'Sys::Hostname'                => 0;
 
+# SWISH::Filters::Decompress requires this, and so do our tests
+requires 'Compress::Zlib'               => 0;
+
 # recommended Aggregator support
 
 # FF should be part of base install just like Carp

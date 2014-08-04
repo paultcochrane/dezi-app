@@ -2,6 +2,7 @@ Revision history for Dezi-App
 
 0.010  xx
   - use Try::Tiny in ReplaceRules
+  - require Compress::Zlib on behalf of SWISH::Filter
 
 0.009  01 Aug 2014
   - add missing dependencies to Makefile.PL
