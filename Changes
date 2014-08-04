@@ -1,5 +1,8 @@
 Revision history for Dezi-App
 
+0.010  xx
+  - use Try::Tiny in ReplaceRules
+
 0.009  01 Aug 2014
   - add missing dependencies to Makefile.PL
 
