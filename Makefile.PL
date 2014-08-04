@@ -37,8 +37,9 @@ requires 'Sort::SQL'                    => 0;
 requires 'Text::ParseWords'             => 0;
 requires 'Sys::Hostname'                => 0;
 
-# SWISH::Filters::Decompress requires this, and so do our tests
+# SWISH::Filters::Decompress requires these, and so do our tests
 requires 'Compress::Zlib'               => 0;
+requires 'CAM::PDF'                     => 0;
 
 # recommended Aggregator support
 
