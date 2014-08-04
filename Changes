@@ -1,6 +1,6 @@
 Revision history for Dezi-App
 
-0.010  xx
+0.010  04 Aug 2014
   - use Try::Tiny in ReplaceRules
   - require Compress::Zlib on behalf of SWISH::Filter
   - require CAM:PDF on behalf of SWISH::Filter
