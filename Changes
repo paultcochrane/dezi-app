@@ -1,5 +1,8 @@
 Revision history for Dezi-App
 
+0.012  xxx
+  - fix error checking in Lucy::Searcher to Search::Query::Dialect
+
 0.011  14 Aug 2014
   - add missing MooseX::Getopt to Makefile.PL for deziapp CLI
 
