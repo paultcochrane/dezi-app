@@ -153,7 +153,7 @@ sub AUTOLOAD {
 
 =head1 NAME
 
-Dezi::Indexer::Config - read/write Swish-e config files
+Dezi::Indexer::Config - read/write Indexer config files
 
 =head1 SYNOPSIS
 
@@ -172,6 +172,7 @@ and converts them to Swish3-style XML configuration format.
 
 See the Swish-e documentation for a list of configuration parameters.
 Each parameter has an accessor/mutator method as part of the Config object.
+L<http://swish-e.org/docs/swish-config.html>.
 
 B<NOTE:> Every config parameter can take either a scalar or an array ref as a value.
 In addition, you may append config values to any existing values by passing an additional
@@ -195,7 +196,7 @@ Example:
 
 Instantiate a new Config object. 
 Takes a hash of key/value pairs, where each key
-may be a Swish-e configuration parameter.
+may be a configuration parameter.
 
 Example:
 

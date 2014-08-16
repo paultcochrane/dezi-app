@@ -78,7 +78,7 @@ __END__
 
 =head1 NAME
 
-Dezi::Indexer::Headers - create document headers for Swish-e -S prog
+Dezi::Indexer::Headers - create document headers for Swish3 or Swish-e
 
 =head1 SYNOPSIS
 

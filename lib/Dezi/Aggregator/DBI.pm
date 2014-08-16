@@ -21,7 +21,7 @@ my $XMLer = Search::Tools::XML->new();    # included in Utils
 
 =head1 NAME
 
-Dezi::Aggregator::DBI - index DB records with Swish-e
+Dezi::Aggregator::DBI - index DB records
 
 =head1 SYNOPSIS
     
@@ -93,7 +93,7 @@ column descriptions, where the key is the column name and the value
 is a hashref of type and bias. See the SYNOPSIS.
 
 There are two special column names: swishtitle and swishdescription.
-These are reserved for mapping real column names to Swish-e property names
+These are reserved for mapping real column names to PropertyNames
 for returning in search results. C<swishtitle> should be the name of a column,
 and C<swishdescription> should be a hashref of column names to include
 in the StoreDescription value.
