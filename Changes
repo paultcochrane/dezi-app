@@ -1,5 +1,8 @@
 Revision history for Dezi-App
 
+0.013  xxx
+  - move Dezi::Indexer::Headers to SWISH::3::Headers, require SWISH::3 1.000012
+
 0.012  15 Aug 2014
   - fix error checking in Lucy::Searcher to Search::Query::Dialect
   - zapped .svn from git repo (never included in dist)
