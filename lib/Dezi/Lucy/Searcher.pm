@@ -178,7 +178,7 @@ sub _build_lucy {
     else {
         $self->{qp} = $self->{_initial_qp};
     }
-    
+
     $self->debug and warn dump $self;
 
     return $self;
@@ -376,9 +376,12 @@ sub search {
         dump( $hits_args{query}->dump() ),
         dump( \%hits_args )
         );
-    my $compiler = $hits_args{query}->make_compiler( searcher => $lucy );
-    my $hits     = $lucy->hits(%hits_args);
-    my $results  = Dezi::Lucy::Results->new(
+    my $compiler = $hits_args{query}->make_compiler(
+        searcher => $lucy,
+        boost    => 0,
+    );
+    my $hits    = $lucy->hits(%hits_args);
+    my $results = Dezi::Lucy::Results->new(
         hits                 => $hits->total_hits + 0,
         payload              => $hits,
         query                => $parsed_query,
