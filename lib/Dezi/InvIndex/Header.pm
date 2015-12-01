@@ -7,9 +7,9 @@ use MooseX::Types::Path::Class;
 use Carp;
 use SWISH::3 qw( :constants );
 
-use namespace::sweep;
+use namespace::autoclean;
 
-our $VERSION = '0.013';
+our $VERSION = '0.014';
 
 has 'invindex' => ( is => 'rw', isa => DeziInvIndex, required => 1 );
 has 'file' => ( is => 'ro', isa => 'Path::Class::File', coerce => 1, );

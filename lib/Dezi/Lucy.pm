@@ -2,7 +2,7 @@ package Dezi::Lucy;
 use Moose;
 extends 'Dezi::App';
 
-our $VERSION = '0.013';
+our $VERSION = '0.014';
 
 __PACKAGE__->meta->make_immutable;
 

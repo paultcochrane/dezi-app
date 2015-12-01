@@ -6,9 +6,9 @@ use Carp;
 use Data::Dump qw( dump );
 use Text::ParseWords;
 use Try::Tiny;
-use namespace::sweep;
+use namespace::autoclean;
 
-our $VERSION = '0.013';
+our $VERSION = '0.014';
 
 has 'rules' => ( is => 'rw', isa => 'ArrayRef' );
 

@@ -2,9 +2,9 @@ package Dezi::Lucy::Results;
 use Moose;
 extends 'Dezi::Results';
 use Dezi::Lucy::Result;
-use namespace::sweep;
+use namespace::autoclean;
 
-our $VERSION = '0.013';
+our $VERSION = '0.014';
 
 has 'find_relevant_fields' =>
     ( is => 'rw', isa => 'Bool', default => sub {0} );

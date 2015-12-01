@@ -22,9 +22,9 @@ use Sort::SQL;
 use Search::Query;
 use Search::Query::Dialect::Lucy;
 
-use namespace::sweep;
+use namespace::autoclean;
 
-our $VERSION = '0.013';
+our $VERSION = '0.014';
 
 has 'find_relevant_fields' => ( is => 'rw', isa => Bool, default => sub {0} );
 has 'nfs_mode'             => ( is => 'rw', isa => Bool, default => sub {0} );

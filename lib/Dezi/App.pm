@@ -9,9 +9,9 @@ use Class::Load ();
 use Types::Standard qw( Bool HashRef );
 use Dezi::Types qw( DeziIndexerConfig DeziInvIndex DeziFileOrCodeRef );
 use Dezi::ReplaceRules;
-use namespace::sweep;
+use namespace::autoclean;
 
-our $VERSION = '0.013';
+our $VERSION = '0.014';
 
 =head1 NAME
 

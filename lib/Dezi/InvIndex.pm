@@ -14,9 +14,9 @@ use overload(
     fallback => 1,
 );
 
-use namespace::sweep;
+use namespace::autoclean;
 
-our $VERSION = '0.013';
+our $VERSION = '0.014';
 
 our $DEFAULT_NAME = 'dezi.index';
 

@@ -9,9 +9,9 @@ use URI;
 use HTML::Tagset;
 use HTML::HeadParser;
 
-use namespace::sweep;
+use namespace::autoclean;
 
-our $VERSION = '0.013';
+our $VERSION = '0.014';
 
 has 'http_response' => ( is => 'rw', isa => 'HTTP::Response' );
 has 'link_tags'     => ( is => 'rw', isa => 'HashRef' );

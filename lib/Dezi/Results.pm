@@ -3,9 +3,9 @@ use Moose;
 use MooseX::StrictConstructor;
 with 'Dezi::Role';
 use Carp;
-use namespace::sweep;
+use namespace::autoclean;
 
-our $VERSION = '0.013';
+our $VERSION = '0.014';
 
 has 'hits' => ( is => 'ro', isa => 'Int', required => 1 );
 has 'query' => ( is => 'ro', isa => 'Search::Query::Dialect', required => 1 );

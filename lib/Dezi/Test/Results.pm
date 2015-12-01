@@ -2,7 +2,7 @@ package Dezi::Test::Results;
 use Moose;
 extends 'Dezi::Results';
 use Dezi::Test::Result;
-use namespace::sweep;
+use namespace::autoclean;
 
 sub next {
     my $self    = shift;

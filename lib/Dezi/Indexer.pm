@@ -12,9 +12,9 @@ use Dezi::InvIndex;
 use SWISH::3 qw( :constants );
 use Try::Tiny;
 
-use namespace::sweep;
+use namespace::autoclean;
 
-our $VERSION = '0.013';
+our $VERSION = '0.014';
 
 has 'invindex' => (
     is     => 'rw',

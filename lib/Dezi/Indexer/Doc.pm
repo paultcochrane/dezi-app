@@ -13,9 +13,9 @@ use overload(
 );
 use SWISH::3::Headers;
 
-use namespace::sweep;
+use namespace::autoclean;
 
-our $VERSION = '0.013';
+our $VERSION = '0.014';
 
 my $default_headers = SWISH::3::Headers->new();
 

@@ -2,9 +2,9 @@ package Dezi::Cache;
 use Moose;
 with 'Dezi::Role';
 use Carp;
-use namespace::sweep;
+use namespace::autoclean;
 
-our $VERSION = '0.013';
+our $VERSION = '0.014';
 
 has 'cache' => ( is => 'rw' );
 

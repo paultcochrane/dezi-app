@@ -64,7 +64,7 @@ declare DeziLogLevel, as Int;
 coerce DeziLogLevel, from Undef, via {0};
 
 #
-use namespace::sweep;
+use namespace::autoclean;
 
 sub _coerce_indexer_config {
     my $config2 = shift;

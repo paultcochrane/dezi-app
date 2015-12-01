@@ -10,9 +10,9 @@ use Dezi::Indexer::Doc;
 use Scalar::Util qw( blessed );
 use Data::Dump qw( dump );
 
-use namespace::sweep;
+use namespace::autoclean;
 
-our $VERSION = '0.013';
+our $VERSION = '0.014';
 
 has 'set_parser_from_type' => ( is => 'rw', isa => Bool, default => sub {1} );
 has 'indexer' => (

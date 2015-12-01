@@ -10,9 +10,9 @@ use Scalar::Util qw( blessed );
 use Class::Load;
 use Search::Query;
 use Search::Query::Parser;
-use namespace::sweep;
+use namespace::autoclean;
 
-our $VERSION = '0.013';
+our $VERSION = '0.014';
 
 has 'max_hits' => ( is => 'rw', isa => Int, default => 1000 );
 has 'invindex' => (

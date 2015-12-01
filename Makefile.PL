@@ -37,6 +37,7 @@ requires 'Sort::SQL'                    => 0;
 requires 'Text::ParseWords'             => 0;
 requires 'Sys::Hostname'                => 0;
 requires 'MooseX::Getopt'               => 0;
+requires 'namespace::autoclean'         => 0;
 
 # SWISH::Filters::Decompress requires these, and so do our tests
 requires 'Compress::Zlib'               => 0;
