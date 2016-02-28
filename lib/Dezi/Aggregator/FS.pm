@@ -26,8 +26,8 @@ Dezi::Aggregator::FS - crawl a filesystem
 
  use Dezi::Aggregator::FS;
  my $fs = Dezi::Aggregator::FS->new(
-        indexer => Dezi::Indexer->new
-    );
+   indexer => Dezi::Indexer->new
+ );
     
  $fs->indexer->start;
  $fs->crawl( $path );
