@@ -241,8 +241,8 @@ XML
     ok( my $spider = Dezi::Aggregator::Spider->new(
             verbose => $debug,
             debug   => $debug,
-            email   => 'noone@swish-e.org',
-            agent   => 'swish-prog-test',
+            email   => 'noone@dezi.org',
+            agent   => 'dezi-app-test',
 
             #max_depth => 2, # unlimited
 
