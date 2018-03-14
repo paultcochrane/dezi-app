@@ -19,14 +19,14 @@ my $XMLer = Search::Tools::XML->new();
 Dezi::Aggregator::Mail - crawl a mail box
 
 =head1 SYNOPSIS
-    
+
     use Dezi::Aggregator::Mail;
-    
+
     my $aggregator = 
         Dezi::Aggregator::Mail->new( 
             indexer => Dezi::Indexer::Native->new()
         );
-    
+
     $aggregator->indexer->start;
     $aggregator->crawl('path/to/my/maildir');
     $aggregator->indexer->finish;

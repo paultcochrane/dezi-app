@@ -20,11 +20,11 @@ Dezi::Aggregator::MailFS - crawl a filesystem of email messages
  my $fs = Dezi::Aggregator::MailFS->new(
         indexer => Dezi::Indexer->new
     );
-    
+
  $fs->indexer->start;
  $fs->crawl( $path_to_mail );
  $fs->indexer->finish;
- 
+
 =head1 DESCRIPTION
 
 Dezi::Aggregator::MailFS is a subclass of Dezi::Aggregator::FS

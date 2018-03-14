@@ -16,7 +16,7 @@ has 'property_map' => ( is => 'ro', isa => 'HashRef', required => 1 );
 Dezi::Result - abstract result class
 
 =head1 SYNOPSIS
-                
+
  my $results = $searcher->search( 'foo bar' );
  while (my $result = $results->next) {
      printf("%4d %s\n", $result->score, $result->uri);

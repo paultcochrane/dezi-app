@@ -24,10 +24,10 @@ my $XMLer = Search::Tools::XML->new();    # included in Utils
 Dezi::Aggregator::DBI - index DB records
 
 =head1 SYNOPSIS
-    
+
     use Dezi::Aggregator::DBI;
     use Carp;
-    
+
     my $aggregator = Dezi::Aggregator::DBI->new(
         db => [
             "DBI:mysql:database=movies;host=localhost;port=3306",
@@ -55,7 +55,7 @@ Dezi::Aggregator::DBI - index DB records
         alias_columns   => 1,
         indexer         => Dezi::Indexer::Native->new,
     );
-    
+
     $aggregator->crawl();
 
 

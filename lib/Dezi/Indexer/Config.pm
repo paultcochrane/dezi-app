@@ -158,13 +158,13 @@ Dezi::Indexer::Config - read/write Indexer config files
 =head1 SYNOPSIS
 
  use Dezi::Indexer::Config;
- 
+
  my $config = Dezi::Indexer::Config->new;
  $config->write2();
  $config->read2('path/to/file.conf');
  $config->write3();
- 
- 
+
+
 =head1 DESCRIPTION
 
 The Dezi::Indexer::Config class reads and writes Swish-e 2.x configuration files,
@@ -188,7 +188,7 @@ Example:
  # one two
  # red yellow
  # green blue
- 
+
 
 =head1 METHODS
 
@@ -201,9 +201,9 @@ may be a configuration parameter.
 Example:
 
  my $config = Dezi::Indexer::Config->new( DefaultContents => 'HTML*' );
- 
+
  print "DefaultContents is ", $config->DefaultContents, "\n";
- 
+
 =cut
 
 around BUILDARGS => sub {
@@ -366,12 +366,12 @@ Example:
  use Dezi::Indexer::Config;
  my $config = Dezi::Indexer::Config->new();
  my $parsed = $config->read2( 'my/file.cfg' );
- 
+
  # should print same thing
  print $config->WordCharacters->[0], "\n";
  print $parsed->{WordCharacters}, "\n";
- 
- 
+
+
 =cut
 
 sub read2 {
@@ -678,7 +678,7 @@ equivalents.
  UndefinedMetaNames
  UndefinedXMLAttributes
  XMLClassAttributes
-        
+
 =cut
 
 sub ver2_to_ver3 {

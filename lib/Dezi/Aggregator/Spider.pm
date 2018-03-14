@@ -94,7 +94,7 @@ Dezi::Aggregator::Spider - web aggregator
  my $spider = Dezi::Aggregator::Spider->new(
      indexer => Dezi::Indexer->new
  );
- 
+
  $spider->indexer->start;
  $spider->crawl( 'http://swish-e.org/' );
  $spider->indexer->finish;

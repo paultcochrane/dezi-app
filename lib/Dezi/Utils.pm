@@ -26,14 +26,14 @@ Dezi::Utils - utility variables and methods
 =head1 SYNOPSIS
 
  use Dezi::Utils;
- 
+
  my $ext = Dezi::Utils->get_file_ext( $filename );
  my $mime = Dezi::Utils->get_mime( $filename );
  if (Dezi::Utils->looks_like_gz( $filename )) {
      $mime = Dezi::Utils->get_real_mime( $filename );
  }
  my $parser = Dezi::Utils->get_parser_for_mime( $mime );
- 
+
 =head1 DESCRIPTION
 
 This class provides commonly used variables and methods

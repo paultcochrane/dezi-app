@@ -120,7 +120,7 @@ Dezi::InvIndex - base class for Dezi inverted indexes
  my $index = Dezi::InvIndex->new(path => 'path/to/index');
  print $index;  # prints $index->path
  my $header = $index->get_header();  # $meta isa Dezi::InvIndex::Header object
- 
+
 =head1 DESCRIPTION
 
 A Dezi::InvIndex is a base class for defining different inverted index formats.

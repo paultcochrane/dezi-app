@@ -47,25 +47,25 @@ Dezi::Aggregator - document aggregation base class
  package MyAggregator;
  use Moose;
  extends 'Dezi::Aggregator';
- 
+
  sub get_doc {
     my ($self, $url) = @_;
-    
+
     # do something to create a Dezi::Indexer::Doc object from $url
-    
+
     return $doc;
  }
- 
+
  sub crawl {
     my ($self, @where) = @_;
-    
+
     foreach my $place (@where) {
-       
+
        # do something to search $place for docs to pass to get_doc()
-       
+
     }
  }
- 
+
  1;
 
 =head1 DESCRIPTION

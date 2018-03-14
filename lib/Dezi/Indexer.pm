@@ -67,7 +67,7 @@ Dezi::Indexer - base indexer class
     $indexer->process($doc);
  }
  $indexer->finish;
- 
+
 =head1 DESCRIPTION
 
 Dezi::Indexer is a base class implementing the simplest of indexing

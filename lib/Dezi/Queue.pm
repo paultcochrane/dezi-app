@@ -15,7 +15,7 @@ Dezi::Queue - simple in-memory FIFO queue class
 
  use Dezi::Queue;
  my $queue = Dezi::Queue->new;
- 
+
  $queue->put( 'foo' );
  $queue->size;          # returns number of items in queue (1)
  $queue->peek;          # returns 'foo' (next value for get())

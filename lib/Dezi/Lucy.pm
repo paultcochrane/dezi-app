@@ -24,9 +24,9 @@ Dezi::Lucy - Dezi Apache Lucy backend
     indexer    => 'lucy',
     config     => 'path/to/dezi.conf',
  );
- 
+
  $app->run('path/to/files');
- 
+
  # then search the index
  my $searcher = Dezi::Lucy::Searcher->new(
     invindex => 'path/to/dezi.index',

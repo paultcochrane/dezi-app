@@ -28,11 +28,11 @@ Dezi::Aggregator::FS - crawl a filesystem
  my $fs = Dezi::Aggregator::FS->new(
    indexer => Dezi::Indexer->new
  );
-    
+
  $fs->indexer->start;
  $fs->crawl( $path );
  $fs->indexer->finish;
- 
+
 =head1 DESCRIPTION
 
 Dezi::Aggregator::FS is a filesystem aggregator implementation
@@ -120,7 +120,7 @@ sub file_ok {
 
 Called by find() for all directories. You can control
 the recursion into I<directory> via the config() params
- 
+
 =cut
 
 sub dir_ok {

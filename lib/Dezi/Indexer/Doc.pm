@@ -63,25 +63,25 @@ Dezi::Indexer::Doc - Document object class for passing to Dezi::Indexer
 
   # subclass Dezi::Indexer::Doc
   # and override filter() method
-  
+
   package MyDoc;
   use Moose;
   extends 'Dezi::Indexer::Doc';
-  
+
   sub filter {
     my $doc = shift;
-    
+
     # alter url
     my $url = $doc->url;
     $url =~ s/my.foo.com/my.bar.org/;
     $doc->url( $url );
-    
+
     # alter content
     my $buf = $doc->content;
     $buf =~ s/foo/bar/gi;
     $doc->content( $buf );
   }
-  
+
   1;
 
 =head1 DESCRIPTION

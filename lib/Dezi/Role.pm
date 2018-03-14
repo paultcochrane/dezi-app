@@ -42,7 +42,7 @@ Dezi::Role - common attributes for Dezi classes
  with 'Dezi::Role';
  # other stuff
  1;
- 
+
  # see METHODS for what you get for free
 
 =head1 DESCRIPTION

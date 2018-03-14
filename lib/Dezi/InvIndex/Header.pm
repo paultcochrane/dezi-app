@@ -144,7 +144,7 @@ Dezi::InvIndex::Header - read/write InvIndex metadata
  for my $key (keys %{ $meta->data }) {
     dump $meta->$key;
  }
- 
+
 =head1 DESCRIPTION
 
 A Dezi::InvIndex::Header object represents the metadata for an

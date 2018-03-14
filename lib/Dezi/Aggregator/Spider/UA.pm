@@ -34,7 +34,7 @@ Dezi::Aggregator::Spider::UA - spider user agent
 
  use Dezi::Aggregator::Spider::UA;
  my $ua = Dezi::Aggregator::Spider::UA->new;
- 
+
  # $ua is a LWP::RobotUA object
 
 =head1 DESCRIPTION

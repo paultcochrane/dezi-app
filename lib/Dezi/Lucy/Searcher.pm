@@ -34,14 +34,14 @@ has 'nfs_mode'             => ( is => 'rw', isa => Bool, default => sub {0} );
 Dezi::Lucy::Searcher - Dezi Apache Lucy Searcher
 
 =head1 SYNOPSIS
- 
+
  my $searcher = Dezi::Lucy::Searcher->new(
      invindex             => 'path/to/index',
      max_hits             => 1000,
      find_relevant_fields => 1,   # default: 0
      nfs_mode             => 1,   # default: 0
  );
-                
+
  my $results = $searcher->search( 'foo bar' );
  while (my $result = $results->next) {
      printf("%4d %s\n", $result->score, $result->uri);

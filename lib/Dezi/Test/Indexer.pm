@@ -80,7 +80,7 @@ Dezi::Test::Indexer - test indexer class
 =head1 SYNOPSIS
 
  use Dezi::Test::Indexer;
- 
+
  my $spider = Dezi::Aggregator::Spider->new(
     indexer => Dezi::Test::Indexer->new()
  );

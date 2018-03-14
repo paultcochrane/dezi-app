@@ -47,7 +47,7 @@ in a Dezi::Indexer::Config object or config file.
 Constructor for new ReplaceRules object. I<rules> should be an array
 of strings as defined in
 L<http://swish-e.org/docs/swish-config.html#replacerules>.
- 
+
 =head2 BUILDARGS
 
 Internal method. Allows for single argument to new().

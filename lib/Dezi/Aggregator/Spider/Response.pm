@@ -28,7 +28,7 @@ Dezi::Aggregator::Spider::Response - spider response
  my $ua = Dezi::Aggregator::Spider::UA->new;
  my $response = $ua->get('http://swish-e.org/');
  my $http_response = $response->http_response;
- 
+
  # $ua isa LWP::RobotUA subclass
  # $response isa Dezi::Aggregator::Spider::Response
  # $http_response isa HTTP::Response

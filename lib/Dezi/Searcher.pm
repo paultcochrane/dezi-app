@@ -41,7 +41,7 @@ Dezi::Searcher - base searcher class
                     invindex        => 'path/to/index',
                     max_hits        => 1000,
                 );
-                
+
  my $results = $searcher->search( 'foo bar' );
  while (my $result = $results->next) {
      printf("%4d %s\n", $result->score, $result->uri);

@@ -23,7 +23,7 @@ Dezi::Results - base results class
                     query_class     => 'Dezi::Query',
                     query_parser    => $swish_prog_queryparser,
                 );
-                
+
  my $results = $searcher->search( 'foo bar' );
  while (my $result = $results->next) {
      printf("%4d %s\n", $result->score, $result->uri);
