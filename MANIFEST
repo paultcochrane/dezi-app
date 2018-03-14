@@ -35,7 +35,6 @@ lib/Dezi/Utils.pm
 lib/Dezi/CLI.pm
 lib/Dezi/Lucy.pm
 lib/Dezi/Lucy/Indexer.pm
-lib/Dezi/Lucy/Indexer.pm.new
 lib/Dezi/Lucy/InvIndex.pm
 lib/Dezi/Lucy/Result.pm
 lib/Dezi/Lucy/Results.pm
@@ -49,7 +48,7 @@ lib/Dezi/Test/Searcher.pm
 Makefile.PL
 MANIFEST
 META.yml
-README
+README.pod
 t/000-load.t
 t/000-synopsis.t
 t/001-fs.t
