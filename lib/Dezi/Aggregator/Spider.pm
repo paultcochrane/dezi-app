@@ -229,7 +229,7 @@ Number of seconds to wait before skipping manual prompt for username/password.
 
 =item credentials I<user:pass>
 
-String with C<username>:C<password> pair to be used when prompted by 
+String with C<username>:C<password> pair to be used when prompted by
 the server.
 
 =item follow_redirects I<1|0>
@@ -711,7 +711,7 @@ sub get_doc {
 
 Called internally when the server returns a 401 or 403 response.
 Will attempt to determine the correct credentials for I<uri>
-based on the previous attempt in I<response> and what you 
+based on the previous attempt in I<response> and what you
 have configured in B<credentials>, B<authn_callback> or when
 manually prompted.
 
@@ -1040,7 +1040,7 @@ sub looks_like_sitemap {
 =head2 crawl( I<uri> )
 
 Implements the required crawl() method. Recursively fetches I<uri>
-and its child links to a depth set in max_depth(). 
+and its child links to a depth set in max_depth().
 
 Will quit after max_files() unless max_files==0.
 
@@ -1118,7 +1118,7 @@ Peter Karman, E<lt>perl@peknet.comE<gt>
 =head1 BUGS
 
 Please report any bugs or feature requests to C<bug-swish-prog at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Dezi-App>.  
+the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Dezi-App>.
 I will be notified, and then you'll
 automatically be notified of progress on your bug as I make changes.
 
@@ -1160,7 +1160,7 @@ L<http://search.cpan.org/dist/Dezi-App/>
 Copyright 2008-2015 by Peter Karman
 
 This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself. 
+it under the same terms as Perl itself.
 
 =head1 SEE ALSO
 

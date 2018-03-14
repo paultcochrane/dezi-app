@@ -72,7 +72,7 @@ including:
 Only new and overridden methods are documented here. See
 the L<Dezi::Searcher> documentation.
 
-=head2 BUILD 
+=head2 BUILD
 
 Called internally by new(). Additional parameters include:
 
@@ -184,7 +184,7 @@ sub _build_lucy {
     return $self;
 }
 
-=head2 get_propnames 
+=head2 get_propnames
 
 Returns array ref of PropertyNames defined for the invindex.
 The array will not contain any alias names or reserved PropertyNames.
@@ -528,7 +528,7 @@ Peter Karman, E<lt>karpet@dezi.orgE<gt>
 =head1 BUGS
 
 Please report any bugs or feature requests to C<bug-dezi-app at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Dezi-App>.  
+the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Dezi-App>.
 I will be notified, and then you'll automatically be notified of progress on your bug as I make changes.
 
 =head1 SUPPORT

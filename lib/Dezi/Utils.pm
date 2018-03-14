@@ -215,7 +215,7 @@ this method eases the pain.
 I<key> should be a SWISH::3::Config reserved word. Use
 the SWISH::3::Constants for safety.
 
-I<value> is passed through perl_to_xml(). 
+I<value> is passed through perl_to_xml().
 If I<value> is a hashref, it should be a simple key/value set with strings.
 You may use arrayref values, where items in the array are strings.
 
@@ -226,11 +226,11 @@ is missing.
 Example:
 
  use SWISH::3 qw( :constants );
- $utils->merge_swish3_config( 
-     SWISH_PARSERS() => { 
+ $utils->merge_swish3_config(
+     SWISH_PARSERS() => {
          'XML'  => [ 'application/x-bar', 'application/x-foo' ],
-         'HTML' => [ 'application/x-blue', 'application/x-red' ] 
-     } 
+         'HTML' => [ 'application/x-blue', 'application/x-red' ]
+     }
  );
  $utils->merge_swish3_config(
      'foo' => 'bar'
@@ -319,7 +319,7 @@ Peter Karman, E<lt>karpet@dezi.orgE<gt>
 =head1 BUGS
 
 Please report any bugs or feature requests to C<bug-dezi-app at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Dezi-App>.  
+the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Dezi-App>.
 I will be notified, and then you'll automatically be notified of progress on your bug as I make changes.
 
 =head1 SUPPORT

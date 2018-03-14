@@ -194,7 +194,7 @@ Example:
 
 =head2 new( I<params> )
 
-Instantiate a new Config object. 
+Instantiate a new Config object.
 Takes a hash of key/value pairs, where each key
 may be a configuration parameter.
 
@@ -429,7 +429,7 @@ Writes Swish-e version 2 compatible config file.
 If I<path/file> is omitted, a temp file will be
 written using File::Temp.
 
-If I<prog_mode> is true all config directives 
+If I<prog_mode> is true all config directives
 inappropriate for the -S prog mode in the Native::Indexer
 are skipped. The default is false.
 
@@ -1130,7 +1130,7 @@ __END__
 
 =head1 CAVEATS
 
-IgnoreTotalWordCountWhenRanking defaults to 0 
+IgnoreTotalWordCountWhenRanking defaults to 0
 which is B<not> the default in Swish-e 2.x.
 
 =head1 AUTHOR
@@ -1140,7 +1140,7 @@ Peter Karman, E<lt>perl@peknet.comE<gt>
 =head1 BUGS
 
 Please report any bugs or feature requests to C<bug-swish-prog at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Dezi-App>.  
+the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Dezi-App>.
 I will be notified, and then you'll
 automatically be notified of progress on your bug as I make changes.
 
@@ -1182,7 +1182,7 @@ L<http://search.cpan.org/dist/Dezi-App/>
 Copyright 2006-2015 by Peter Karman
 
 This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself. 
+it under the same terms as Perl itself.
 
 =head1 SEE ALSO
 

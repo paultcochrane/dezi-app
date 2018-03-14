@@ -468,11 +468,11 @@ sub _commands {
     my $usage = <<EOF;
  synopsis:
     $CLI_NAME [-E N] [-i dir file ... ] [-S aggregator] [-c file] [-f invindex] [-l] [-v (num)] [-I name=val]
-    $CLI_NAME -q 'word1 word2 ...' [-f file1 file2 ...] 
-          [-s sortprop1 [asc|desc] ...] 
+    $CLI_NAME -q 'word1 word2 ...' [-f file1 file2 ...]
+          [-s sortprop1 [asc|desc] ...]
           [-H num]
-          [-m num] 
-          [-x output_format] 
+          [-m num]
+          [-x output_format]
           [-L prop low high]
     $CLI_NAME -N path/to/compare/file or date
     $CLI_NAME -V
@@ -611,7 +611,7 @@ Peter Karman, E<lt>karpet@dezi.orgE<gt>
 =head1 BUGS
 
 Please report any bugs or feature requests to C<bug-dezi-app at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Dezi-App>.  
+the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Dezi-App>.
 I will be notified, and then you'll automatically be notified of progress on your bug as I make changes.
 
 =head1 SUPPORT

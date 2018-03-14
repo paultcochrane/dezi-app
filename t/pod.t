@@ -1,4 +1,4 @@
-#!perl 
+#!perl
 
 use Test::More;
 plan skip_all => "set RELEASE_TESTING to test POD" unless $ENV{RELEASE_TESTING};

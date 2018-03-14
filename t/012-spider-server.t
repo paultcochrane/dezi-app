@@ -205,21 +205,21 @@ SKIP: {
 	    xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
 	<url>
-		<loc>$base/hello</loc> 
-		<lastmod>$now+00:00</lastmod> 
-		<changefreq>weekly</changefreq> 
+		<loc>$base/hello</loc>
+		<lastmod>$now+00:00</lastmod>
+		<changefreq>weekly</changefreq>
 		<priority>0.6</priority>
 	</url>
 	<url>
-		<loc>$base/nosuchlink</loc> 
-		<lastmod>$yesterday+00:00</lastmod> 
-		<changefreq>daily</changefreq> 
+		<loc>$base/nosuchlink</loc>
+		<lastmod>$yesterday+00:00</lastmod>
+		<changefreq>daily</changefreq>
 		<priority>0.6</priority>
 	</url>
 	<url>
-		<loc>http://elsewhere.foo/bar</loc> 
-		<lastmod>$yesterday+00:00</lastmod> 
-		<changefreq>hourly</changefreq> 
+		<loc>http://elsewhere.foo/bar</loc>
+		<lastmod>$yesterday+00:00</lastmod>
+		<changefreq>hourly</changefreq>
 		<priority>0.6</priority>
 	</url>
 </urlset>
