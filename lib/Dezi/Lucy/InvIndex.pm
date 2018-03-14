@@ -87,7 +87,7 @@ L<https://metacpan.org/dist/Dezi-App/>
 Copyright 2015 by Peter Karman
 
 This library is free software; you can redistribute it and/or modify
-it under the terms of the GPL v2 or later.
+it under the same terms as Perl itself.
 
 =head1 SEE ALSO
 
