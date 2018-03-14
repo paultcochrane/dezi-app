@@ -65,7 +65,7 @@ recommends 'DBI'                          => 0;
 recommends 'Term::ProgressBar'            => 0;
 
 perl_version '5.8.3';
-license 'http://dev.perl.org/licenses/';
+license 'perl';
 homepage 'http://dezi.org/';
 bugtracker 'http://rt.cpan.org/NoAuth/Bugs.html?Dist=Dezi-App';
 repository 'https://github.com/karpet/dezi-app';
