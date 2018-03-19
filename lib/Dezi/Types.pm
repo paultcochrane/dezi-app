@@ -1,4 +1,8 @@
 package Dezi::Types;
+
+use strict;
+use warnings;
+
 use Type::Library -base, -declare => qw(
     DeziFileRules
     DeziIndexerConfig

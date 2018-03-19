@@ -1,5 +1,8 @@
 #!perl
 
+use strict;
+use warnings;
+
 use Test::More;
 plan skip_all => "set RELEASE_TESTING to test POD" unless $ENV{RELEASE_TESTING};
 sub Pod::Coverage::TRACE_ALL () { 1 }
