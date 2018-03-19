@@ -14,9 +14,8 @@ perl:
     - "5.10"
 
 install:
-    - cpanm --installdeps .
-    - cpanm Rose::DBx::TestDB Mail::Box WWW::Sitemap::XML XML::Feed Test::HTTP::Server::Simple HTTP::Server::Simple::Authen Test::LeakTrace
+    - dzil authordeps --missing | cpanm --no-skip-satisfied || { cat ~/.cpanm/build.log ; false ; }
+    - dzil listdeps --author --missing | cpanm --no-skip-satisfied || { cat ~/.cpanm/build.log ; false ; }
 
 script:
-    - perl Makefile.PL
-    - RELEASE_TESTING=1 make test
+    - dzil test --author --release
