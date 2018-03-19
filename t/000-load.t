@@ -1,5 +1,5 @@
 #!/usr/bin/env perl
-use Moo;
+use Moose;
 use Test::More tests => 8;
 
 use_ok('Dezi::App');
