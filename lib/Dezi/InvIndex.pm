@@ -179,7 +179,7 @@ their IR library specifics.
 
 =head2 clobber
 
-Get/set the boolean indicating whether the index should overwrite
+Get/set the Boolean indicating whether the index should overwrite
 any existing index with the same name. The default is true.
 
 =head2 new_from_meta

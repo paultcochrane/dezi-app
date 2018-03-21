@@ -79,7 +79,7 @@ and an upper limit.
 
 =item default_boolop
 
-The default boolean connector for parsing I<query>. Valid values
+The default Boolean connector for parsing I<query>. Valid values
 are B<AND> and B<OR>. The default is
 B<AND> (which is different than Lucy::QueryParser, but the
 same as Swish-e).

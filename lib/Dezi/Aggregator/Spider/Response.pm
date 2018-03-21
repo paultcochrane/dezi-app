@@ -233,7 +233,7 @@ sub title {
     return $p->header('Title');
 }
 
-# delegate all other method calls the the http_response object.
+# delegate all other method calls to the http_response object.
 # cribbed from HTTP::Message
 our $AUTOLOAD;
 

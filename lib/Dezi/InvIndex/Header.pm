@@ -167,7 +167,7 @@ Default is C<swish.xml>.
 
 =head2 swish_header_file
 
-Alias for header_file(). For backwards compatability with SWISH::Prog.
+Alias for header_file(). For backwards compatibility with SWISH::Prog.
 
 =head2 BUILD
 

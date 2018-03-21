@@ -10,7 +10,7 @@
 
 Dezi::App is a Moose port of SWISH::Prog.
 
-Dezi::App drops compatability with Swish-e version 2.x and focuses
+Dezi::App drops compatibility with Swish-e version 2.x and focuses
 on tight integration with SWISH::3 and Apache Lucy.
 
 =head2 INSTALLATION

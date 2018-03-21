@@ -637,7 +637,7 @@ The libswish3 XML and HTML parsers will automatically treat a <title> tag as swi
 
 =item
 
-Things get complicated quickly when defining fields. Experiment with small test cases to arrive a the configuration that works best with your application.
+Things get complicated quickly when defining fields. Experiment with small test cases to arrive at the configuration that works best with your application.
 
 =back
 

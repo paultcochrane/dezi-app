@@ -153,7 +153,7 @@ need to be fetched.
 
 =item ua I<lwp_useragent>
 
-Get/set the Dezi::Aggregagor::Spider::UA object.
+Get/set the Dezi::Aggregator::Spider::UA object.
 
 =item max_depth I<n>
 
@@ -173,7 +173,7 @@ next server, if any.  The default is to not limit by time.
 This optional key sets the max number of files to spider before aborting.
 The default is to not limit by number of files.  This is the number of requests
 made to the remote server, not the total number of files to index (see C<max_indexed>).
-This count is displayted at the end of indexing as C<Unique URLs>.
+This count is displayed at the end of indexing as C<Unique URLs>.
 
 This feature can (and perhaps should) be use when spidering a web site where dynamic
 content may generate unique URLs to prevent run-away spidering.
