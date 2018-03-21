@@ -16,7 +16,7 @@ use overload(
 
 use namespace::autoclean;
 
-our $VERSION = '0.014_01';
+our $VERSION = '0.014_02';
 
 our $DEFAULT_NAME = 'dezi.index';
 
