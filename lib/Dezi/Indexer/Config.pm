@@ -572,7 +572,7 @@ sub stringify {
 
 sub _write_utf8 {
     my ( $self, $file, $buf ) = @_;
-    binmode $file, ':utf8';
+    binmode $file, ':encoding(UTF-8)';
     print {$file} $buf;
 }
 
