@@ -174,12 +174,6 @@ has 'warnings' => (
     default     => sub {2},
 );
 
-=head2 run
-
-Main method. Calls commands passed via @ARGV.
-
-=cut
-
 sub _getopt_full_usage {
     my ( $self, $usage ) = @_;
     $usage->die( { post_text => $self->_commands } );
@@ -587,6 +581,10 @@ The Dezi::CLI class is a port of the B<swish3> tool to a proper class,
 using L<MooseX::Getopt>.
 
 =head1 METHODS
+
+=head2 run
+
+Main method. Calls commands passed via @ARGV.
 
 =head2 index
 

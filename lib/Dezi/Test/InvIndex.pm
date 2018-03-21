@@ -6,26 +6,6 @@ use Carp;
 use Dezi::Cache;
 use Data::Dump qw( dump );
 
-=head1 NAME
-
-Dezi::Test::InvIndex - test in-memory invindex
-
-=head1 METHODS
-
-=head2 term_cache
-
-=head2 doc_cache
-
-=head2 open
-
-=head2 search
-
-=head2 put_doc
-
-=head2 get_doc
-
-=cut
-
 # in memory invindex
 has 'term_cache' => (
     is      => 'rw',
@@ -99,6 +79,36 @@ sub get_doc {
 __PACKAGE__->meta->make_immutable;
 
 1;
+
+=head1 NAME
+
+Dezi::Test::InvIndex - test in-memory invindex
+
+=head1 METHODS
+
+=head2 term_cache
+
+Accessor for the term cache.
+
+=head2 doc_cache
+
+Accessor for the document cache.
+
+=head2 open
+
+Currently a no-op.
+
+=head2 search($query)
+
+Search the document cache with the given query and return a hash of the hits found.
+
+=head2 put_doc($doc)
+
+Add the given document to the document cache.
+
+=head2 get_doc($uri)
+
+Return the document from the given URI.
 
 =head1 AUTHOR
 

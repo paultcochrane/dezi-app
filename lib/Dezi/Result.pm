@@ -42,11 +42,19 @@ Returns the ranking score for the Result.
 
 =head2 uri
 
+URL or filepath to document.
+
 =head2 mtime
+
+Last modified date of document.
 
 =head2 title
 
+Document title.
+
 =head2 summary
+
+Description of document.
 
 =head2 swishdocpath
 

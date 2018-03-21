@@ -156,7 +156,11 @@ at this time.
 All the L<SWISH::3> constants are imported into this namespace,
 including:
 
-=head2 SWISH_DOC_PROP_MAP
+=over 4
+
+=item * SWISH_DOC_PROP_MAP
+
+=back
 
 =head1 METHODS
 

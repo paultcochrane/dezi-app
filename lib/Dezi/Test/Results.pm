@@ -27,6 +27,8 @@ Dezi::Test::Results - test results class
 
 =head2 next
 
+Return the next test Result.
+
 =head1 AUTHOR
 
 Peter Karman, E<lt>karpet@dezi.orgE<gt>

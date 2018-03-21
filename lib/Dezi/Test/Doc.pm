@@ -32,6 +32,15 @@ Dezi::Test::Doc - test Document class for Dezi::Test::Result
 
 =head1 SYNOPSIS
 
+    use Dezi::Test::Doc;
+
+    my %doc;  # holds all the parsed text, keyed by field name
+    ... construct %doc hash ...
+    my $test_doc = Dezi::Test::Doc->new( %doc );
+
+    print $test_doc->swishtitle, "\n";
+    print $test_doc->swishdescription, "\n";
+
 =head1 METHODS
 
 =head2 SWISH_DOC_PROP_MAP
@@ -40,9 +49,15 @@ All attributes defined in L<SWISH::3> SWISH_DOC_PROP_MAP hash.
 
 =head2 swishdefault
 
+A Metaname that is used by Swish-e if no other name is specified.
+
 =head2 swishtitle
 
+Document title.
+
 =head2 swishdescription
+
+Description of document.
 
 =head2 uri
 
