@@ -5,6 +5,8 @@ use Test::More tests => 2;
 
 SKIP: {
 
+    my $doc_url = 'https://dezi.org/swish-e-docs/';
+
     if ( !$ENV{TEST_SPIDER} ) {
         diag "set TEST_SPIDER env var to test the spider";
         skip "set TEST_SPIDER env var to test the spider", 2;
@@ -24,7 +26,7 @@ SKIP: {
         "new spider"
     );
 
-    diag("spidering swish-e.org/docs");
-    is( $spider->crawl('http://www.swish-e.org/docs/'), 26, "crawl" );
+    diag("spidering $doc_url");
+    is( $spider->crawl($doc_url), 19, "crawl" );
 
 }
