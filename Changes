@@ -1,5 +1,8 @@
 Revision history for Dezi-App
 
+0.014_01 20 March 2018
+  - test pull request challenge improvements, notably move to Dist::Zilla
+
 0.014  01 Dec 2015
   - replace namespace::sweep with namespace::autoclean
 

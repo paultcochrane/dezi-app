@@ -14,7 +14,7 @@ use Try::Tiny;
 
 use namespace::autoclean;
 
-our $VERSION = '0.014';
+our $VERSION = '0.014_01';
 
 has 'invindex' => (
     is     => 'rw',
