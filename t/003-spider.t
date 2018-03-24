@@ -1,7 +1,9 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
+
 use Test::More tests => 2;
+use Class::Load qw(try_load_class);
 
 SKIP: {
 
@@ -12,10 +14,8 @@ SKIP: {
         skip "set TEST_SPIDER env var to test the spider", 2;
     }
 
-    eval "use Dezi::Aggregator::Spider";
-    if ( $@ && $@ =~ m/([\w:]+)/ ) {
-        skip "$1 required for spider test: $@", 3;
-    }
+    try_load_class("Dezi::Aggregator::Spider")
+        or skip "Dezi::Aggregator::Spider required for spider test: $@", 3;
 
     ok( my $spider = Dezi::Aggregator::Spider->new(
             verbose   => $ENV{DEZI_DEBUG},

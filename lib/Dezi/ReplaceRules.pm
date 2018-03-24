@@ -170,6 +170,7 @@ sub apply {
 
             #warn "code='$code'\n";
             try {
+                ## no critic (ProhibitStringyEval)
                 eval "$code";
             }
             catch {
