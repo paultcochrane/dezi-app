@@ -14,8 +14,7 @@ perl:
     - "5.10"
 
 env:
-    - TEST_SPIDER=1
-    - RELEASE_TESTING=1
+    - TEST_SPIDER=1 RELEASE_TESTING=1
 
 install:
     - dzil authordeps --missing | cpanm --no-skip-satisfied || { cat ~/.cpanm/build.log ; false ; }
