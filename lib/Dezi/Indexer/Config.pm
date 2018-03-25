@@ -21,7 +21,7 @@ use overload(
 
 use namespace::autoclean;
 
-our $VERSION = '0.014_02';
+our $VERSION = '0.015';
 
 # only a few explicitly named attributes.
 # everything else is through AUTOLOAD.
